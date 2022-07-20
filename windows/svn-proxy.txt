@@ -1,0 +1,10 @@
+Alterar o arquivo "~/subversion/.servers".
+
+[global]
+
+http-proxy-host = servidor.com.br
+http-proxy-port = 80
+http-proxy-username = usuario
+http-proxy-password = senha
+ 
+

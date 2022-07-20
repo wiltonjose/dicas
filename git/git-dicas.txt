@@ -1,0 +1,245 @@
+Gerar um par de chaves SSH
+
+-- No terminal digitar:
+ssh-keygen -t rsa -b 4096 -C "wiltonj@gmail.com"
+
+-- Confirmar diretório e arquivo ($HOME/.ssh/id_rsa), informar uma senha.
+-- Abrir o arquivo $HOME/.ssh/id_rsa.pub e copiar o conteúdo dele.
+
+-- Cadastrar essa chave no GitHub e ma Umbler, mas respectivas contas.
+Obs: Deve ser criado um par de chaves SSH para cada repositório.
+
+Configuração do git
+
+-- Listar configurações atuais
+git config --list
+
+-- Configurando usuário, email e editor padrão.
+git config --global user.name “nomeUsuario”
+git config --global user.email “email@dominio.com”
+git config --global core.editor vim
+git config --global merge.tool vimdiff
+
+Criando um novo repositório
+
+-- Criar um diretório, entrar nele e executar:
+git init
+
+-- Conectar com um repositório remoto.
+git remote add origin <urlRepositório>
+
+-- Sicronizar com repositório remoto.
+git pull origin
+
+Clonar um repositório remoto
+
+git clone usuario@<urlRepositório> 
+
+-- Clonar um branch. O -b faz com que o branch clonado seja o corrente.
+git checkout -b <nomeBranch> origin/<nomeBranch>
+git checkout -b <nomeBranch> <apelidoRemoto>/<nomeBranch>
+Fluxo de trabalho
+Working directory (copia local)
+git add <arquivo>|*|.
+Index (stage)
+git commit -m ‘texto’
+HEAD
+
+Enviando alterações para o repositório remoto
+
+-- Após o commit as alterações estarão na Head do diretório de trabalho.
+git push origin master|<branch>
+
+Trabalhando com repositórios remotos
+
+-- Podemos adicionar vários repositórios remotos para a mesma área de trabalho local.
+git remote add <apelidoRemoto> <urlRepositório>
+
+-- Para listar todos os repositórios remotos
+git remote -v
+
+-- Para baixar todos os dados que não estão no repositório local. O fetch não faz o merge com os dados na área de trabalho. Deverá ser feito o merge depois
+git fetch <apelidoRemoto>
+
+-- Para baixar todos os dados que não estão no repositório local fazendo o merge com os dados na área de trabalho. 
+git pull <apelidoRemoto>
+
+-- Enviar as alterações no repositório local para o remoto. Se outro desenvolvedor executar o push antes, o seu push será rejeitado e deverá ser executado o pull e os conflitos deverão ser resolvidos.
+git push <apelidoRemoto> <branch>
+
+-- Listando mais informações sobre o repositório remoto.
+git remote show <apelidoRemoto>
+
+-- Remover uma referencia para repositório remoto.
+git remote rm <apelidoRemoto>
+
+-- Renomear uma referencia para repositório remoto.
+git remote rename <apelidoRemoto> <novoApelidoRemoto>
+
+-- Atualizar o repositório local com as últimas tags e branchs do repositório remoto.
+git fetch --all
+Trabalhando com tags
+
+-- Criando uma tag anotada
+git tag -a <nomeTag> -m “mensagem”
+
+-- Criando uma tag leve (não guarda as informações de usuário e outras)
+git tag <nomeTag> -m “mensagem”
+
+-- Clonar uma tag
+git checkout tags/<nomeTag> -b <nomeBranch>
+
+-- Para criar uma tag para um commit. O idCommit corresponde aos 10 primeiros caracteres do id do commit a qual a tag se referencia.
+git tag -a <nomeTag> [<idCommit>] -m “mensagem”
+
+-- Para enviar uma tag para o repositório remoto.
+git push origin <nomeTag>
+
+-- Para enviar várias tags para o repositório remoto ao mesmo tempo.
+git push origin --tags
+
+-- Para listar os ids dos commits
+git log --pretty=oneline
+
+-- Listar tags
+git tag -l
+git tag -l ‘1.2*’
+
+-- Listar tags no repositório remoto
+git ls-remote --tags origin
+
+-- Listar mais informações sobre o tag
+git show <nomeTag>
+git show -s --pretty=full <nomeTag>
+git show --pretty=full <nomeTag>
+git show --name-only <nomeTag>
+git tag -v <nomeTag>
+
+-- Remover tag (local)
+git tag -d <nomeTag>
+
+-- Remover tag (remote)
+git push -d origin <nomeTag>
+git push origin :refs/tags/<nomeTag>
+
+-- Renomear tag
+git tag <novaTag> <tagAntiga>
+git tag -d <tagAntiga>
+git push -d origin <tagAntiga>
+git push origin --tags
+
+Trabalhando com branch
+
+-- Branches são importantes para o desenvolvimento de funcionalidades isoladas. 
+   O branch padrão é master, criado na inicialização do repositório. 
+   Todo branch deve ser mesclado (merge) com o branch master.
+
+-- Criando um branch
+git checkout -b <branch>
+
+-- Listar os branchs
+git brach -r|--remotes      (remoto)
+git brach --list 2.*        (local)
+git brach                   (local)
+git brach -a|--all          (local e remoto)
+git brach --list *2.* -a    (local e remoto)
+git remote show origin      (local e remoto)
+
+-- Vai para um branch expecifico
+git checkout master|<branch>
+
+-- Remover um branch (local)
+git branch -d <branch>
+
+-- Enviar um branch para o repositório remoto
+git push origin <branch>
+
+-- Remover um branch (remoto)
+git push -d origin <branch>
+git push origin :<branch>
+git push origin --delete <branch>
+
+-- Renomear branch
+git checkout <branchAntigo>
+git branch -m <novoBranch>
+git push origin -u <novoBranch>
+git push -d origin <branchAntigo>
+
+Atualizar o diretório de trabalho local com o remoto
+
+-- Sincroniza o diretório local com as alterações do remoto:
+git pull
+
+-- Fazer o merge do branch-a com o branch atual (master):
+git checkout master
+git merge <branch-a>
+
+-- Os conflitos devem ser resolvidos manualmente. Depois de resolvidos devem ser marcados como merged:
+git add <arquivo>
+
+-- Podemos verficar as diferenças entre os branchs antes de qualquer alteração:
+git diff <branch-a> <branch-b>
+
+Visualizando mudanças
+
+-- Os arquivos alterados.
+git status
+
+-- Verificar o que foi alterado nos arquivos e não foi colocado no INDEX (stage)
+git diff
+
+Desfazendo alterações
+
+-- Remover o arquivo da área de INDEX (stage).
+git restore --staged <arquivo>
+git reset HEAD <arquivo>
+
+-- Descartar alterações na área de trabalho antes de colocar no INDEX.
+git restore <arquivo>
+
+-- Para descartar as alterações locais, substituindo pelo conteúdo mais recente no Head.
+git checkout -- <arquivo>
+OBS: Alterações já incluídas no index, bem como novos arquivos serão mantidos.
+
+-- Alterar um commit.
+git commit --amend
+
+-- Para descartar todas as alterações e commits locais, deve ser recupedado o histórico mais recente do servidor e fazer o apontamento para o branch master local.
+git fetch origin
+git reset --hard origin/master
+
+Remover e mover arquivos
+
+git rm <arquivo>
+git rm --cached <arquivo>
+git mv <origem> <destino>
+
+Visualizar histórico
+
+-- Lista o histórico.
+git log 
+git log --stat
+git log --shortstat
+git log --pretty=oneline
+git log --pretty=format:"%cd - %H - %an/%cn %s"
+git log --name-only
+
+-- Lista o histórico com diff. -n limita a quantidade de entradas a serem exibidas.
+git log -p -n
+Alterar repositório remoto
+
+-- Lista a URL que o git armazenou para o nome remoto.
+git remote -v
+
+-- Você pode remover
+git remote remove origin
+
+-- Adicionar um novo com o novo endereço
+git remote add origin git://suaUrl
+
+-- Alterar o diretório remoto
+git remote set-url origin git://suaUrl
+
+-- Ou pode renomear o atual e adicionar um novo.
+git remote rename origin old-origin
+git remote add origin novaurl

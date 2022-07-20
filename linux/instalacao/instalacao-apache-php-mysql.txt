@@ -1,0 +1,68 @@
+
+# ================================================== #
+Apache / PHP / MySQL
+# ================================================== #
+
+*-----* Apache2 / PHP 5
+
+sudo apt-get install apache2 php5 libapache2-mod-php5 
+
+-- Incluir a linha "ServerName localhost" no arquivo httpd.conf.
+gksu leafpad /etc/apache2/httpd.conf
+ServerName localhost
+sudo /etc/init.d/apache2 restart
+
+-- Testar se o PHP está funcionando
+
+*--* Criar arquivo /var/www/teste.php e incluir a linha abaixo
+
+<?php phpinfo(); ?>
+
+- Abrir o browser e digitar "http://localhost/teste.php" na URL.
+
+*--* Criar um diretorio virtual no apache
+
+- Editar o arquivo /etc/apache2/httpd.conf
+
+<VirtualHost *>
+    ServerName localhost
+    DocumentRoot /home/wilton/www
+</Virtualhost>
+
+sudo /etc/init.d/apache2 restart
+
+*-----* MySQL
+
+sudo apt-get install mysql-server
+Informar senha do root = mysql
+
+sudo apt-get install php5-mysql
+sudo apt-get install mysql-query-browser
+
+-- para alterar password para root
+
+mysqladmin -u root password "newpwd"
+mysqladmin -u root -h saturno password "newpwd"
+
+-- Testar se o MySQL está funcionando
+
+mysql -u root -p
+
+create database dbTeste;
+grant all privileges on dbTeste.* to admin;
+use dbTeste;
+create table teste(codigo varchar(10), nome varchar(30));
+insert into teste(codigo,nome) values("123","teste1");
+select * from teste;
+drop database dbTeste;
+
+*--* JDBC MySQL
+sudo apt-get install libmysql-java
+
+-- Driver e URL conexão
+dbDriver = "com.mysql.jdbc.Driver";
+dbUrl    = "jdbc:mysql://localhost/dbTeste";
+
+*--* mysql
+sudo apt-get install python-mysqldb
+

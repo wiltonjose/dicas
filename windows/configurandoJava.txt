@@ -1,0 +1,40 @@
+Instalação do Ambiente de Desenvolvimento Java
+----------------------------------------------
+
+1) Descompactar o arquivo "java-win.zip" no root "c:\".
+
+2) Instalar o jdk. Durante o processo de instalação, será solicitado o diretório para 
+   instalação do jdk, informe "c:\Java\jdk".
+
+3) Criar as variáveis de ambiente abaixo:
+   
+   Nome da variável              Valor
+   ------------------------------------------------------
+   JAVA_DIR                      c:\java   
+   JAVA_HOME                     %JAVA_DIR%\jdk
+   J2EE_HOME                     %JAVA_DIR%\oc4j\j2ee\home
+   ORACLE_HOME                   %JAVA_DIR%\oc4j
+   OC4J_HOME                     %JAVA_DIR%\oc4j\j2ee\home
+   ANT_HOME                      %JAVA_DIR%\apache-ant
+   CATALINA_HOME                 %JAVA_DIR%\tomcat
+   CATALINA_OPTS                 -Dfile.encoding=ISO8859_1
+   CLASSPATH (*)                 .;%JAVA_HOME%\lib\tools.jar;
+   PATH (**)                     %JAVA_HOME%\bin;%ANT_HOME%\bin;
+            
+   (*)  Se a variável "CLASSPATH" já existir inclua o valor no inicio do valor existente. 
+   (**) Incluir no inicio do valor existente.
+
+4) Criar um atalho no desktop (ou outro lugar de sua preferência) para o eclipse.
+
+   O atalho tem o seguinte comando:
+
+   C:\java\eclipse\eclipse.exe -showlocation -data c:\java\eclipse\workspace -vmargs -Xmx256m -Xms256m
+
+   Ajustar os parâmetros -Xms e -Xmx conforme a quantidade de memória RAM da sua
+   máquina.
+
+   -Xms = define a quantidade inicial de memória alocada para o eclipse;
+   -Xmx = define a quantidade máxima de memória a ser alocada.
+
+5) Lembre-se de verificar se a política de anti-virus de sua máquina já foi atualizada.
+

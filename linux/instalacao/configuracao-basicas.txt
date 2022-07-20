@@ -1,0 +1,440 @@
+
+*-----* Site para configuracao - http://debianhelp.wordpress.com/2012/03/09/to-do-list-after-installing-ubuntu-12-04-lts-aka-precise-pangolin/
+                                 http://www.hardware.com.br/tutoriais/ubuntu-1204-entendendo-configurando-unity/
+                                 http://packages.medibuntu.org/precise/index.html
+*-----* Copiar arquivo *.desktop para diret?rio /usr/share/applications ou ~/.local/share/applications
+
+
+# ================================================== #
+Configurar Proxy  e variaveis de ambiente
+# ================================================== #
+
+*-----* Lê arquivo Configuracao-proxy.txt
+
+*-----* Configuracao de ambiente
+
+*--* Incluir o diretório abaixo no PATH definido no arquivo /etc/environment
+
+sudo vi /etc/environment ou /etc/profile
+
+/opt/java/jdk/bin
+
+*--* Alterar arquivo ~/.bashrc ou ~/.profile
+
+vi ~/.bashrc
+
+## ---- Configuracoes local do usuario
+
+export PATH=$PATH:$HOME/scripts
+
+alias catalina='catalina.sh'
+alias tomcat='tomcat.sh'
+# alias lxterminal='lxterminal --geometry=170x40'
+# alias xfce4-terminal='xfce4-terminal --geometry=170x40'
+# alias gnome-terminal='gnome-terminal --geometry=170x40'
+
+*--* Alterar arquivo /etc/bash.bashrc, ~/.bashrc ou ~/.profile
+
+sudo vi /etc/bash.bashrc
+
+## ---- Configuracoes para o Java
+
+export JAVA_DIR=/opt/java
+
+# export JAVA_HOME=/opt/java/jdk-producao
+# export JAVA_HOME=/usr/lib/jvm/java-6-sun
+# export JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk
+# export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
+# export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+# export JAVA_HOME=/usr/lib/jvm/jdk1.6.0_24
+# export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_17
+export JAVA_HOME=$JAVA_DIR/jdk
+export JRE_HOME=$JAVA_DIR/jdk/jre
+
+export ANT_HOME=$JAVA_DIR/apache-ant
+export CATALINA_HOME=$JAVA_DIR/apache-tomcat
+export MAVEN_HOME=$JAVA_DIR/apache-maven
+export M2_HOME=$JAVA_DIR/apache-maven
+
+export IDEA_IC=$JAVA_DIR/idea-IC
+
+export ANDROID_STUDIO=$JAVA_DIR/android-studio
+# export ANDROID_SDK=$ANDROID_STUDIO/sdk
+export ANDROID_SDK=$JAVA_DIR/android-sdk-linux
+export ANDROID_NDK=$JAVA_DIR/android-ndk-linux
+export ANDROID_KEYSTORE=/home/wilton/ti/certificados/wjps-release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+# export ANDROID_KEYSTORE=/home/wilton/ti/certificados/prodasen-release.keystore
+# export ANDROID_KEY_ALIAS=prodasen-release
+
+export OC4J_HOME=$JAVA_DIR/oc4j
+export J2EE_HOME=$OC4J_HOME/j2ee/home
+
+# export GWT_HOME=$JAVA_DIR/gwt-2.5.1
+export GWT_HOME=$JAVA_DIR/gwt
+
+export GRADLE_HOME=$JAVA_DIR/gradle
+
+export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:/usr/share/java/mysql.jar
+export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin:$ANT_HOME/bin:$MAVEN_HOME/bin:$CATALINA_HOME/bin:$GWT_HOME:$GRADLE_HOME/bin:$ANDROID_SDK/tools:$ANDROID_SDK/platform-tools:$ANDROID_STUDIO/bin:$JAVA_DIR/genymotion:$IDEA_IC/bin
+
+## ---- Configuracoes para o Python
+
+export PYTHON_DIR=/opt/python
+
+export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/dist-packages:/usr/local/lib/python2.7:/usr/local/lib/python2.7/dist-packages:/usr/local/lib/python2.7/site-packages:$PYTHON_DIR/pyjamas:$PYTHONPATH
+export PATH=$PATH:$PYTHON_DIR/pyjamas/bin
+
+## ---- Configuracoes para o NodeJS
+
+export NODE_ENV='development'
+
+## ---- Configuracoes para o Oracle
+
+export ORACLE_HOME=/opt/oracle/instantclient_11_2
+export TNS_ADMIN=/opt/oracle/instantclient_11_2
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
+export OCI_LIB_DIR=$ORACLE_HOME
+export OCI_INCLUDE_DIR=$ORACLE_HOME/sdk/include
+export OCI_VERSION=11
+# export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1'
+export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.UTF8'
+
+export PATH=$PATH:$ORACLE_HOME
+
+
+# ================================================== #
+Atualizacao da distribuicao
+# ================================================== #
+
+*-----* Atualizar sistema
+
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+*-----* Dar boot
+
+
+# ================================================== #
+Desativar apport
+# ================================================== #
+
+*-----* Alterar o arquivo /etc/default/apport
+
+sudo vi /etc/default/apport
+
+Colocar o parametro "enabled=0" para "enabled=1"
+
+
+# ================================================== #
+Configurar memória de swap
+# ================================================== #
+
+*-----* Alterar o arquivo /etc/sysctl.conf
+
+Para ver o valor atual
+
+sudo cat /proc/sys/vm/swappiness
+
+sudo vi /etc/sysctl.conf
+
+Alterar o parâmetro "vm.swappiness" (Incluir a linha caso se não existir)
+
+vm.swappiness = 5
+
+Execute o comando abaixo
+
+sudo sysctl -w vm.swappiness=5
+
+
+# ================================================== #
+Restaurar backup
+# ================================================== #
+
+*-----* Ativar repositórios "partner"
+
+*-----* Restaurar backup
+
+./scripts/restaura.sh -r|p
+
+*-----* Executar instalação
+
+cd ~
+
+*-* Verificar as versões default para o flashplugin e para o java
+
+*-* Em casa
+
+./scripts/instalacao64.sh -lubuntu -oraclejdk -virtualbox -chrome -noproxy
+
+*-* No trabalho
+
+./scripts/instalacao64.sh -lubuntu -oraclejdk -virtualbox -chrome -proxy
+
+*-----* Dar boot
+
+*-----* Terminar configuração cliente oracle
+
+*--* Executar alterações indicadas no arquivo instalacao-cliente-oracle.txt
+
+*--* Teste
+
+sqlplus sicon/sicon@OPUS.WORLD
+
+*-----* Configurar Google Chrome
+
+*-----* Configurar Dropbox
+
+*-----* Configurar impressoras
+
+*-* No trabalho
+
+IE0490 - Desenvolvimento - socket://ie0490:9100
+IE0571 - Diretor         - socket://ie0571:9100
+
+
+# ================================================== #
+F I N A L I Z A D O   C O M   S U C E S S O
+# ================================================== #
+
+
+
+*-----* Configurando repositorio para Virtualbox..."
+
+sudo bash -c 'echo "deb http://download.virtualbox.org/virtualbox/debian '$(lsb_release -cs)' contrib" > /etc/apt/sources.list.d/virtualbox.list'
+wget -q -O- http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc | sudo apt-key add -
+ou
+sudo apt-key add ~/Downloads/Linux/VirtualBox/oracle_vbox.asc
+
+sudo apt-get update
+
+*--* Executar o comando abaixo
+
+sudo /etc/init.d/vboxdrv status
+
+*--* se aparecer mensagem "VirtualBox kernel modules (vboxdrv, vboxnetflt, vboxnetadp, vboxpci) not loaded." executar o camando abaixo
+
+sudo /etc/init.d/vboxdrv setup
+
+*--* Adicionar o usuario $USER no grupo vboxusers
+
+sudo gpasswd -a $USER vboxusers
+
+
+
+
+
+*-----* Configurando repositorio para Medibuntu..."
+
+OBS: Para saber a lista de pacotes de Medibuntu acesse: http://packages.medibuntu.org/precise/index.html
+
+sudo wget http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list --output-document=/etc/apt/sources.list.d/medibuntu.list
+sudo apt-get update
+sudo apt-get --yes -q --allow-unauthenticated install medibuntu-keyring
+sudo apt-get update
+
+*-----* Configurando repositorio para Google Chrome..."
+
+sudo bash -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list'
+wget -q -O- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo apt-get update
+
+*-----* Instalacao google-chrome
+
+sudo apt-get install google-chrome-stable
+
+*-----* Configurar vim
+
+*-----* Terminar instalacao Dropbox
+
+cd ~/Temp
+wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+sudo mv .dropbox-dist/ /var/lib/dropbox/
+cd /var/lib/dropbox/
+sudo chown -R root.root .dropbox-dist/
+
+*-----* Terminar instalação do flashplugin
+
+*--* Ir para o diretório /var/cache/flashplugin-installer
+
+cd /var/cache/flashplugin-installer
+
+*-* Fazer download do arquivo. Antes verificar a versão mais nova em http://archive.canonical.com/pool/partner/a/adobe-flashplugin/
+
+sudo wget http://archive.canonical.com/pool/partner/a/adobe-flashplugin/adobe-flashplugin_11.2.202.280.orig.tar.gz
+
+*-* Executar o script install_plugin existente em /usr/lib/flashplugin-installer/
+
+sudo /usr/lib/flashplugin-installer/install_plugin adobe-flashplugin_11.2.202.280.orig.tar.gz
+
+
+# ================================================== #
+Instalação do java da oracle
+# ================================================== #
+
+cd /usr/lib/jvm
+sudo cp ~/Downloads/Java/Oracle/jdk-6u24-linux-i586.bin .
+sudo chmod u+x jdk-6u24-linux-i586.bin
+sudo ./jdk-6u24-linux-i586.bin
+sudo rm jdk-6u24-linux-i586.bin
+
+sudo cp ~/Downloads/Java/Oracle/jdk-7u17-linux-i586.tar.gz .
+sudo tar xzf jdk-7u17-linux-i586.tar.gz
+sudo rm jdk-7u17-linux-i586.tar.gz
+sudo ln -s jdk1.6.0_24/ jdk-oracle
+
+ou
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+
+ou (com proxy)
+
+- Adicionar o repositório ppa:webupd8team/java pelo canal de software
+echo deb http://ppa.launchpad.net/webupd8team/java/ubuntu $(lsb_release -cs) main > ~/webupd8team-java.list
+sudo chown root.root ~/webupd8team-java.list
+sudo mv ~/webupd8team-java.list /etc/apt/sources.list.d/
+
+- Executar:
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+
+- Configurar a vers?o ativa
+update-alternatives --config java
+
+
+# ================================================== #
+Gerenciador de PPA
+# ================================================== #
+
+sudo add-apt-repository ppa:webupd8team/y-ppa-manager
+sudo apt-get update
+sudo apt-get install y-ppa-manager
+
+
+# ================================================== #
+Configurando Firefox
+# ================================================== #
+
+*-----* No menu "Editar/Prefêrencias/Downloads"
+
+*-* Salvar em = Perguntar para cada arquivo
+
+*-----* No menu "Editar/Prefêrencias/Conte?do/Idiomas"
+
+*-* Conferir se o primeiro é = Portugu?s/Brasil [pt-br]
+
+*-* Conferir se a Codificação padrão é = Ocidental (ISO-8859-1)
+
+*-----* Extensões
+
+Firebug, Verificação Ortográfica pt-BR, ImTranslator, foxlingo
+
+
+# ================================================== #
+Configurando Correio Prodasen
+# ================================================== #
+
+*-----* Configurar Thunderbird
+
+*-* Receber mensagens (IMAP)
+
+Servidor: correio.senado.gov.br
+Porta: 993
+Usuário: senado\<seu_usuario>
+Segurança da conexão: SSL/TLS
+Modo de autenticação: Senha normal
+
+*-* Servidor de envio (SMTP)
+
+Servidor: exchcas1001.senado.gov.br
+Porta: 587
+Segurança da conexão: STARTTLS
+Modo de autenticação: Senha normal
+Nome de usuário: <seu_usuario> (n?o necessita do prefixo "senado\")
+
+*-* Cat?logo de endere?os
+
+Em "Catálogo" selecionar "Arquivo -> Novo -> Diretório LDAP"
+
+Servidor: infraa.senado.gov.br
+Base DN: DC=senado,DC=gov,DC=br
+Porta: 389
+Bind DN: senado\wilton
+
+*-----* Configurar Evolution
+
+*-* Instalar evolution-ews
+
+sudo apt-get install evolution-ews
+
+*-* Adicionar nova conta Exchange EWS
+
+Tipo do Servidor = Web Services do Exchange
+Nome do usuário = wilton
+URL do Servidor = https://correio.senado.gov.br/EWS/Exchange.asmx
+URL OAB = http://correio.senado.gov.br/OAB/a1778765-e50e-4990-801c-0ac0cd94a8fe/oab.xml
+Autentica??o = NTML
+
+Obs: Encerrar a sessão e logar outra vez.
+
+*-* Adicionar nova conta Microsoft Exchange
+
+Tipo servidor = Microsoft Exchange
+Nome do usuário = WILTON (Mai?culo)
+URL OWA = https://correio.senado.gov.br
+
+Nome do servidor de catálogo global = infraa.senado.gov.br
+
+*-* Adicionar nova conta IMAP
+
+Tipo servidor = IMAP
+Servidor = correio.senado.gov.br
+Porta: 993
+Usuário: senado\<seu_usuario>
+Segurança da conexão: SSL/TLS
+Modo de autenticação: Senha normal
+
+*-* Servidor de envio (SMTP)
+
+Servidor: exchcas1001.senado.gov.br
+Porta: 587
+Segurança da conexão: STARTTLS
+Modo de autenticação: Senha normal
+Nome de usuário: <seu_usuario> (não necessita do prefixo "senado\")
+
+
+# ================================================== #
+Mensageiro da internet Pidgin (Prodasen)
+# ================================================== #
+
+*-* Adicionar conta
+*-* Aba Basico
+Protocolo = XMPP
+Nome de Usuãrio: wilton
+Dom?nio: senado.gov.br
+Apelido local: Wilton
+*-* Aba avançado
+Servidor de conexão: conference.senado.gov.br
+Limpar transferência de arquivo pelo proxy.
+Tipo de proxy: Nenhum proxy
+
+*-* Adicionar contato
+
+
+# ================================================== #
+Mensageiro da internet Empathy (Prodasen)
+# ================================================== #
+
+*-* Adicionar conta
+Protocolo = Jabber
+ID de login: wilton@senado.gov.br
+*-* Aba avançado
+Servidor: conference.senado.gov.br
+Porta: 5222
+Criptografia requerida (TLS/SSL)
+
+*-* Adicionar contato
+

@@ -1,0 +1,60 @@
+
+https://averagelinuxuser.com/clean-arch-linux/#1-clean-package-cache
+
+
+======> ----- Limpando o cache de pacotes
+
+du -sh /var/cache/pacman/pkg/
+
+-- Remove pacotes não instalados do cache
+
+sudo pacman -Sc
+sudo pacman -Scc - remove tudo
+
+
+======> ----- Remover pacotes não usados (orfões)
+
+sudo pacman -Qtdq
+sudo pacman -Rns $(pacman -Qtdq)
+
+
+======> ----- Limpar o cache do home
+
+sudo du -sh ~/.cache/
+rm -rf ~/.cache/*
+
+
+======> ----- Verificar arquivos vazios e duplicados. E localizar arquivos grandes.
+
+rmlint diretorio
+ncdu
+
+-- Executa o script que limpa os arquivos
+./rmlint.sh -c -d 
+
+
+======> ----- Limpando diretórios node_modules
+
+find ~/ti -type d -name 'node_modules' -exec echo '{}' \;
+find ~/ti -type d -name 'node_modules' -exec rm -rf '{}' \;
+
+find ~/projetos/ -type d -name 'node_modules' -exec echo '{}' \;
+find ~/projetos/ -type d -name 'node_modules' -exec rm -rf '{}' \;
+
+find ~/temp/ -type d -name 'node_modules' -exec echo '{}' \;
+find ~/temp/ -type d -name 'node_modules' -exec rm -rf '{}' \;
+
+
+======> ----- Limpando o systemd journal
+
+du -sh /var/log/journal/
+sudo journalctl --vacuum-size=50M
+ou 
+sudo journalctl --vacuum-time=4weeks
+
+-- configurar para a limpeza permanente. Alterar o arquivo /etc/systemd/journald.conf. Alterar a linha que contem SystemMaxUse=
+
+sudo medit /etc/systemd/journald.conf
+
+SystemMaxUse=50M
+

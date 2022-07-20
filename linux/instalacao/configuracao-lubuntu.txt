@@ -1,0 +1,271 @@
+
+Alterar o tamanho default do lxterminal
+-------------------------------------------------------------------------------------------------------------
+
+Atalho desktop - Alterar a linha abaixo no arquivo "/usr/share/applications/lxterminal.desktop"
+
+Exec=lxterminal --geometry=170x45
+ou
+Exec=lxterminal --geometry=170x45
+
+Ou incluir a linha abaixo no arquivo "~/.bashrc"
+
+alias lxterminal='lxterminal --geometry=170x45'
+ou
+alias lxterminal='lxterminal --geometry=170x45'
+
+Default para o atalho Ctrl+Alt+T - Alterar a linha abaixo no arquivo "~/.config/openbox/lubuntu-rc.xml"
+
+<command>lxterminal --geometry=170x45</command>
+ou
+<command>lxterminal --geometry=170x45</command>
+
+A tag "command" da linha acima pode ter "x-terminal-emulator" e nesse caso ficaria:
+
+<command>x-terminal-emulator --geometry=170x45</command>
+ou
+<command>x-terminal-emulator --geometry=170x45</command>
+
+No final executar:
+
+openbox --restart
+
+-------------------------------------------------------------------------------------------------------------
+Alterar background na tela de login
+
+For LXDM (before 12.04)
+
+Using LXTerminal:
+
+gksudo leafpad /etc/lxdm/default.conf
+and change the value of bg to the full path of your desired wallpaper, such as:
+
+bg=/usr/share/lubuntu/wallpapers/Morning_Dew_by_Lars_Clausen.jpg
+Logout and you should see it.
+
+For LightDM (from 12.04 and on)
+
+Using LXTerminal:
+
+gksudo leafpad /etc/xdg/lubuntu/lightdm/lightdm-gtk-greeter.conf
+and change the value of background to the full path of your desired wallpaper, such as:
+
+background=/usr/share/lubuntu/wallpapers/1204-happy-new-year.png
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Atalhos lxshortcut
+
+-------------------------------------------------------------------------------------------------------------
+Autostart alterar arquivo "/etc/xdg/lxsession/Lubuntu/autostart" ou
+"/home/wilton/.config/lxsession/Lubuntu/autostart"
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Sombra e transparencia - alterar arquivo "/etc/xdg/lxsession/Lubuntu/autostart" ou
+"/home/wilton/.config/lxsession/Lubuntu/autostart"
+
+incluir a linha:
+@xcompmgr -C -c -r8 -t-12 -l-12
+
+ou
+
+@xcompmgr -t-12 -l-12 -r9
+
+edit: Here's an explanation for the options I'm using:
+
+"-cfF" "c" is for soft shadows and transparency support, "f" for fade in & fade out when creating and closing windows,
+       and "F" for fade when changing a window's transparency.
+
+"-t-9 -l-11" shadows are offset 9 pixels from top of the window and 11 pixels from the left edge
+
+"-r9" shadow radius is 9 pixels
+
+"-o.95" shadow opacity is set to 0,95
+
+"-D6" the time between each step when fading windows is set to 6 milliseconds.
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Arandr
+
+- Fazer download
+
+ sudo apt-get install arandr
+
+ - Executar
+
+ arandr
+
+ - Configuração para ativar no boot - Alterar o arquivo ~/.config/lxsession/Lubuntu/autostart
+
+xrandr --output VGA-1 --left-of HDMI-1
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Dropbox
+
+- Fazer download
+
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+
+- Executar scripts
+
+criaDirDropbox.sh
+
+- Alterar arquivo "/etc/xdg/lxsession/Lubuntu/autostart" ou "/home/wilton/.config/lxsession/Lubuntu/autostart"
+
+incluir a linha:
+@/var/lib/dropbox/.dropbox-dist/dropboxd
+
+Corrigindo a mensagem abaixo:
+
+Unable to monitor entire Dropbox folder hierarchy. Please run "echo 100000 | sudo tee /proc/sys/fs/inotify/max_user_watches" and restart Dropbox to correct the problem...
+
+
+- Editar o arquivo /etc/sysctl.conf
+
+gksu leafpad /etc/sysctl.conf
+
+- Adicionar a linha abaixo:
+
+fs.inotify.max_user_watches = 100000
+
+- Executar: sudo sysctl -p
+
+
+-------------------------------------------------------------------------------------------------------------
+Menu do lxpanel - Criar arquivo aplicacao.desktop no diretório /usr/share/applications/
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Menu do openbox - Alterar arquivo "/home/wilton/.config/lxsession/Lubuntu/menu.xml"  ou
+"/usr/share/lubuntu/openbox/menu.xml"
+
+
+
+-------------------------------------------------------------------------------------------------------------
+Aí vai mais uma dica para o LXDE. Se você usa o gerenciador de janelas padrão do LXDE, o Openbox,
+talvez tenha dúvida de como configurar os seus atalhos de teclado. O arquivo que você precisa editar
+é o lxde-rc.xml. No Openbox "puro" ele ficaria em ~/.config/openbox/rc.xml, mas no caso do LXDE fica
+em ~/.config/openbox/lxde-rc.xml. Edite-o:
+
+$ leafpad ~/.config/openbox/lubuntu-rc.xml
+
+Procure por "<!-- Keybindings for running applications -->" e edite a partir dessa parte, seguindo
+os modelos existentes. Por exemplo, para ativar proteção de tela ao digitar Ctrl+Alt+Del, adicione:
+
+    <!-- Launch scrot when Print is pressed -->
+    <keybind key="Print">
+      <action name="Execute">
+        <command>gnome-screenshot --interactive</command>
+      </action>
+    </keybind>
+    <!-- Take a screenshot of the current window with scrot when Alt+Print are pressed -->
+    <keybind key="A-Print">
+      <action name="Execute">
+        <command>gnome-screenshot --window</command>
+        <!-- command>lxsession-default screenshot window</command -->
+      </action>
+    </keybind>
+
+    <!-- Keybindings for running applications on Home + P -->
+    <keybind key="W-p">
+      <action name="Execute">
+        <startupnotify>
+          <enabled>true</enabled>
+          <name>PCManFM</name>
+        </startupnotify>
+        <command>pcmanfm</command>
+      </action>
+    </keybind>
+    <!-- Launch a terminal on Home + E-->
+    <keybind key="W-e">
+      <action name="Execute">
+          <command>/opt/java/eclipse/eclipse</command>
+      </action>
+    </keybind>
+    <!-- Launch a terminal on Home + F-->
+    <keybind key="W-f">
+      <action name="Execute">
+          <command>firefox</command>
+      </action>
+    </keybind>
+    <!-- Launch a terminal on Home + C-->
+    <keybind key="W-c">
+      <action name="Execute">
+          <command>chromium-browser</command>
+      </action>
+    </keybind>
+    <!-- Keybindings for running Run menu from Lxpanel on Home + R-->
+    <keybind key="W-r">
+      <action name="Execute">
+        <command>lxpanelctl run</command>
+      </action>
+    </keybind>
+    <!-- Lock the screen on Home + L-->
+    <keybind key="W-l">
+      <action name="Execute">
+        <command>dm-tool lock</command>
+        <!-- command>xscreensaver-command -lock</command -->
+      </action>
+    </keybind>
+    <!-- Launch a terminal on Home + T-->
+    <keybind key="W-t">
+      <action name="Execute">
+        <command>lxterminal --geometry=145x38</command>
+      </action>
+    </keybind>
+
+    <!-- Launch task manager on Ctrl + Alt + Del-->
+    <keybind key="C-A-Delete">
+      <action name="Execute">
+        <command>lxtask</command>
+      </action>
+    </keybind>
+    <!-- Launch a terminal on Ctrl + Alt + T-->
+    <keybind key="C-A-T">
+      <action name="Execute">
+        <command>lxterminal --geometry=145x38</command>
+      </action>
+    </keybind>
+    <!-- Launch a filemanager on Ctrl + Alt + D-->
+    <keybind key="C-A-D">
+      <action name="Execute">
+        <startupnotify>
+          <enabled>true</enabled>
+          <name>PCManFM</name>
+        </startupnotify>
+        <command>pcmanfm</command>
+      </action>
+    </keybind>
+    <!-- Lock the screen on Ctrl + Alt + l-->
+    <keybind key="C-A-l">
+      <action name="Execute">
+        <command>dm-tool lock</command>
+        <!-- command>xscreensaver-command -lock</command -->
+      </action>
+    </keybind>
+
+    <!-- Launch logout when push on the shutdown button -->
+    <keybind key="C-A-End">
+      <action name="Execute">
+        <command>lxsession-default quit</command>
+      </action>
+    </keybind>
+
+    <!-- Launch logout when push on the shutdown button -->
+    <keybind key="XF86PowerOff">
+      <action name="Execute">
+        <command>lxsession-default quit</command>
+      </action>
+    </keybind>
+
+Coloque os atalhos que preferir e depois faça login para que seja efetuada a nova configuração.
+
+Importante: Antes de editar o arquivo, crie uma cópia de segurança do mesmo.

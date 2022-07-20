@@ -1,0 +1,677 @@
+Instalação do chromium OS
+================================================
+http://www.dicasparacomputador.com/conheca-crosh-chrome-ambiente-shell
+https://www.reddit.com/r/Crostini/comments/9yds5p/how_to_run_multiple_vms_containers_with_launcher/eiqd8qv/?context=8&depth=9
+http://linuxiumcomau.blogspot.com/2018/07/introduction-to-crostini-part-1-hp.html
+https://www.edivaldobrito.com.br/instalar-e-usar-o-yay-no-arch/
+https://www.reddit.com/r/Crostini/wiki/howto/change-default-username
+https://arnoldthebat.co.uk/wordpress/
+https://chromium.arnoldthebat.co.uk/?dir=daily
+
+***** Compartilhamento via NFS
+https://kraudio.wordpress.com/2007/03/01/compartilhando-arquivos-e-pastas-entre-maquinas-linux-com-o-nfs/
+https://www.somosagility.com.br/compartilhando-arquivos-usando-nfs/
+https://sempreupdate.com.br/compartilhar-arquivos-entre-linux-com-o-nfs/
+
+Instalação do cloudready (chromium OS)
+================================================
+sudo dd if=cloudready-free-78.4.3-64-bit.bin of=/dev/sdb bs=4MB
+
+***** Lista de comando do terminal no Chromium OS
+https://www.makeuseof.com/tag/terminal-commands-chromebook/
+http://www.dicasparacomputador.com/conheca-crosh-chrome-ambiente-shell
+
+
+Instalação do archlinux (Crostini)
+================================================
+https://wiki.archlinux.org/index.php/Chrome_OS_devices/Crostini
+***** Se desejar matar o container default (penguin) debian, execute os comando abaixo:
+vmc destroy termina
+vmc start termina
+
+***** Digitar o comando abaixo no terminal do crostini
+vmc container termina arch https://us.images.linuxcontainers.org archlinux/current
+
+obs: Se der o erro abaixo é normal
+"Error: routine at frontends/vmc.rs:403 `container_setup_user(vm_name,user_id_hash,container_name,username)` failed: timeout while waiting for signal"
+
+***** Configuração de usuário
+vsh termina
+lxc list
+lxc start arch
+lxc exec arch -- bash
+
+- Verificar se existe o usuário wiltonj
+grep 1000:1000 /etc/passwd|cut -d':' -f1
+
+- Criar se não existir
+useradd -m wiltonj
+
+***** Alterar password do usuário default e do root
+passwd wiltonj
+passwd root
+
+***** Permitir que o usuário default execute sudo
+pacman -S sudo 
+visudo
+
+- Descomentar a linha abaixo
+# %wheel ALL=(ALL) ALL
+
+- Salvar
+
+***** Colocar o usuário no grupo wheel
+usermod -aG wheel wiltonj
+
+exit
+lxc console arch
+
+- Verificar se a rede está ok
+ip -4 a show dev eth0
+
+***** Alterar o container default para o archlinux
+exit
+lxc stop --force arch
+lxc rename arch penguin
+lxc exec arch -- bash
+systemctl --failed
+systemctl --user --failed
+ip -4 a show dev eth0
+dhcpcd eth0
+
+***** Configurar locale.gen
+-- Alterar o arquivo /etc/locale.gen
+Descomentar as linhas abaixo e conferir se as demais estão comentadas.
+pt_BR.UTF-8 UTF-8
+pt_BR ISO-8859-1
+
+-- Executar:
+sudo locale-gen
+
+***** Acertar repositórios do archlinux 
+sudo vi /etc/pacman.conf
+
+- descomente as linhas abaixo
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+
+- incluir as linhas abaixo
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/x86_64
+
+***** Atualizar o banco de dados local do pacman
+sudo pacman -Syy
+
+***** Instalar yay
+sudo pacman -S git go base-devel cmake
+cd /tmp
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+rm -rf yay/
+yay -Syyu
+
+***** Instalar integração com o chromeos
+yay -S cros-container-guest-tools-git wayland xorg-server-xwayland
+systemctl --user enable --now sommelier@0 sommelier-x@0 sommelier@1 sommelier-x@1
+
+- Diretório dos atalhos
+/usr/share/applications/
+
+***** Instalar pacotes
+sudo pacman -S lxterminal
+sudo pacman -S screenfetch
+
+***** Colocar as linhas abaixo no arquivo .bashrc
+complete -cf sudo
+screenfetch
+
+***** Configurar o lxterminal
+-- Alterar o arquivo .config/lxterminal/lxterminal.conf
+geometry_columns=186
+geometry_rows=46
+geometry_x=10
+geometry_y=10
+
+***** Instalar pacotes
+sudo pacman -S gedit nano mlocate
+sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
+sudo pacman -S lxterminal htop usbutils
+sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
+yay -S  ttf-ms-fonts
+sudo pacman -S p7zip tar gzip bzip2 unrar unzip
+sudo pacman -S putty moc rmlint ncdu
+sudo pacman -S tree youtube-dl
+sudo pacman -S xarchiver file-roller filezilla transmission-gtk
+sudo pacman -S mesa
+
+sudo pacman -S ghex hexedit meld sqlite sqlite-doc curl
+sudo pacman -S gvim ctags clang
+sudo pacman -S git tk
+sudo pacman -S pcmanfm
+
+sudo pacman -S jdk8-openjdk openjdk8-doc openjdk8-src
+sudo pacman -S firefox firefox-i18n-pt-br flashplugin
+sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre
+yay -S vim-plug postman-bin
+
+***** Configurando openssh
+- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile	.ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+AllowUsers wilton
+
+- Configurar o firewall para aceitar a porta 22
+
+- Inicar o daemon sshd
+sudo systemctl start sshd
+
+- Conectar ao servidor
+ssh usuario@endereço.ip.do.destino
+
+- copiando arquivos e diretórios para outra máquina via ssh
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+***** Colocar as linha abaixo no arquivo .bashrc
+================================================================================================
+export EDITOR=gedit
+export TERMINAL=lxterminal
+export BROWSER=chromium
+
+export JAVA_HOME=/usr/lib/jvm/default
+export JRE_HOME=/usr/lib/jvm/default/jre
+export MAVEN_OPTS=-Xmx512m
+export M2_HOME=$HOME/.sdkdev/maven
+# export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+
+export CHROME_EXECUTABLE=/usr/bin/google-chrome-stable
+export ANDROID_HOME=$HOME/.sdkdev/android-sdk
+export ANDROID_KEYSTORE=$HOME/ti/certificados/android/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+
+export PATH=$PATH:$HOME/bin:$HOME/.sdkdev/VSCode-linux-x64/bin:$JAVA_HOME/bin:$M2_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$HOME/.sdkdev/flutter/bin
+
+### ----- site da seluz
+
+export NODE_ENV=desenvolvimento
+export LOG_ACESSOS=sim
+
+# --- Local
+# source config-mongodb.sh local
+
+# --- Desenvolvimento
+source config-mongodb.sh desenv
+export EMAIL_USAR_SENDGRID=sim
+export EMAIL_FROM=wjps@wilton.jose.nom.br
+export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
+export EMAIL_SENDGRID_API_KEY=SG.8rbZhrQ4Sq28bsmMqbEh6g.yfDNSmdbXs7L8bjNdJ6G7mm96s4GHH1EM9X-37NUBlQ
+
+# --- Producao
+# source config-mongodb.sh prod
+# export EMAIL_USAR_SENDGRID=sim
+# export EMAIL_FROM=site@seluz.org.br
+# export EMAIL_NODEMAILER_USUARIO=site@seluz.org.br:kpg89d33
+# export EMAIL_SENDGRID_API_KEY=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
+
+### ----- Colocado pelo nvm
+================================================================================================
+
+***** Instalação Node.js
+- Site nvm https://github.com/creationix/nvm
+
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash
+yay -S watchman
+
+***** Alterar permissão de execução para o arquivo "~/.config/nvm/nvm.sh"
+cd ~/.nvm
+chmod u+x nvm.sh
+
+***** Fechar o terminal e abrir outro.
+
+***** Instalar node
+nvm install 10.21.0
+nvm install 14.5.0
+
+- mudar versão atual do node
+nvm use 10.21.0
+
+- Comando importantes do nvm
+nvm --version
+nvm ls-remote
+nvm install 9.9.9
+nvm install 8.2.1 --reinstall-packages-from=7.11.1
+nvm install --lts=argon
+nvm uninstall 9.9.9
+nvm ls
+nvm alias default 10.21.0
+nvm use 9.9.9
+nvm which 9.9.9
+
+- Configurar npm
+npm config set temp /tmp
+npm config set strict-ssl false
+npm config set registry "http://registry.npmjs.org/"
+
+Obs: Verificar se é necessário
+npm config set proxy "http://127.0.0.1:3128"
+npm config set https-proxy "http://127.0.0.1:3128"
+npm config set prefix "/usr/lib/node_modules/"
+
+- Instalar pacotes
+npm install -g nodemon node-gyp node-pre-gyp typescript @angular/cli vtop npm-check-updates eslint jslint gulp dts-gen @nestjs/cli @nestjs/platform-fastify
+
+- Comandos importantes do npm
+npm list
+npm list -g
+npm update -g
+npm cache clean
+npm update packageName
+npm uninstall packageName
+npm show packageName@* version
+
+
+sudo npm update -g packageName
+sudo npm uninstall -g packageName
+
+***** Configurar java
+- Criar o arquivo /etc/profile.d/jdk.sh e inserir as linhas abaixo:
+#!/bin/bash
+export JAVA_HOME=/usr/lib/jvm/default
+export PATH=$PATH:$JAVA_HOME/bin
+
+- Criar arquivo /etc/profile.d/jre.sh e inserir as linhas abaixo:
+export JRE_HOME=/usr/lib/jvm/default/jre
+
+- Comando para saber as VM's java instaladas
+archlinux-java status
+
+- Comando para mudar a VM's java default
+sudo archlinux-java set java-8-jdk
+
+- Comando para desfazer a VM's java dafault
+sudo archlinux-java unset
+
+- Diretório do java /usr/lib/jvm
+
+***** Instalação maven
+- Fazer download no site https://maven.apache.org/download.cgi
+
+- Descompactar no diretório em .sdkdev
+
+- Criar link simbolico para maven
+sudo ln -s apache-maven-x.x.x maven
+
+- Colocar as linhas abaixo no arquivo .bashrc
+export MAVEN_OPTS=-Xmx512m
+export M2_HOME=$HOME/.sdkdev/maven
+
+export PATH=$PATH:$M2_HOME/bin
+
+***** Configurar vim
+- criar o diretório ~/vim-backup
+cp ~/ti/linux/vim/Bundle/_vimrc ~/.vimrc
+cp ~/ti/linux/vim/Bundle/_viminfo ~/.viminfo
+tar xzf ~/ti/linux/vim/Bundle/_vim.tar.gz
+
+- editar o .vimrc e incluir a linha abaixo
+let g:ycm_server_python_interpreter="/usr/bin/python"
+
+- editar o .vimrc e executar o comando abaixo
+:PluginUpdate
+
+- configurar o plugin YouCompleteMe
+cd ~/.vim/bundle/YouCompleteMe
+python3 install.py --clangd-completer
+python3 install.py --ts-completer
+python3 install.py --java-completer
+
+- configurar para o root
+su
+cd /root
+sudo mkdir vim-backup
+sudo cp /home/wiltonj/.vimrc .
+sudo cp -R /home/wiltonj/.vim/ .vim/
+exit
+
+***** Configurar git
+- Gerar um par de chave ssh
+ssh-keygen
+
+- Cadastrar a chave pública no servidor Git (Github ou trabalho)
+
+- Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
+
+- Gerar arquivo de configuração ~/.gitconfig
+git config --global user.email SEU_EMAIL@dominio.com.br
+git config --global user.name SEU_LOGIN
+git config --global merge.tool vimdiff
+git config --global pull.rebase false
+Se for necessário configurar proxy
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+***** instalar android SDK
+https://developer.android.com/studio/#downloads (Command line tools only)
+- Instalar libs 32bits
+sudo pacman -S lib32-ncurses lib32-glibc lib32-gcc-libs lib32-readline lib32-zlib lib32-fontconfig
+yay -S lib32-libstdc++5
+
+- Executar o comando abaixo e verificar se tem a linha "en_US.utf8"
+locale -a
+
+- Se a linha não existe, descomentar a linha que tem en_US.utf8 no arquivo /etc/locale.gen e executar:
+sudo locale-gen
+
+- Unzip o arquivo commandlinetools-linux-6609375_latest.zip no diretório .sdkdev
+cd ~/.sdkdev
+mkdir android-sdk
+cd android-sdk
+unzip commandlinetools-linux-6609375_latest.zip
+
+- colocar a linha abaixo no arquivo .bashrc:
+# export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+
+export ANDROID_SDK_ROOT=$HOME/.sdkdev/android-sdk
+export ANDROID_HOME=$HOME/.sdkdev/android-sdk
+export ANDROID_KEYSTORE=$HOME/ti/certificados/android/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+export REPO_OS_OVERRIDE=linux
+
+export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+
+- Atualizar android sdk
+Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
+### User Sources for Android SDK Manager
+#Wed Mar 14 22:55:42 ICT 2018
+count=0
+
+chown wilton:android-sdk .android/repositories.cfg
+
+- executar sdkmanager 
+sdkmanager --sdk_root=$ANDROID_HOME --list
+sdkmanager --sdk_root=$ANDROID_HOME --update
+sdkmanager --sdk_root=$ANDROID_HOME --licenses
+sdkmanager --sdk_root=$ANDROID_HOME "tools"
+sdkmanager --sdk_root=$ANDROID_HOME "build-tools;29.0.3" "build-tools;30.0.0" "platform-tools" "emulator" "platforms;android-29" "platforms;android-30" "extras;google;google_play_services" "extras;google;webdriver" "sources;android-29" "system-images;android-29;default;x86" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86" "system-images;android-29;google_apis_playstore;x86" "system-images;android-29;google_apis_playstore;x86_64"
+
+***** instalar flutter
+https://flutter.dev/docs/get-started/install/chromeos
+https://flutter.dev/docs/get-started/install/linux
+cd ~/.sdkdev
+tar xf flutter_linux_v1.17.4-stable.tar.xz (versão estável)
+tar xf flutter_linux_1.19.0-4.3.pre-beta.tar.xz (versão beta)
+
+- Instalar os pacotes
+sudo pacman -S glu
+
+- Alterar o PATH no arquivo .bashrc
+export CHROME_EXECUTABLE=/usr/bin/chromium
+
+export PATH=$PATH:$HOME/.sdkdev/flutter/bin
+
+- Instalar dependências
+flutter precache --android --ios --web --linux
+flutter doctor
+flutter doctor --android-licenses
+
+- Testar a instalação
+flutter create teste
+cd teste
+flutter run
+
+- Criar projeto web
+flutter channel beta (temporário)
+flutter upgrade
+flutter config --enable-web
+flutter create projeto
+cd projeto
+flutter update-packages (temporário)
+flutter run -d chrome
+flutter build web
+
+- Adiciona suporte a web para um projeto existente
+flutter create .
+
+***** Comandos úteis do Flutter para ter sempre à mão:
+flutter create → cria um novo projeto com toda a estrutura padrão de pastas, código boilerplate e testes.
+flutter run → compila e dá build em um determinado projeto.
+flutter run -d <id do dispositivo>→ compila e dá build em um determinado projeto tendo como alvo um dispositivo específico.
+flutter install → instala um projeto Flutter no dispositivo conectado.
+flutter packages get → adiciona dependências ao projeto.
+flutter test → executa teste unitário.
+flutter doctor → mostra informações sobre o processo de instalação do Flutter.
+flutter devices → lista todos os dispositivos conectados, com informações como: nome do dispositivo, id do dispositivo e versão do Android .
+s → realiza uma captura de tela do aplicativo em execução e a armazena na pasta do projeto.
+r → realiza hot reload do projeto.
+R → realiza hot restart do projeto.
+q → encerra o projeto.
+flutter help →lista estes e todos os outros comandos disponíveis para serem executados com Flutter.
+
+***** Instalar VsCode
+- Fazer download do site da Microsoft (https://code.visualstudio.com/Download) ou instalar do repositório AUR
+yay visual-studio-code-bin
+
+- Se fizer download descompactar no diretório /home/wilton/.sdkdev
+
+- Recuperar os arquivos abaixo do backup
+cd ~
+tar xzf <dirMontado>/bck/saturno/ultimo/home/_vscode.tar.gz
+cd ~/temp
+tar xzf <dirMontado>/bck/saturno/ultimo/home/_config.tar.gz
+cd .config
+mv Code ~/.config
+
+- Para aumentar o limite de arquivos sendo monitorados:
+# ver o número atual
+cat /proc/sys/fs/inotify/max_user_watches
+
+# Inserir a linha abaixo no final do arquivo /etc/sysctl.conf (no archlinux criar o arquivo /etc/sysctl.d/40-max-user-watches.conf).
+fs.inotify.max_user_watches=524288
+
+# executar:
+sudo sysctl -p
+# no archlinux
+sudo sysctl --system
+
+- Plugin flutter
+No menu View > Command Palette….
+Digite install e selecione  Extensions: Install Extensions
+Digite flutter e instale Flutter 
+
+***** Instalar banco de dados - MongoDB
+yay -S mongodb-bin mongodb-tools-bin
+
+- Executar o comando abaixo se der o erro “gpg: keyserver receive failed: Erro genérico‘ 
+gpg --keyserver pgp.mit.edu --recv-key 5CC908FDB71E12C2
+
+- Configurar mongdb
+
+- Editar o arquivo /etc/mongodb.conf
+Alterar o bindIp para o IP da máquina.
+
+- Iniciar o servidor
+sudo systemctl start mongodb
+
+- Testar
+mongo --host saturno --port 27017
+
+- Sair do mongo (exit)
+sudo chown -R mongodb: /var/lib/mongodb
+sudo chown -R mongodb: /var/log/mongodb
+
+- Criar um usuário no banco local
+mongo --host saturno --port 27017
+use admin
+db.createUser({user: 'admin', pwd: 'malcxkwmvg59o', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+
+- Editar o arquivo /etc/mongodb.conf
+security:
+  authorization: enabled
+
+- Reiniciar o mongodb
+sudo systemctl restart mongodb
+
+- Conectar o cliente com um usuário
+mongo --host saturno --port 27017 -u admin -p --authenticationDatabase "admin"
+
+- Criar usuários
+use admin
+db.createUser({user: 'wilton', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'wilton'}, {role: 'dbAdmin', db: 'wilton'}]})
+db.createUser({user: 'seluz', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'seluz'}, {role: 'dbAdmin', db: 'seluz'}]})
+
+***** Dar permissão para o usuário wilton alterar o banco seluz
+db.grantRolesToUser('wilton', [{role: 'readWrite', db: 'seluz'}])
+db.grantRolesToUser('wilton', [{role: 'dbAdmin', db: 'seluz'}])
+
+obs: fazer o mesmo (criar usuários e configurar security no servidor remoto)
+mongo --host marte --port 27017
+
+- Conectar o cliente com um usuário
+mongo --host saturno --port 27017 -u admin -p --authenticationDatabase "admin"
+mongo --host marte --port 27017 -u admin -p --authenticationDatabase "admin"
+
+mongo mongodb://admin:@saturno:27017/admin
+mongo mongodb://admin:@marte:27017/admin
+
+- Exemplo de comando para criar usuário:
+
+- Grant role para usuário (dbAdmin, dbOwner, userAdmin, read, readWrite)
+db.createUser({user: 'admin', pwd: 'admin', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+db.grantRolesToUser('admin', ['dbAdminAnyDatabase', 'readWriteAnyDatabase'])
+db.grantRolesToUser('admin', [{role: 'root', db: 'admin'}])
+
+- Alterar a senha do usuário
+db.changeUserPassword('usuario', 'nova-senha')
+
+- Trocar usuário corrente
+db.auth('usuario', 'senha')
+
+- Remover usuário
+db.dropUser('usuario')
+
+- Listar usuário corrente
+db.runCommand({connectionStatus : 1})
+
+- Listar todos os usuário
+use <banco>
+db.getUsers()
+ou
+db.system.users.find(null, {user:1})
+
+- Configurar para iniciar o mongodb no boot
+sudo systemctl enable  mongodb
+
+- Autenticação/autorização
+http://ednilsonamaral.me/autenticacao-no-mongodb/
+https://docs.mongodb.com/manual/core/authentication/
+https://pt.stackoverflow.com/questions/205519/cria%C3%A7%C3%A3o-e-altera%C3%A7%C3%A3o-de-usu%C3%A1rios-e-permiss%C3%B5es
+
+- Conectando ao banco de dados
+mongo mongodb://wilton:@saturno:27017/seluz
+
+
+***** Instalar Docker
+sudo pacman -S docker
+sudo gpasswd -a usuario docker
+sudo systemctl start docker.service
+
+docker --version
+Docker version 19.03.12-ce, build 48a66213fe
+
+
+***** restart vm do crontini
+Voltar para crosh
+vmc stop termina
+vmc start termina
+exit 
+vmc container termina penguin
+vmc container termina arch
+exit
+vsh termina penguin
+vsh termina arch
+
+***** Trocar o container default:
+
+- ir para o prompt do crosh
+vsh termina
+lxc stop penguin
+lxc stop arch
+lxc rename penguin debian
+lxc rename arch penguin
+exit
+vsh termina penguin
+
+- Alterar o hostname
+hostnamectl set-hostname penguin
+
+- Verificações
+systemctl --failed
+systemctl --user --failed
+ip -4 a show dev eth0
+
+
+Instalação do debian (Crostini)
+================================================
+
+** Alterar no arquivo /etc/apt/sources.list para ficar assim:
+deb https://deb.debian.org/debian buster main contrib non-free
+deb https://deb.debian.org/debian-security buster/updates main contrib non-free
+deb http://deb.debian.org/debian buster-backports main contrib non-free
+
+** Alterar no arquivo /etc/apt/sources.list.d/cros.list para ficar assim:
+deb https://storage.googleapis.com/cros-packages/78 stretch main
+
+** Se der erro no sudo apt-get update executar o camando abaixo:
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+sudo apt-get install build-essential cmake autoconf automake pkg-config zlib1g-dev
+sudo apt-get install vim-gtk nano gedit exuberant-ctags clang
+sudo apt-get install xarchiver putty youtube-dl pcmanfm tree ghex hexedit meld
+sudo apt-get install ttf-dejavu ttf-bitstream-vera ttf-mscorefonts-installer fonts-powerline
+sudo apt-get install firefox-esr firefox-esr-l10n-pt-br gimp evince default-jdk
+sudo apt-get install -t buster-backports libreoffice libreoffice-l10n-pt-br libreoffice-gnome
+
+***** Instalar python
+sudo apt-get install python3-pip python2.7-dev python-dev
+sudo apt-get install tk gitk git-gui
+sudo apt-get install x11-apps screenfetch htop filezilla moc p7zip gsmartcontrol
+sudo apt-get install xarchiver putty youtube-dl pcmanfm tree ghex hexedit meld sqlite sqlite-doc curl
+
+- Instalar o spyder
+sudo pip3 install spyder
+sudo pip3 install pyflakes
+sudo pip3 install pycodestyle
+
+***** Para saber se um pacote está instalado. O parâmetro --format pode ser configurado em pip.conf
+pip3 list --format=(legacy|columns)
+Criar o arquivo $HOME/.pip/pip.conf
+[list]
+format=columns
+
+***** Remover pacote
+sudo pip3 uninstall pacote
+
+***** Executar os comandos abaixo para instalar o VSCode
+curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+
+sudo apt-get install apt-transport-https
+sudo apt-get update
+sudo apt-get install code
+
+***** Considerações sobre configurações (atualização do debian) e configuração para acesso a um servidor pelo browser principal (chromeOS).
+https://www.codevamping.com/2018/11/chromeos-linux-tips/

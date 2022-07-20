@@ -1,0 +1,48 @@
+PATH
+---------------------------------
+
+%SystemRoot%\system32;
+%SystemRoot%;
+%SystemRoot%\System32\Wbem;
+%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;
+C:\Program Files\QuickTime\QTSystem\;
+C:\Util;
+C:\Util\Subversion\bin;
+c:\python26;
+C:\Python26\Lib\site-packages\django\bin;
+D:\Java\jdk\bin;
+D:\Java\jdk\jre\lib\i386\client;
+D:\Java\apache-ant\bin;
+D:\Java\jEdit;
+D:\Java\gwt\gwt-2.0.0;
+C:\Util\gtk-2.16.6\bin
+C:\instantclient_11_1;
+C:\instantclient_11_1\bin;
+
+ANT_HOME=d:\Java\apache-ant
+CATALINA_HOME=d:\Java\tomcat
+CLASSPATH=d:\Java\jdk\lib\tools.jar;C:\Program Files\Java\jre6\lib\ext\QTJava.zip
+HSQLDB_HOME=d:\Java\hsqldb
+J2EE_HOME=d:\Java\oc4j\j2ee\home
+JAVA_DIR=d:\java
+JAVA_DOC=d:\Java\docs
+JAVA_HOME=d:\Java\jdk
+OC4J_HOME=d:\Java\oc4j\j2ee\home
+
+
+GWT_HOME=d:\Java\gwt\gwt-2.0.0
+GWT_TOOLS=D:\Java\gwt\gwt-svn\tools
+GWT_EXTERNAL_BROWSER="D:\Documents and Settings\wilton\Configurações locais\Dados de aplicativos\Google\Chrome\Application\chrome.exe"
+
+
+LD_LIBRARY_PATH=%ORACLE_HOME%
+NLS_LANG=BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1
+ORACLE_HOME=c:\instantclient_11_1
+TNS_ADMIN=c:\instantclient_11_1
+
+
+PYTHONPATH=C:\python\Django-1.1.1
+
+
+
+%HOMEDRIVE%%HOMEPATH% - Diretório home do usuário

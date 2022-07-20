@@ -1,0 +1,23 @@
+
+
+# ================================================== #
+Broffice
+# ================================================== #
+
+*-----* Fazer download do dicionário de sinôminos 
+
+http://www.dicsin.com.br/content/download.php
+
+Com o BrOffice.org aberto vá até o menu Ferramentas->Gerenciador de Extensão, 
+depois clique no botão Adicionar, localize o arquivo em seu computador e aperte em abrir.
+
+*-----* Feito isso reinicie o BrOffice.org e pronto, dicionário ativado. 
+
+*-----* Fazer download dos dicionários temáticos
+
+http://www.broffice.org/dicionarios_tematicos
+
+*-----* Feche totalmente o BrOffice.org/OpenOffice.org, inclusive o Início Rápido.
+        Descompacte o arquivo '.zip' e copie o(s) arquivo(s) com extensão '.dic' para o 
+        diretório /opt/libreoffice/basis-link/share/wordbook/pt-BR/
+

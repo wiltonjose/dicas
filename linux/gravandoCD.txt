@@ -1,0 +1,137 @@
+:. Gravar CDs via linha de comando (atualizado)
+  	
+
+
+Uma vantagem essencial do Linux do ponto de vista de qualquer usuário avançado é a possibilidade de executar a maioria das tarefas via linha de comando, o que com um pouco de prática se torna mais rápido e geralmente oferece mais opções do que fazê-lo através do modo gráfico, embora seja mais complicado no início.
+
+Vamos agora aprender como gravar CDs via linha de comando, utilizando o cdrecord e o mkisofs, dois programinhas que substituem os equivalentes gráficos, coma vantagem de consumirem muito menos recursos do sistema. Eles são ideais para quem utiliza um PC antigo, principalmente com pouco memória RAM, ou não tem paciência para esperar o xcdroast abrir ;-)
+
+
+:. Criando um ISO
+
+O mkisofs permite criar imagens ISO a partir de um diretório no HD. O “mk” vem de make, ou seja, criar. O “iso” vem de imagem ISO, enquanto o “fs” vem de sistemas de arquivos. Ou seja, o nome mkisofs descreve bem o uso do programa, que é criar sistemas de arquivo ISO.
+
+Para usa-lo abra um terminal e digite:
+
+    $ mkisofs -r -J -o nome_do_arquivo.iso /diretorio_de_origem/
+
+
+Onde:
+mkisofs : é o comando que chama o programa
+
+-r : permite que qualquer cliente possa ler o conteúdo do arquivo. Evita problemas ao tentar ler o arquivo no Windows
+
+-J : Mais uma opção para manter compatibilidade como Windows. Ativa as extensões Joilet.
+
+-o : Especifica o nome do arquivo ISO que será criado
+
+nome_do_arquivo.iso : O nome do arquivo propriamente dito. Não se esqueça de sempre incluir a extensão .iso. O arquivo é sempre gravado no diretório corrente.
+
+/diretório_de_origem/ : O diretório onde estão os arquivos que serão incluídos na imagem. Você pode especificar vários diretórios separados por espaços, como em: /home/morimoto/livros/ /home/morimoto/Mail/
+Se você quiser fazer um backup de todos os arquivos da pasta /home/fernando/trabalhos gerando o arquivo trabalhos.iso, o comando ficaria:
+
+    $ mkisofs -r -J -o trabalhos.iso /home/fernando/trabalhos/
+
+
+O mkisofs oferece muitas opções que podem ser incluídas na linha de comando. Para conhecê-las digite “man mkisofs” no terminal. Esta é apenas uma descrição resumida.
+
+
+:. Gravando dados
+
+Localizando a gravadora de CD
+
+    $ cdrecord -scanbus
+    ou
+    $ cdrecord dev=ATAPI -scanbus
+
+Com a imagem em mãos, basta grava-la usando o cdrecord. A sintaxe do comando é:
+
+    $ cdrecord -v -fs=16M speed=8 dev=0,0,0 -data nome_da_imagem.iso
+    ou
+    $ cdrecord -v -fs=16M speed=8 dev=ATAPI:0,0,0 -data nome_da_imagem.iso
+
+
+Onde:
+
+-v : Exibe informações durante a gravação.
+
+-fs=16 : Especifica o tamanho do buffer na memória RAM em megabytes. Substitua o 16 por um número menor caso você tenha pouca memória RAM.
+
+speed=8 : A velocidade de gravação. Pode ser qualquer número suportado pelo gravador. Graças ao cache de memória e à multitarefa real, o Linux oferece uma tolerância muito maior durante a gravação. Quase sempre você conseguirá gravar a 8x ou mais, mesmo que continue usando o PC normalmente.
+
+Dev=0,0,0 : Especifica a localização do gravador. O 0,0,0 é o padrão para gravadores IDE na maioria das distribuições. Se não funcionar, use o comando “cdrecord -scanbus” (como root) para ver onde está instalado o seu gravador.
+
+-data : Especifica o arquivo ISO que será gravado
+
+nome_da_imagem.iso : O nome da imagem que será gravada.
+Para gravar o arquivo trabalhos.iso que criamos com o mkisofs, gravando-o a 8x e com um buffer de 16 MB na memória RAM o comando seria:
+
+    $ cdrecord -v -fs=16M speed=8 dev=0,0,0 -data trabalhos.iso
+
+
+:. Copiando CDs
+
+Para copiar um CD já gravado, você deve primeiro gerar a imagem usando o comando dd e em seguida gravá-la normalmente usando o cdrecord. O comando para gerar a imagem é:
+
+    # dd if=/dev/cdrom of=imagem.iso
+
+
+Este comando deve ser dado como root. Caso não funcione, substitua o /dev/cdrom pela localização correta do seu CD-ROM. Se ele for SCSI a localização correta será /dev/scd0
+
+O comando acima serve para copiar apenas CDs de dados, pois faz uma cópia exata dos dados, coisa impossível num CD de música, onde não existem os códigos de correção de erro necessários. Para copiar CDs de música é preciso fazer uso de um segundo programa, o cdparanoia, o ripador de modo texto oficial do Linux ;-)
+
+O uso é muito simples. Para ripar todas as faixas do CD, basta coloca-lo na
+bandeja e teclar:
+
+    $ cdparanoia -B
+
+
+Isto irá extrair todas as faixas do Cd para o diretório corrente, salvando-as como track01.cdda.wav, track02.cdda.wav, etc. Você também pode extrair uma única faixa, já salvando-a com o nome desejado usando:
+
+    $ cdparanoia 2 faixa.wav
+
+
+Substituindo naturalmente o “2” e o “faixa.wav” pelo número da faixa e o nome do arquivo desejado. Para extrair as faixas 2, 3 e 4, use: $ cdparanoia 2-4 e assim por diante. Para ver todas as opções do cdparanoia basta chama-lo sem argumentos.
+
+Depois de extrair as faixas você pode gravá-las diretamente usando novamente o cdrecord. Para isso, organize todas as faixas a serem gravadas dentro de um diretório e use o comado:
+
+    $ cdrecord -v -fs=16M speed=8 dev=0,0,0 -audio *
+
+
+Se você preferir especificar manualmente as faixas a serem gravadas, uma a uma, basta substituir o asterisco pelos nomes das faixas, separadas por espaços:
+
+    $ cdrecord -v -fs=16M speed=8 dev=0,0,0 -audio 01.wav 02.wav 03.wav
+
+
+Gravando direto de arquivos MP3Para facilitar as coisas, você pode escrever um pequeno script que se encarregará de automaticamente converter todas as músicas em MP3 do diretório corrente para CDR e já grava-las no CD. É um programinha extremamente simples, mas que vai facilitar a sua vida:
+
+1- Abra o kedit (ou o editor de sua preferência)
+
+    $ kedit
+
+
+2- Escreva os comandos:
+
+    for I in *.mp3
+    do
+    mpg123 --cdr - "$I" | cdrecord -v -fs=16M speed=2 dev=0,0,0 -audio -pad -swab -nofix -
+    done
+    cdrecord -fix
+
+Este script nada mais faz do que estabelecer uma condição que será repetida para todos os arquivos wav do diretório (for I in *.mp3), armazenando o nome do arquivo corrente na variável I e repassando-o, um de cada vez para o comando seguinte, o mpg123 --cdr - "$I" que por sua vez enviará a saída (para isso que serve o |, ou pipe) para o cdrecord, que se encarregará de já gravar a faixa no CD. O restante da linha é composta pelos parâmetros do cdrecord, que já aprendemos.
+
+Substitua o speed=2 pela velocidade em que deseja gravar as faixas. Lembre-se que neste caso é preciso gravar a uma velocidade mais lenta, pois o PC terá que ao mesmo tempo converter o arquivo de mp3 para wav e grava-lo no CD. Mesmo com um PC rápido é difícil gravar a mais que 8x.
+
+3- Salve o arquivo e dê a ele permissão de execução:
+
+    $ chmod +x arquivo
+
+
+4- Agora basta chama-lo para gravar as MP3 do diretório corrente:
+
+    $ ./arquivo
+
+
+Você também pode gravar CDs mistos, com faixas de dados e de música, como em alguns CDs de jogos, onde as músicas podem ser tocadas em CD-Players comuns. Para isto, basta indicar as faixas de dados e de áudio a serem gravadas, colocando sempre a(s) faixa(s) de áudio no final:
+
+    $ cdrecord -v -fs=16M speed=8 dev=0,0,0 -data imagem.iso -audio track1.cdr

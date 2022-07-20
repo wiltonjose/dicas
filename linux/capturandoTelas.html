@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Linux)">
+	<META NAME="AUTHOR" CONTENT="Wilton Santos">
+	<META NAME="CREATED" CONTENT="20070207;20373000">
+	<META NAME="CHANGEDBY" CONTENT="Wilton Santos">
+	<META NAME="CHANGED" CONTENT="20070207;20380300">
+</HEAD>
+<BODY LANG="pt-BR" DIR="LTR">
+<P STYLE="margin-bottom: 0cm"><A HREF="http://www.eltonminetto.net/capturando-telas-com-maior-resolucao-no-linux.htm" TARGET="_SELF">Capturando
+telas com maior resolu&ccedil;&atilde;o no linux</A> 
+</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P>Essa semana precisei capturar algumas telas para um livro que
+estou escrevendo. Normalmente usaria a ferramenta padr&atilde;o do
+Gnome ou do KDE, usando a tecla PrtSc. Mas o problema &eacute; que
+usando-se essas ferramentas a resolu&ccedil;&atilde;o do arquivo &eacute;
+de 72 dpi, a resolu&ccedil;&atilde;o do monitor, mas para imprimir a
+gr&aacute;fica pede uma resolu&ccedil;&atilde;o maior, algo em torno
+de 300 dpi. Para fazer isso usei o comando import do pacote
+ImageMagic.<BR>Para instalar no Ubuntu &eacute; s&oacute;:</P>
+<P>sudo apt-get install imagemagick</P>
+<P>Para utilizar o import para capturar a tela:</P>
+<P>import -border -frame -density 300 nome_imagem.jpg</P>
+<P>Assim que executar este comando o cursor vira um alvo e &eacute;
+s&oacute; clicar na tela desejada que o arquivo nome_imagem.jpg &eacute;
+criado, pronto para mandar para a gr&aacute;fica. Os par&acirc;metros
+-border e -frame indicam para o import capturar tamb&eacute;m a borda
+e a decora&ccedil;&atilde;o da janela. O -density indica a resolu&ccedil;&atilde;o
+desejada. 
+</P>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>

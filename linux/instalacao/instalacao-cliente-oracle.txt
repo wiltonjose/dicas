@@ -1,0 +1,74 @@
+
+# ================================================== #
+Desenvolvimento (Oracle)
+# ================================================== #
+
+*-----* Cliente Oracle (InstantClient)
+
+*--* Criar ambiente
+
+cd /opt
+sudo mkdir oracle
+sudo groupadd oracle
+sudo gpasswd -a wilton oracle
+sudo find oracle -type d -exec chmod g+s {} \;
+sudo chown -R wilton.oracle oracle
+sudo chmod -R ug+rwx oracle
+
+instantclient-basic-linux32-11.2.0.2...zip
+instantclient-sdk-linux32-11.2.0.2...zip
+instantclient-sqlplus-linux32-11.2.0.2...zip
+
+Site: http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/linuxsoft.html
+
+*--* Executar o unzip para cada arquivo do cliente oracle no diretório /opt/oracle
+
+*--* Criar link simbólico:
+
+cd /opt/oracle/instantclient_11_2
+ln -s libclntsh.so.11.1 libclntsh.so
+ln -s libocci.so.11.1 libocci.so
+
+*--* Editar o /etc/ld.so.conf e adicionar a linha "/opt/oracle/instantclient_11_2"
+
+sudo leafpad /etc/ld.so.conf
+
+*--* Executar:
+
+sudo ldconfig
+
+*--* Criar link simbólico para sqlplus em /usr/bin:
+
+sudo ln -s /opt/oracle/instantclient_11_2/sqlplus /usr/bin/sqlplus
+
+*--* Para testar se está funcionando:
+
+sqlplus sicon/sicon@//volga.senado.gov.br:1532/opus
+
+*--* Copiar o arquivo tnsnames.ora para o diretório /opt/oracle/instantclient_11_2
+
+*--* Executar:
+
+sudo chmod ugo+r tnsnames.ora
+
+*--* Editar o arquivo /etc/bash.bashrc ou ~/.profile
+
+## Colocar no final do arquivo. -- /etc/bash.bashrc ou ~/.profile
+## Configuracoes para o Oracle
+
+export ORACLE_HOME=/opt/oracle/instantclient_11_2
+export TNS_ADMIN=/opt/oracle/instantclient_11_2
+export LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
+export OCI_LIB_DIR=$ORACLE_HOME
+export OCI_INCLUDE_DIR=$ORACLE_HOME/sdk/include
+export OCI_VERSION=11
+# export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1'
+export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.UTF8'
+
+export PATH=$PATH:$ORACLE_HOME
+
+
+*--* Para testar
+
+sqlplus sicon/sicon@OPUS.WORLD
+

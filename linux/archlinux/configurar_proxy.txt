@@ -1,0 +1,94 @@
+
+======> ----- Proxy (primeira parte)
+
+http://usuario:senha@av-web.senado.gov.br:80
+
+=====> ----- wget
+
+=====> ----- Alterar o arquivo /etc/wgetrc
+http_proxy = http://usuario:senha@av-web.senado.gov.br:80
+https_proxy = http://usuario:senha@av-web.senado.gov.br:80
+ftp_proxy = http://usuario:senha@av-web.senado.gov.br:80
+
+# If you do not want to use proxy at all, set this to off.
+use_proxy = on
+
+=====> ----- pacman com wget
+
+=====> ----- Alterar o arquivo /etc/pacman.conf
+#XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+
+
+export all_proxy="http://usuario:senha@av-web.senado.gov.br:80"
+export http_proxy=$all_proxy
+export https_proxy=$all_proxy
+export ftp_proxy=$all_proxy
+export socks_proxy=$all_proxy
+export rsync_proxy=$all_proxy
+
+
+======> ----- Proxy (segunda parte)
+
+yaourt -S cntlm
+
+sudo cntlm -H
+ou
+sudo cntlm -H -M http://av-web.senado.gov.br:80
+
+=====> ----- Alterar o arquivo /etc/cntlm.conf
+Username    wilton
+Domain      senado
+PassLM      FF9EF4A844B020E42029B7CDF44D542E
+PassNT      3770D467EFFFFFB77BB311C4C298A2C8
+Proxy       av-web.senado.gov.br:80
+NoProxy     *.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*
+Listen      3128
+Auth        NTLM
+
+=====> ----- Alterar o arquivo /etc/wgetrc para apontar para http://127.0.0.1:3128
+
+=====> ----- Criar o arquivo /etc/profile.d/profile.sh
+#!/bin/bash
+
+## Colocar no final do arquivo. -- /etc/profile.d/profile.sh
+## Configuracoes de PROXY
+## Para configurar usuaro e senha do proxy: http://usuario:senha@servidor:80/
+
+export all_proxy="http://127.0.0.1:3128"
+export http_proxy=$all_proxy
+export https_proxy=$all_proxy
+export ftp_proxy=$all_proxy
+export socks_proxy=$all_proxy
+export rsync_proxy=$all_proxy
+
+export no_proxy="*.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*"
+
+export ALL_PROXY=$all_proxy
+export HTTP_PROXY=$all_proxy
+export HTTPS_PROXY=$all_proxy
+export FTP_PROXY=$all_proxy
+export SOCKS_PROXY=$all_proxy
+export RSYNC_PROXY=$all_proxy
+
+export NO_PROXY=$no_proxy
+
+=====> ----- Alterar o arquivo /etc/sudoers
+Defaults env_keep+="all_proxy http_proxy https_proxy ftp_proxy socks_proxy rsync_proxy no_proxy ALL_PROXY HTTP_PROXY HTTPS_PROXY FTP_PROXY SOCKS_PROXY RSYNC_PROXY NO_PROXY"
+
+=====> ----- Comentar a linha abaixo no arquivo /etc/pacman.conf
+#XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+
+=====> ----- Inicializar no boot
+
+sudo systemctl enable cntlm.service
+
+=====> ----- Gnome3
+
+gsettings set org.gnome.system.proxy mode 'manual'
+gsettings set org.gnome.system.proxy.http host '127.0.0.1'
+gsettings set org.gnome.system.proxy.http port 3128
+gsettings set org.gnome.system.proxy.https host '127.0.0.1'
+gsettings set org.gnome.system.proxy.https port 3128
+gsettings set org.gnome.system.proxy.ftp host '127.0.0.1'
+gsettings set org.gnome.system.proxy.ftp port 3128
+gsettings set org.gnome.system.proxy ignore-hosts "['*.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*']"

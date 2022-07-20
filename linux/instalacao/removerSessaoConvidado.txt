@@ -1,0 +1,24 @@
+Para remover a Sessão Convidado que aparece na tela de login do 
+Ubuntu(O LightDM) e impedir que outros acessem seu computador,
+caso você deseje isso, basta alterar o arquivo lightdm.conf.
+
+Abra o Terminal -Ctrl+Alt+T- e cole a seguinte linha de comando
+
+gksu leafpad /etc/lightdm/lightdm.conf 
+
+O conteúdo do ficheiro deve ser parecido com isso:
+
+[SeatDefaults]
+user-session=ubuntu
+greeter-session=unity-greeter
+
+Agora acrescente a seguinte linha ao ficheiro, salve e feche o editor:
+
+allow-guest=false
+
+Ao voltar a iniciar a sessão, só aparecerão os usuários permitidos a usar o 
+computador.
+
+Caso você queira voltar com a opção da Sessão Convidado basta tirar a linha 
+adicionada do arquivo.
+

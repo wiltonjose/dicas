@@ -1,0 +1,49 @@
+
+
+http://www.cupoflinux.com/SBB/index.php/topic,2959.msg17980.html#msg17980
+
+
+
+
+looks like the pgp keys are out of date / invalid
+
+try the following in terminal:
+
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman-mirrors -g
+
+Updates Mirrors
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman -Syy
+
+Forces update of lists
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman -S gnupg
+
+synchs and/or reinstalls gnupg
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman-key --populate archlinux
+
+Updates pacman keys
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman-key --populate manjaro
+
+Updates pacman keys
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman-key --refresh-keys
+
+refreshes pacman keys
+Code: You are not allowed to view links. Register or Login
+
+sudo pacman -Syyu
+
+Force list update and synchronize packages on system. Ii the above does not work... REMOVE ALL KEYS as shown below and start over at the top of this list.
+Code: You are not allowed to view links. Register or Login
+
+sudo rm /etc/pacman.d/gnupg

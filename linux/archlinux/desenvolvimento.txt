@@ -1,0 +1,33 @@
+#### ----- Controle de versão
+
+sudo apt-get install subversion git
+
+
+#### ----- Ferramentas
+
+sudo apt-get install ghex hexedit meld sqlite sqlite-doc curl
+
+
+#### ----- NodeJS
+
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash
+
+cd ~/.nvm
+chmod u+x nvm.sh
+
+#### ----- Alterar o arquivo "~/.nvm/nvm.sh"
+#### ----- Procurar a definição da variável de ambiente NVM_PATH e alterar no final da linha de "node" para "node_modules".
+
+#### ----- fechar o terminal e abrir outro. Listar as versões de node disponível.
+
+nvm ls-remote
+nvm install v8.2.1
+
+npm install -g nodemon
+npm install -g node-gyp
+npm install -g node-pre-gyp
+npm install -g typescript
+npm install -g @angular/cli
+npm install -g vtop
+
+yaourt -S watchman

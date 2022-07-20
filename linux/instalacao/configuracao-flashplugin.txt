@@ -1,0 +1,25 @@
+
+*-----* Instalacao flashplugin-installer ttf-mscorefonts-installer com proxy
+
+sudo http_proxy=http://127.0.0.1:3128/ apt-get install flashplugin-installer ttf-mscorefonts-installer
+
+*-----* Instalacao flashplugin na mão
+
+wget http://archive.canonical.com/pool/partner/a/adobe-flashplugin/adobe-flashplugin_11.2.202.280.orig.tar.gz
+
+-- Descompactar o arquivo tar.gz num diretório temporário
+
+-- Identificar o diretório de instalação dos plugins do firefox e chromium
+
+ls -l /usr/lib/mozilla/plugins/
+lrwxrwxrwx 1 root root     37 Ago 26 07:39 flashplugin-alternative.so -> /etc/alternatives/mozilla-flashplugin
+
+ls -l /etc/alternatives/mozilla-flashplugin
+lrwxrwxrwx 1 root root 48 Ago 26 07:39 /etc/alternatives/mozilla-flashplugin -> /usr/lib/flashplugin-installer/libflashplayer.so
+
+cp libflashlayer.so /usr/lib/flashplugin-installer/
+sudo cp -r usr/* /usr
+
+cd /usr/lib/chromium-browser/plugins/
+sudo ln -s /etc/alternatives/mozilla-flashplugin flashplugin-alternative.so
+

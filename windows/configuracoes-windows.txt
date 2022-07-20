@@ -1,0 +1,27 @@
+
+Path = c:\util\UnixUtil\usr\local\wbin;c:\util\svn-win32\bin;c:\java\jdk\bin;c:\java\jdk\jre\lib\i386\client;c:\java\apache-ant\bin;c:\python25;c:\python\django-svn\django\bin;c:\instantclient_10_2\bin;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;C:\Arquivos de programas\ZipGenius 6\
+
+
+--- Java ---
+ANT_HOME = c:\java\apache-ant
+CATALINA_HOME = c:\java\tomcat
+CLASSPATH = .;%JAVA_HOME%\lib\tools.jar
+HSQLDB_HOME = c:\java\hsqldb
+J2EE_HOME = c:\java\oc4j\j2ee\home
+JAVA_DIR = c:\java
+JAVA_DOC = c:\java\docs
+JAVA_HOME = c:\java\jdk
+OC4J_HOME = c:\java\oc4j\j2ee\home
+
+
+--- Oracle ---
+LD_LIBRARY_PATH = %ORACLE_HOME%
+NLS_LANG = BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1
+ORACLE_HOME = c:\instantclient_10_2
+TNS_ADMIN = %ORACLE_HOME%
+
+
+--- Python ---
+PYTHONPATH = c:\python\django-svn
+
+

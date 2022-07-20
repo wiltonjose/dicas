@@ -1,0 +1,12 @@
+dd if=/dev/sdb of=meu_disco.bin bs=1024
+VBoxManage convertdd meu_disco.bin meu_disco.vdi
+VBoxManage modifyvdi meu_disco.vdi compact
+
+VBoxManage createvm --name "MinhaMaquina" --ostype Linux --register
+VBoxManage modifyvm "MinhaMaquina" --memory 512 --vram 64 --acpi on --boot1 dvd --nic1 bridged --bridgeadapter1 eth0 --vrde on --usb on --usbehci on
+VBoxManage storagectl "MinhaMaquina" --name "IDE Controller" --add ide
+VBoxManage storagectl "MinhaMaquina" --name "SATA Controller" --add sata
+VBoxManage storageattach "MinhaMaquina" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium  meu_disco.vdi
+VBoxManage storageattach "MinhaMaquina" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium  meu_disco.vdi
+
+VBoxHeadless -s "MinhaMaquina" &

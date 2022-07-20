@@ -1,0 +1,301 @@
+
+https://github.com/tiimgreen/github-cheat-sheet
+http://kazale.com/curso-basico-git-github
+
+git-cola
+gitk
+
+-- Configurando git diff para trabalhar com o Meld
+
+cd ~/bin
+medit git_meld_diff.sh
+#!/bin/bash
+meld "$5" "$2"
+
+chmod +x git_meld_diff.sh
+
+-- Configurações globais
+
+git config --global user.name "user"
+git config --global user.email "user@server.com"
+git config --global color.ui true
+git config --global format.pretty oneline
+git config --global diff.external ~/bin/git_meld_diff.sh
+git config --global diff.tool meld
+git config --global alias.stash-unapply '!git stash show -p | git apply -R'
+
+git config --list
+
+-- Criando repositório
+
+cd <projeto>
+git init
+git status
+
+-- Adicionar ao staging
+
+git add -A .                    -- todos
+git add .                       -- todos
+git add --ignore-removal .      -- novos e modificados
+git add -u .                    -- modificados e deletados
+
+-- Cancela o git add (unstaged)
+
+git reset <arquivo>
+
+-- Adicionar arquivos ao stage e executar commit
+
+git add <arquivo>
+git commit -m 'teste' <arquivo>
+
+ou
+
+git commit -a -m 'teste' <arquivo>
+
+-- Remover um arquivo
+
+git rm <arquivo>
+git rm -r <diretorio>   -- Remove diretório recursivamente
+
+-- Criar arquivo .gitignore e colocar os arquivos que devem ser ignorados pelo git.
+
+-- Diferenças no diretório de trabalho.
+
+git diff
+git diff <commit_id>
+git diff --name-only <commit-hash> <commit-hash>
+git diff --name-only HEAD~3 HEAD
+
+git diff <commit-hash>~1..<commit-hash> [<file>]
+
+-- Diferenças arquivos no staging (após o git add)
+
+git diff --staged
+
+-- Histórico de commits
+
+git log                                                 -- Histórico de commits
+got log --stat                                          -- Mostrando estatística de todos os commits
+git log -p                                              -- Verificando o que foi mudado
+git log -p -1                                           -- Verificando os n últimos commits
+git log --pretty=oneline                                -- Mostra todos os commits
+git log --oneline                                       -- Mostra todos os commits
+git log --oneline --graph                               -- Mostra todos os commits - com gráfico
+git log --since=2.days                                  -- Mostra todos os commits do dois últimos dias até o memento atual
+git log --author=usuario                                -- Commits de um usuário
+git log -- <caminho_do_arquivo>                         -- Log de um arquivo
+git log --pretty=format: "%h - %an, %ar : %s"           -- Inicio do Hash, quem fez o commit, qto tempo, mensagem
+git log -S '<palavra>' [<caminho_do_arquivo>]
+git log --summary -S<palavra> [<caminho_do_arquivo>]
+
+Verificar parâmetro --name-only
+
+-- Listar arquivos modificados
+
+git ls-files --modified|--deleted
+git ls-files --deleted | xargs git rm    -- Removidos ao mesmo tempo
+
+-- Atualizar o último commit
+
+git commit --amend -m 'testet - 1'
+
+-- Retirar um arquivo da staging area
+
+git reset HEAD <arquivo>
+
+-- Descartar as mudanças no diretório de trabalho
+
+git checkout -- <arquivo>
+git checkout <commit-id> <arquivo>
+
+-- Descartar todas as alterações locais
+
+git fetch origin
+git reset --hard origin/master
+
+-- Voltar um commit (versões anteriores)
+
+git reset HEAD~1
+git reset HEAD~1 --soft    - deixando o arquivo no estágio anterior
+git reset HEAD~1 --hard    - excluindo o arquivo e deixando no estágio anterior
+
+-- Criando tag
+
+git tag -a v1.0 -m 'versao 1.0'
+
+enviando para o servidor remoto
+
+git push origin <nomeTag>
+
+-- Listando as tags
+
+git tag
+git tag -l 'v1.4.2.*'
+
+-- Criar uma tag de um commit
+
+git log --pretty=oneline
+
+b75d4c92854027d5fbc2cce9a750868a0ed7551f (HEAD -> master, tag: v1.0) testet - 1
+04de2454dc39cbd63319a31c2ea23aea8a3967fd teste 1
+42b779a9a6cbdb5e9a958ee65f132449fda8ff1c teste
+66abb58d265c84546bc0c522da0903607489b9fc teste
+
+git tag -a <nomeTag> <commit_id> -m 'versão v0.0'
+
+-- Listar tags
+
+git tag
+git tag -l
+git show <nomeTag>
+
+-- Carregar a tag
+
+git checkout <nomeTag>
+
+-- Deletar uma tag
+
+git tag -d <nomeTag>
+
+-- Deletar uma tag no repositório remoto
+
+git push origin -d <nomeTag>
+
+-- Criar branch
+
+git branch <nomeBranch>
+git checkout <nomeBranch>
+
+Fazer alterações e depois criar o branch no repositório remoto
+
+git add . 
+git commit -m 'teste'
+
+git checkout master
+git push origin <nomeBranch>
+
+-- Criar um branch a partir de um commit. O primeiro comando cria
+   o branch e executa o checkout. O segundo comando apenas cria o branch
+
+git checkout -b <nomeBranch> <commit_id>
+
+git branch <nomeBranch> <commit_id>
+
+-- Verificar branch corrente
+
+git branch
+git branch -a         -- Todos os branchs (incluindo remotos)
+
+-- Para ver o ultimo commit de cada branch
+
+git branch -v
+
+-- Para ver os branch megiados 
+
+git branch --merged | --no-merged
+
+-- Baixar um branch remoto
+
+git checkout -t origin/<nomeBranch>
+
+-- Trocar o branch corrente
+
+git checkout <nomeBranch>
+git checkout -b <nomeBranch> origin/<nomeBranch>
+
+-- Merge
+
+git merge <nomeBranch>    -- Merge entre o branch atual com o <nomeBranch> informado
+git rebase <nomeBranch>
+
+-- Merge de um branch com o master
+
+git checkout master
+git marge <nomeBranch>
+
+-- Resolver conflitos de merge com uma ferramenta
+
+git mergetool -t vimdiff
+
+-- Guardar o estado atual do branch para trocar para outro branch
+   sem a necessidade de dar commit nas alterações do branch atual.
+
+git stash
+git stash list
+git stash apply                              -- aplica o ultimo stash
+git stash apply stash@{0}                    -- aplica um específico
+git stash drop stash@{0}
+git stash show -p stash@{0} | git apply -R   -- desfazer um stash aplicado
+
+-- Remover branch
+
+git branch -d <nomeBranch>
+git branch -D <nomeBranch>
+
+-- Iniciar git na rede
+
+git init --bare
+
+-- Baixar no diretório local
+
+cd <dirtemp>
+git clone file://localhost/home/wilton/temp/gitserver <dirlocal>
+
+git clone -b <nome_branch> --single-branch <url>
+
+git add .
+git commit -m 'teste'
+
+-- Baixar um branch
+
+git clone -b <nome_branch> ssh://git@git.senado.leg.br:10022/legislativo/eplenario.git <nome_branch>
+
+-- Um fluxo de trabalho: https://git-scm.com/book/pt-br/v1/Ramifica%C3%A7%C3%A3o-Branching-no-Git-B%C3%A1sico-de-Branch-e-Merge
+
+-- Enviando para o servidor
+
+git remote origin
+
+git push origin master
+
+-- Update a versão local com as alterações no servidor.
+
+git pull origin master
+
+-- Update sem executar o merge com a versão local
+
+git fetch origin <nomeBranch>
+
+-- Github
+
+ssh-keygen
+
+-- Configurar a chave pública no github.
+
+-- Conectar a repositório remoto
+
+git remote add wjps file://localhost/home/wilton/temp/gitsrv
+
+-- Renomear repositório remoto
+
+git remote rename <nome-atual> <novo-nome>
+
+-- Inspecionar o acesso remoto
+
+git remote show <wjps>
+
+-- Remover repositório remoto
+
+git remote remove wjps
+
+-- Lista de arquivo de um commit
+
+git diff-tree --no-commit-id --name-only -r 4cf68028f144f1204c5654e8878d57eed3d45d6a
+
+-- Verificar as alterações ocorridas no repositório remoto antes de executar o git pull o git merge
+
+git fetch
+git diff --stat origin/master
+git merge origin/master
+
+git diff --name-only --diff-filter=U       -- Mostra arquivos com conflitos

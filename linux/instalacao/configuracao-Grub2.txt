@@ -1,0 +1,49 @@
+
+*--* Executar fdisk para identificar a partição do 
+     Windows
+
+sudo fdisk -l
+
+Disk /dev/sda: 60.0 GB, 60011642880 bytes
+255 heads, 63 sectors/track, 7296 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Disk identifier: 0x2e61c242
+Device Boot Start End Blocks Id System
+/dev/sda1 * 1 3315 26627706 7 HPFS/NTFS
+/dev/sda2 3316 7296 31977382+ 5 Extended
+/dev/sda5 * 3316 5139 14651248+ 83 Linux
+/dev/sda6 5140 5200 489951 82 Linux swap / Solaris
+/dev/sda7 5201 7296 16836088+ b W95 FAT32
+
+*--* Criar um boot file para Windows XP/Vista/7
+
+gksudo vi /etc/grub.d/11_Windows
+
+*---* Incluir a linhas abaixo
+
+#! /bin/sh -e
+echo "Adding Windows" >&2
+cat << EOF
+menuentry "Windows 7" {
+set root=(hd0,2)
+chainloader +1
+}
+EOF
+
+Observação: Tabela de partições
+
+Windows  on:
+First partition (/dev/sda1):            root=(hd0,1)
+Extended First partition (/dev/sda5):   root=(hd0,5)
+Extended Second partition (/dev/sda6):  root=(hd0,6)
+
+*---* Executar o comando abaixo
+
+sudo chmod a+x /etc/grub.d/11_Windows
+
+
+*---* Executar o comando abaixo
+
+sudo  update-grub2
+
+*---* Dar boot

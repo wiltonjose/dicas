@@ -1,0 +1,182 @@
+
+# ================================================== #
+Configurar Proxy
+# ================================================== #
+
+http://usuario:senha@av-web.senado.gov.br:80
+
+*-----* Instalar cntlm
+
+sudo apt-get install cntlm
+
+*-* Executar o comando abaixo.
+
+sudo cntlm -H
+ou
+sudo cntlm -H -M http://av-web.senado.gov.br:80
+
+*-* Copiar as linhas geradas pelo comando acima para o arquivo /etc/cntlm.conf
+
+PassLM          FD2F6C316CF87170552C4BCA4AEBFB11
+PassNT          350EC3B0CDE49F74D8028A2DAB645AC3
+
+Obs: Não copiar a terceira linha
+
+*-----* Configurar cntlm.config
+
+sudo vi /etc/cntlm.conf
+
+*-* Alterar as linhas
+
+Username    wilton
+Domain      senado
+PassLM      EE9EF4A8A4A020E42029B7CDF44D542E
+PassNT      3770D467E6D3F5B77BB311C4C25682C8
+Proxy       av-web.senado.gov.br:80
+NoProxy     *.senado.leg.br,*.senado.gov.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*
+Listen      3128
+Auth        NTLM
+
+*-----* Configurar Proxy no GNOME3
+
+gsettings set org.gnome.system.proxy mode 'manual'
+gsettings set org.gnome.system.proxy.http host 'localhost'
+gsettings set org.gnome.system.proxy.http port 3128
+gsettings set org.gnome.system.proxy.ftp host 'localhost'
+gsettings set org.gnome.system.proxy.ftp port 3128
+gsettings set org.gnome.system.proxy.https host 'localhost'
+gsettings set org.gnome.system.proxy.https port 3128
+gsettings set org.gnome.system.proxy ignore-hosts "['*.senado.leg.br','*.senado.gov.br','*.lexml.gov.br','*.local','.senado.leg.br','.senado.gov.br','.lexml.gov.br','.local','senado.leg.br','senado.gov.br','lexml.gov.br','local','localhost','127.0.0.0/8','172.28.*','172.29.*','172.30.*','172.31.*']"
+
+*-----* No editor do dconf
+
+*--* Selecionar system/proxy
+
+Alterar a chave "ignore-hosts" conforme o ultimo comando ("gsettings set org.gnome.system.proxy ignore-hosts" de "Configurar proxy no GNOME3"
+
+
+*-----* Configurar Proxy no sistema
+
+gconftool-2 -a /system/http_proxy
+
+gconftool-2 -t string -s /system/http_proxy/host "localhost"
+gconftool-2 -t int -s /system/http_proxy/port 3128
+gconftool-2 -t bool -s /system/http_proxy/use_http_proxy true
+
+http://localhost:3128/
+
+*-* Menu "Sistema/Pref?rencias/Proxy da Rede"
+
+*-* No Firefox
+
+*-* Configurar proxy Gerenciador de Atualiza??o
+
+*-----* Colocar as linhas abaixo em /etc/profile.d/profile.sh
+
+sudo vi /etc/profile.d/profile.sh
+
+#!/bin/bash
+
+## Colocar no final do arquivo. -- /etc/profile.d/profile.sh
+## Configuracoes de PROXY
+## Para configurar usuaro e senha do proxy: http://usuario:senha@servidor:80/
+
+export all_proxy="http://localhost:3128/"
+export http_proxy=$all_proxy
+export https_proxy=$all_proxy
+export ftp_proxy=$all_proxy
+export socks_proxy=$all_proxy
+export rsync_proxy=$all_proxy
+
+export no_proxy="*.senado.leg.br,*.senado.gov.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*"
+
+export ALL_PROXY=$all_proxy
+export HTTP_PROXY=$all_proxy
+export HTTPS_PROXY=$all_proxy
+export FTP_PROXY=$all_proxy
+export SOCKS_PROXY=$all_proxy
+export RSYNC_PROXY=$all_proxy
+
+export NO_PROXY=$no_proxy
+
+
+*-----* Alterar arquivo  /etc/sudoers
+
+sudo vi /etc/sudoers
+ou
+sudo visudo
+
+*-* Colocar a linha abaixo logo em seguida ? linha "Defaults env_reset"
+
+Defaults    env_keep+="all_proxy http_proxy https_proxy ftp_proxy socks_proxy no_proxy ALL_PROXY HTTP_PROXY HTTPS_PROXY FTP_PROXY SOCKS_PROXY NO_PROXY"
+
+
+
+*-----* Alterar arquivo /etc/apt/apt.conf
+
+sudo vi /etc/apt/apt.conf
+
+Acquire::http::proxy "http://localhost:3128/";
+Acquire::https::proxy "https://localhost:3128/";
+Acquire::ftp::proxy "ftp://localhost:3128/";
+Acquire::socks::proxy "socks://localhost:3128/";
+
+ou
+
+Acquire{
+   http {
+	roxy "http://localhost:3128/";
+	Timeout "10800";
+   };
+}
+
+*-----* Para WGet
+
+sudo vi /etc/wgetrc
+
+http_proxy = http://localhost:3128/
+https_proxy = https://localhost:3128/
+ftp_proxy = ftp://localhost:3128/
+
+# If you do not want to use proxy at all, set this to off.
+use_proxy = on
+
+
+Verificar necessidade de colocar a linha abaixo.
+export no_proxy=localhost,127.0.0.0/8,*.local,*.senado.gov.br
+
+*-----* Para SVN
+
+sudo vi ~/.subversion/servers
+
+[global]
+
+http-proxy-host = localhost
+http-proxy-port = 3128
+http-proxy-exceptions = localhost, 127.0.0.0/8, dsvp, dsvp.senado.gov.br, *.senado.gov.br, *.local, *.senado.leg.br, *.senado.gov.br, *.lexml.gov.br, *.local, 172.28.*, 172.29.*, 172.30.*, 172.31.*
+
+*-----* Para GIT
+
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+sudo vi ~/.gitconfig
+
+[http]
+	proxy = http://localhost:3128/
+[https]
+	proxy = http://localhost:3128/
+
+*-----* Para Gradle
+
+sudo vi /home/wilton/.gradle/gradle.properties
+
+systemProp.http.proxyHost=localhost
+systemProp.http.proxyPort=3128
+systemProp.http.nonProxyHosts=*.senado.leg.br|*.senado.gov.br|*.lexml.gov.br|*.local,.senado.leg.br|.senado.gov.br|.lexml.gov.br|.local|senado.leg.br|senado.gov.br|lexml.gov.br|local|localhost|127.0.0.0/8|172.28.*|172.29.*|172.30.*|172.31.*
+systemProp.https.proxyHost=localhost
+systemProp.https.proxyPort=3128
+systemProp.https.nonProxyHosts=*.senado.leg.br|*.senado.gov.br|*.lexml.gov.br|*.local,.senado.leg.br|.senado.gov.br|.lexml.gov.br|.local|senado.leg.br|senado.gov.br|lexml.gov.br|local|localhost|127.0.0.0/8|172.28.*|172.29.*|172.30.*|172.31.*
+
+*-----* Dar boot
+

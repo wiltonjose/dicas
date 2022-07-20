@@ -1,0 +1,1266 @@
+Instalação do Chrome OS Flex
+================================================
+—- Instalar o utilitário de recuperação do ChomeBook (Extesões do Chrome)
+—- Abrir o utilitário de recuperação
+—- Clicar no botão “Primeiros Passos”
+—- Clicar em “Selecionar um modelo na lista”
+—- Em “Selecione um fabricante” selecionar “Google Chome OS Flex”
+—- Em “Selecione um produto” selecionar “Chrome OS Flex …”
+—- Clicar em “Continuar” para gravar o sistema num pendrive
+
+***** Compartilhamento via NFS
+https://kraudio.wordpress.com/2007/03/01/compartilhando-arquivos-e-pastas-entre-maquinas-linux-com-o-nfs/
+https://www.somosagility.com.br/compartilhando-arquivos-usando-nfs/
+https://sempreupdate.com.br/compartilhar-arquivos-entre-linux-com-o-nfs/
+
+***** Lista de comando do terminal no Chromium OS
+https://www.makeuseof.com/tag/terminal-commands-chromebook/
+http://www.dicasparacomputador.com/conheca-crosh-chrome-ambiente-shell
+
+
+========== Crostini - Instalação Linux - DEBIAN ==========
+
+***** Configuração inicial do debian (Crostini)
+cat /etc/*-release
+hostnamectl
+sudo apt update --allow-releaseinfo-change
+sudo apt update
+sudo apt dist-upgrade
+
+***** Alterar o arquivo sources.list
+sudo vim /etc/apt/sources.list
+—- Alterar as duas primeiras linhas (colocar “non-free contrib” no final da linha)
+deb https://deb.debian.org/debian bullseye main non-free contrib
+deb https://deb.debian.org/debian bullseye-updates main non-free contrib
+—- Incluir a linha abaixo
+deb http://deb.debian.org/debian bullseye-backports main contrib non-free
+—- Salvar o arquivo sources.list
+sudo apt update
+sudo apt upgrade
+
+***** Trocar senha do usuário wiltonj e root
+sudo passwd wiltonj
+sudo passwd root
+
+***** Configuração para português
+locale-gen pt_BR.UTF-8
+sudo locale-gen pt_BR.UTF-8
+locale
+sudo dpkg-reconfigure locales
+—- desmarcar “en_US.UTF-8”
+—- Selecionar “pt_BR.ISO-8859-1”/”pt_BR.UTF-8”
+—- Selecionar “pt_BR.UTF-8” como default
+
+***** Restart o sistema 
+
+***** Criar os links simbolicos
+ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
+ln -s /mnt/chromeos/GoogleDrive/MyDrive/ gdrive
+ln -s /mnt/chromeos/GoogleDrive/MyDrive/bin bin
+ln -s /mnt/chromeos/removable/disco/ disco 
+ln -s /mnt/chromeos/removable/disco/devtools devtools 
+
+***** Instalar 
+sudo apt install build-essential cmake autoconf automake pkg-config zlib1g-dev
+sudo apt install vim-gtk exuberant-ctags clang
+sudo apt install screenfetch watchman
+
+***** Instalar do firewall (Não instalar)
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-debian-9-pt
+https://www.how2shout.com/linux/install-and-configure-ufw-on-debian-11-or-10/
+sudo apt install ufw
+sudo ufw enable
+sudo ufw status
+sudo ufw disable
+
+—- configuração do ufw (exemplos)
+sudo ufw allow|deny|reject SERVICE
+sudo ufw allow 8080
+sudo ufw deny 8080
+sudo ufw allow 5000:5010/udp
+sudo ufw allow 5000:5010/tcp
+sudo ufw allow from 192.168.0.104
+sudo ufw allow from 192.168.253.49 to any port 22
+sudo ufw app list
+sudo ufw default deny incoming
+sudo ufw default allow incoming
+sudo ufw default allow outgoing
+sudo ufw default deny outgoing
+sudo ufw status numbered
+
+***** Restaurar backup do diretório ~/bin
+
+***** Colocar as linhas abaixo no arquivo .bashrc
+export PATH=$PATH:$HOME/bin
+screenfetch
+
+***** Configurar ssh
+-- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile      .ssh/authorized_keys .ssh/authorized_keys2
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+Subsystem       sftp    /usr/lib/openssh/sftp-server
+AllowUsers wiltonj
+
+-- Restaurar backup do arquivo .ssh
+tar xfz /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.tar.gz
+
+-- Inicar o daemon sshd
+sudo systemctl start sshd
+
+-- Conectar ao servidor
+ssh usuario@endereço.ip.do.destino
+
+-- copiando arquivos e diretórios para outra máquina via ssh
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+***** Instalar utilitários
+sudo apt install lxterminal
+sudo apt install gvfs sshfs exfat-fuse exfat-utils
+sudo apt install samba smbclient cifs-utils 
+sudo apt install curl nano xarchiver putty youtube-dl pcmanfm tree ghex hexedit meld
+sudo apt install ttf-bitstream-vera fonts-powerline fonts-dejavu
+sudo apt install ttf-mscorefonts-installer
+sudo apt install firefox-esr firefox-esr-l10n-pt-br gimp evince
+sudo apt install libreoffice libreoffice-l10n-pt-br libreoffice-gnome
+sudo apt install tk gitk git-gui
+sudo apt install x11-apps htop filezilla moc p7zip gsmartcontrol
+sudo apt install sqlite3 sqlite3-doc
+
+***** Instalar google chrome
+su
+—- configurar o repositório
+cat << EOF > /etc/apt/sources.list.d/google-chrome.list
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+EOF
+
+—- Instalar GPG Key
+wget -O- https://dl.google.com/linux/linux_signing_key.pub |gpg --dearmor > /etc/apt/trusted.gpg.d/google.gpg
+
+—- Configuração da base de dados do apt
+exit
+sudo apt update
+
+—- instalar pacote
+sudo apt install google-chrome-stable
+
+***** Configurar git
+
+***** Restaurar backup do diretório ~/devtools
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.tar.gz
+
+***** Instalar nvm e Nodejs
+
+***** Instalar Golang
+https://go.dev/doc/install
+https://idroot.us/install-go-debian-11/
+https://www.freecodecamp.org/news/how-to-install-go-in-arch-linux-using-pacman/
+
+—- Remover a versão anterior
+sudo rm -rf /usr/local/go
+
+—- Criar diretório no /mnt/chromeos/removable/disco/
+mkdir -p /mnt/chromeos/removable/disco/devtools/go
+
+—- Instalar dependencias
+sudo apt install wget software-properties-common apt-transport-https
+
+—- Fazer download da nova versão
+cd Download
+wget https://go.dev/dl/go1.18.2.linux-amd64.tar.gz
+
+—- Instalar versão do download 
+sudo tar -zxvf go1.18.2.linux-amd64.tar.gz -C /usr/local/
+
+—- Instalar versão do repositório
+sudo apt install golang-go 
+
+—- Se for necessário, alterar a variável de ambiente GOPATH
+go env -w GOPATH="/home/wiltonj/go"
+
+—- Incluir as linhas abaixo no arquivo .bashrc
+export GOLANG_HOME=/usr/local/go
+export PATH=$PATH:$GOLANG_HOME/bin:$HOME/devtools/go/bin
+
+—- Instalar ou atualizar gopls (Antes verificar se já está instalado)
+go install golang.org/x/tools/gopls@latest
+ 
+—- Intalar ferramentas do golang
+go install golang.org/x/lint/golint@latest
+go install golang.org/x/tools/cmd/gotype@latest
+go install github.com/sqs/goreturns@latest
+go install github.com/kisielk/errcheck@latest
+
+***** Instalar java
+sudo apt install default-jre default-jdk
+
+—- instalar uma versão específica
+sudo apt install openjdk-17-jre openjdk-17-jdk
+
+—- listar versão do java
+sudo update-alternatives --list java
+sudo update-alternatives --list javac
+
+—- definir versão corrente o java
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+—- path para a versão default 
+/usr/lib/jvm/default-java/
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export JAVA_HOME=/usr/lib/jvm/default-java
+export JRE_HOME=/usr/lib/jvm/default-java
+# export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+export PATH=$PATH:$JAVA_HOME/bin
+
+export MAVEN_OPTS=-Xmx512m
+export M2_HOME=$HOME/devtools/maven
+export PATH=$PATH:$M2_HOME/bin
+
+***** Instalar Python
+sudo apt install python3-pip python2.7-dev python-dev
+
+-- Restaurar o backup do arquivo .pylintrc
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
+
+-- Instalar o spyder
+sudo pip install pylint
+sudo pip install spyder
+
+-- Instalar utils
+sudo pip install pyflakes flake8 pycodestyle jedi-language-server
+
+—- Para saber se um pacote está instalado. O parâmetro --format pode ser configurado em pip.conf
+pip3 list --format=(legacy|columns)
+
+-- Restaurar o backup do arquivo .pip
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.tar.gz
+ou 
+—- Criar o arquivo $HOME/.pip/pip.conf
+[list]
+format=columns
+
+—- Remover pacote
+sudo pip3 uninstall pacote
+
+***** Configurar vim
+
+***** Instalar Android sdk
+—- Fazer download do sdk
+https://developer.android.com/studio
+https://chromeos.dev/en/android-environment/deploying-apps
+
+—- Unzip o arquivo commandlinetools-linux-*_latest.zip no diretório devtools
+cd ~/devtools
+mkdir android-sdk
+unzip commandlinetools-linux-*_latest.zip
+mv cmdline-tools/ android-sdk
+
+—- incluir as linhas abaixo no arquivo .bashrc
+export CHROME_EXECUTABLE=/usr/bin/google-chrome-stable
+export ANDROID_HOME=$HOME/devtools/android-sdk
+export ANDROID_KEYSTORE=$HOME/gdrive/ti/certificados/android/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+export REPO_OS_OVERRIDE=linux
+export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+
+-- Restaurar o backup do arquivo .pip
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_android.tar.gz
+ou 
+—- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
+### User Sources for Android SDK Manager
+#Wed Mar 14 22:55:42 ICT 2018
+count=0
+
+—- Executar sdkmanager
+sdkmanager --sdk_root=$ANDROID_HOME
+sdkmanager --sdk_root=$ANDROID_HOME --list --channel=0
+sdkmanager --sdk_root=$ANDROID_HOME --update
+sdkmanager --sdk_root=$ANDROID_HOME --licenses
+
+—- Criar o arquivo package.txt e incluir as linhas abaixo
+tools
+platform-tools
+platforms;android-32
+build-tools;32.0.0
+cmdline-tools;latest
+extras;google;google_play_services
+extras;google;webdriver
+sources;android-31
+add-ons;addon-google_apis-google-24
+system-images;android-25;default;x86
+system-images;android-25;default;x86_64
+system-images;android-31;default;arm64-v8a
+system-images;android-31;default;x86_64
+system-images;android-32;google_apis;arm64-v8a
+system-images;android-32;google_apis;x86_64
+system-images;android-32;google_apis_playstore;arm64-v8a
+system-images;android-32;google_apis_playstore;x86_64
+
+—- Instalar os pacotes
+sdkmanager --sdk_root=$ANDROID_HOME --package_file=package.txt
+sdkmanager --sdk_root=$ANDROID_HOME --update
+
+***** Instalar Flutter
+https://docs.flutter.dev/get-started/install/linux
+
+—- Instalar dependêcia
+sudo apt install libglu1-mesa
+sudo apt install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+—- Fazer download flutter_linux_*-stable.tar.xz
+
+—- Descompactar o arquivo no diretorio ~/devtools
+cd ~/devtools
+tar xf ~/Downloads/flutter_linux_3.0.1-stable.tar.xz
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export FLUTTER_HOME=$HOME/devtools/flutter
+export PATH=$PATH:$FLUTTER_HOME/bin
+
+—- Executar os comandos abaixo
+flutter precache --android --ios --web --linux
+flutter doctor --android-licenses
+
+-- Testar a instalação
+flutter create teste
+cd teste
+flutter run
+
+—- Criar projeto web
+flutter channel beta (temporário)
+flutter upgrade
+flutter config --enable-web
+flutter create projeto
+cd projeto
+flutter update-packages (temporário)
+flutter run -d chrome
+flutter build web
+
+—- Adiciona suporte a web para um projeto existente
+flutter create .
+
+—- Comandos úteis do Flutter para ter sempre à mão:
+flutter create → cria um novo projeto com toda a estrutura padrão de pastas, código boilerplate e testes.
+flutter run → compila e dá build em um determinado projeto.
+flutter run -d <id do dispositivo>→ compila e dá build em um determinado projeto tendo como alvo um dispositivo específico.
+flutter install → instala um projeto Flutter no dispositivo conectado.
+flutter packages get → adiciona dependências ao projeto.
+flutter test → executa teste unitário.
+flutter doctor → mostra informações sobre o processo de instalação do Flutter.
+flutter devices → lista todos os dispositivos conectados, com informações como: nome do dispositivo, id do dispositivo e versão do Android .
+s → realiza uma captura de tela do aplicativo em execução e a armazena na pasta do projeto.
+r → realiza hot reload do projeto.
+R → realiza hot restart do projeto.
+q → encerra o projeto.
+flutter help →lista estes e todos os outros comandos disponíveis para serem executados com Flutter.
+
+***** Instalar o VSCode
+https://www.linuxcapable.com/how-to-install-microsoft-visual-studio-code-on-debian-11/
+—- Instalar dependencias
+sudo apt install software-properties-common apt-transport-https
+
+—- Instalar GPG Key
+curl -sSL https://packages.microsoft.com/keys/microsoft.asc -o microsoft.asc
+gpg --no-default-keyring --keyring ./ms_vscode_key_temp.gpg --import ./microsoft.asc
+gpg --no-default-keyring --keyring ./ms_vscode_key_temp.gpg --export > ./ms_vscode_key.gpg
+sudo mv ms_vscode_key.gpg /etc/apt/trusted.gpg.d/
+
+—- Instalar repositório do visual studio
+echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+
+sudo apt update
+sudo apt install code
+
+—- Alternativa fazendo download do arquivo .deb
+https://code.visualstudio.com/docs/?dv=linux64_deb
+
+sudo apt install ./code_*_amd64.deb
+
+–- Recuperar os arquivos abaixo do backup
+cd ~
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vscode.tar.gz
+cd /tmp
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_configCode.tar.gz
+cd .config
+mv Code ~/.config
+
+***** Localizar arquivos/diretórios duplicados
+—- Instalar utilitário para localizar arquivo duplicados
+sudo apt install fdupes
+
+-- Localizar arquivo duplicado
+find /mnt/chromeos/GoogleDrive/MyDrive/ -type d -exec fdupes '{}' \; > teste.txt
+cat teste.txt | grep ' (1)' > rm.sh
+chmod u+x rm.sh
+vim rm.sh
+:%s/\/mnt\//rm '\/mnt\//g
+:wq
+nano rm.sh
+Fechar com “‘“
+./rm.sh
+
+-- Arquivo duplicado
+find /mnt/chromeos/GoogleDrive/MyDrive/ -type f > teste.txt
+vim teste.txt
+:%s/ (1)//g
+:wq
+sort teste.txt | uniq --count | grep '2 /'
+-- abrir o google drive e excluir os duplicados
+
+-- Diretório vazio
+find /mnt/chromeos/GoogleDrive/MyDrive/ -type d -empty | grep ' (1)' > rm.sh
+vim rm.sh
+:%s/\/mnt\//rm -rf '\/mnt\//g
+:wq
+nano rm.sh
+Fechar com “‘“
+,/rm.sh
+
+-- Diretório duplicado
+find /mnt/chromeos/GoogleDrive/MyDrive/ -type d > teste.txt
+vim teste.txt
+:%s/ (1)//g
+:wq
+sort teste.txt | uniq --count | grep '2 /'
+-- abrir o google drive e excluir os duplicados
+
+***** Comandos apt
+https://linuxize.com/post/how-to-list-installed-packages-on-debian/
+https://www.debian.org/doc/manuals/apt-howto/index.pt-br.html#contents
+
+sudo apt list --installed
+sudo dpkg-query -l
+dpkg -l | grep chrome
+
+ls -l /var/cache/apt/archives
+sudo apt autoclean
+sudo apt autoremove --purge
+sudo apt clean
+
+sudo apt install deborphan
+deborphan
+
+apt-cache show lilo
+apt-cache search atari
+dpkg -S stdio.h
+
+—- Corrigingo pacotes quebrados
+https://sempreupdate.com.br/como-corrigir-pacotes-quebrados-no-ubuntu/
+sudo dpkg –remove -force –force-remove-reinstreq NOME_DO_PACOTE_VAI_AQUI
+- Caso não saiba qual o pacote:
+sudo apt –fix-broken install
+- Se der erro na instalação de um pacote
+sudo apt clean
+sudo apt install -f
+sudo dpkg --configure -a
+- Outra opção
+sudo rm /var/lib/apt/lists/* -vf
+sudo apt update
+- Outra opção
+sudo apt clean
+sudo apt autoclean
+sudo apt autoremove
+- Outra opção
+sudo dpkg --configure -a
+sudo apt update
+
+
+
+
+
+========== Crostini - Instalação Linux - ARCHLINUX ==========
+
+https://wiki.archlinux.org/index.php/Chrome_OS_devices/Crostini
+***** Entrar no terminal do constini (ctrl-alt-t) e desabilitar o “Alerta com som de sino”
+—- No terminal digitar ctrl-shift-p 
+—- No menu lateral clicar em Sons
+—- Apagar o campo “Alerta com som de sino”. Para voltar o alerta colocar o valor
+   “lib-resource:hterm/audio/bell”.
+
+***** Se desejar matar o container default (penguin) debian, execute os comando abaixo:
+vmc destroy termina
+vmc start termina
+
+lxc list
+exit
+
+***** Digitar o comando abaixo no terminal do crostini
+vmc container termina penguin https://us.lxd.images.canonical.com/ archlinux/current
+vmc container termina penguin https://images.linuxcontainers.org archlinux/current
+
+obs: Se der o erro abaixo é normal
+"Error: routine at frontends/vmc.rs:403 `container_setup_user(vm_name,user_id_hash,container_name,username)` failed: timeout while waiting for signal"
+
+***** Configuração de usuário
+vsh termina
+lxc list
+- se não estiver rodando executar o comando abaixo
+lxc start penguin
+lxc exec penguin -- bash
+
+-- Verificar se existe o usuário wiltonj
+grep 1000:1000 /etc/passwd|cut -d':' -f1
+
+-- Criar se não existir
+useradd -m wiltonj
+
+***** Alterar password do usuário default e do root
+passwd wiltonj
+passwd root
+
+***** Permitir que o usuário default execute sudo
+pacman -S sudo 
+visudo
+
+-- Descomentar a linha abaixo
+# %wheel ALL=(ALL) ALL
+
+—- Salvar
+
+***** Colocar o usuário no grupo wheel
+sudo usermod -aG wheel wiltonj
+exit
+
+***** Logar com o usuário wiltonj
+lxc console penguin
+
+***** Verificar se a rede está ok
+ip -4 a show dev eth0
+
+—- Se a resposta ao comando acima for vazia, configurar o dhclient
+sudo pacman -S dhclient
+sudo dhcpcd eth0
+sudo systemctl disable systemd-networkd
+sudo systemctl disable systemd-resolved
+sudo unlink /etc/resolv.conf
+sudo touch /etc/resolv.conf
+sudo systemctl enable dhclient@eth0
+sudo systemctl start dhclient@eth0
+
+***** Acertar repositórios do archlinux
+-- Editar o arquivo /etc/pacman.conf
+sudo vi /etc/pacman.conf
+
+-- descomente as linhas abaixo
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+
+-- escrever:
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/x86_64
+
+-- Atualizar o banco de dados local do pacman
+sudo pacman -Syy
+
+-- configurar keys (só para corrigir erro de chave)
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+sudo pacman -Syyu archlinux-keyring
+
+-– Instalar reflector
+sudo pacman -S reflector rsync
+sudo reflector -a 10 -c us -f 5 --sort rate --save /etc/pacman.d/mirrorlist
+
+-- Instalar pacman-contrib
+sudo pacman -S pacman-contrib
+
+-- Otimizar pacman selecionando repositórios mais rápidos
+cd ~
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bck
+sudo cp /etc/pacman.d/mirrorlist.pacnew /etc/pacman.d/mirrorlist
+
+Obs: Descomentar todas as linhas com "#Server =" no arquivo /etc/pacman.d/mirrorlist
+     :%s/#Server =/Server =/g
+
+cp /etc/pacman.d/mirrorlist mirrorlist.temp 
+rankmirrors -v -n 40 mirrorlist.temp > mirrorlist
+sudo cp mirrorlist /etc/pacman.d/mirrorlist
+
+-- Se o comando acima der o error “erro: não foi possível abrir o arquivo /var/lib/pacman/sync/core.db: Unrecognized archive format”, executar:
+sudo rm /var/lib/pacman/db.lck
+sudo rm -R /var/lib/pacman/sync/
+sudo rm -r /etc/pacman.d/gnupg
+sudo pacman -Sc
+– executar “configurar keys”
+
+***** Alterar o container default para o archlinux
+exit
+lxc stop --force arch
+lxc rename arch penguin
+lxc exec penguin -- bash
+
+—- Preparar
+systemctl --failed
+systemctl --user --failed
+ip -4 a show dev eth0
+sudo dhcpcd eth0
+
+***** Configurar locale.gen
+-- Alterar o arquivo /etc/locale.gen
+sudo vi /etc/locale.gen
+Descomentar as linhas abaixo e conferir se as demais estão comentadas.
+pt_BR.UTF-8 UTF-8
+pt_BR ISO-8859-1
+
+-- Executar:
+sudo locale-gen
+
+***** Configurar caracter acentuados no terminal
+—- Colocar a linha abaixo no arquivo .bashrc
+export LANG=pt_BR.utf8
+
+***** Configurar o autocomplete com sudo
+-- Colocar a linha abaixo no arquivo .bashrc
+complete -cf sudo
+
+***** Instalar yay
+sudo pacman -S git go base-devel cmake
+cd ~
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+rm -rf yay/
+yay -Syyu
+
+***** Instalar integração com o chromeos
+yay -S cros-container-guest-tools-git wayland xorg-server-xwayland xorg-xwayland
+cp -rT /etc/skel/.config/pulse ~/.config
+sudo ln -s /opt/google/cros-containers/bin/sommelier.elf /usr/bin/
+systemctl --user enable --now sommelier@0 sommelier-x@0 sommelier@1 sommelier-x@1
+
+-- Diretório dos atalhos
+/usr/share/applications/
+
+-- Executar um boot na máquina
+
+***** Criar os links simbolicos
+ln -s /mnt/chromeos/GoogleDrive/MyDrive/bin bin
+ln -s /mnt/chromeos/removable/disco/ disco 
+ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
+ln -s /mnt/chromeos/GoogleDrive/MyDrive/ gdrive
+
+***** Colocar a linha abaixo no arquivo .bashrc
+export PATH=$PATH:$HOME/bin
+
+***** Instalar editores
+sudo pacman -S nano
+
+***** Instalar chromium
+sudo pacman -S chromium
+
+***** Setar o som
+sudo pacman -S alsa-utils alsa-oss
+alsamixer
+
+-- testar o som
+aplay /usr/share/sounds/alsa/Noise.wav
+
+-- se não passar nos testes do som (verificar se necessário)
+sudo pacman -S pulseaudio
+pulseaudio --start
+
+—- Instalar moc
+sudo pacman -S cmus moc alsa-lib libao libpulse faad2 ffmpeg flac jack libmad libmodplug libmp4v2 speex 
+sudo pacman -S taglib libmpcdec libsamplerate libvorbis libcdio-paranoia opusfile wavpack ffmpeg4.4
+
+***** Instalar screenfetch
+sudo pacman -S screenfetch
+
+—- Colocar a linha abaixo no arquivo .bashrc
+screenfetch
+
+***** Configurando openssh
+-- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile	.ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+AllowUsers wiltonj
+
+-- Configurar o firewall para aceitar a porta 22
+
+-- Restaurar backup do arquivo .ssh
+tar xfz /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.tar.gz
+unzip  /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.zip
+
+-- Inicar o daemon sshd
+sudo systemctl start sshd
+
+-- Conectar ao servidor
+ssh usuario@endereço.ip.do.destino
+
+-- Copiando arquivos e diretórios para outra máquina via ssh
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+***** Instalar xterm
+sudo pacman -S xterm
+
+-- Copiar o arquivo ~/ti/linux/archlinux/config/_Xresources para home ou pegar do backup
+cp ~/gdrive//ti/linux/archlinux/config/_Xresources ~/.Xresources
+
+-- Executar
+xrdb -merge ~/.Xresources
+
+-- Alterar o arquivo ~/.xinitrc. Incluir a linha abaixo:
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+
+***** Instalar pacotes
+sudo pacman -S htop usbutils mlocate wget rmlint ranger links colordiff
+sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
+sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
+sudo pacman -S p7zip tar gzip bzip2 unrar unzip
+sudo pacman -S putty tree youtube-dl
+sudo pacman -S xarchiver file-roller filezilla
+sudo pacman -S tk ghex hexedit meld sqlite sqlite-doc curl geany
+sudo pacman -S firefox firefox-i18n-pt-br
+sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre
+sudo pacman -S imagemagick
+sudo pacman -S pcmanfm lxterminal
+sudo pacman -S audacious
+yay -S google-chrome
+yay -S ttf-ms-fonts
+yay -S postman-bin
+
+***** Colocar as linha abaixo no arquivo .bashrc
+export BROWSER=google-chrome-stable
+
+***** Configurar git
+-- Gerar um par de chave ssh
+ssh-keygen
+
+-- Cadastrar a chave pública no servidor Git (Github ou trabalho)
+
+-- Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
+
+-- Gerar arquivo de configuração ~/.gitconfig
+git config --global user.email SEU_EMAIL@dominio.com.br
+git config --global user.name SEU_LOGIN
+git config --global merge.tool vimdiff
+git config --global pull.rebase false
+Se for necessário configurar proxy
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+-- Restaurar backup do arquivo .gitconfig
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_gitconfig .gitconfig
+
+***** Restaurar backup do diretório ~/devtools
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.tar.gz
+unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.zip
+
+***** Instalação NVM
+-- Site nvm https://github.com/creationix/nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+yay -S watchman
+
+-- Alterar permissão de execução para o arquivo "~/.config/nvm/nvm.sh"
+cd ~/.config/nvm
+chmod u+x nvm.sh
+
+-- Fechar o terminal e abrir outro.
+
+***** Instalação Nodejs
+-- Instalar pacotes
+nvm ls-remote --lts | grep Latest
+
+nvm install --lts=fermium --default
+npm cache clear --force
+npm install -g nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates 
+npm install -g typescript eslint jslint 
+npm install -g @nestjs/cli @angular/cli
+npm install -g bash-language-server dts-gen
+
+nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
+npm cache clear --force
+npm install --location=global nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates 
+npm install --location=global typescript eslint jslint 
+npm install --location=global @nestjs/cli @angular/cli
+npm install --location=global bash-language-server dts-gen
+
+—- Comando importantes do nvm
+nvm --version
+nvm ls-remote
+nvm install 9.9.9
+nvm install 8.2.1 --reinstall-packages-from=7.11.1
+nvm install --lts=argon
+nvm uninstall 9.9.9
+nvm ls
+nvm alias default 10.21.0
+nvm use 9.9.9
+nvm which 9.9.9
+
+—- Configurar npm
+npm config set temp /tmp
+npm config set strict-ssl false
+npm config set registry "http://registry.npmjs.org/"
+
+Obs: Verificar se é necessário
+npm config set proxy "http://127.0.0.1:3128"
+npm config set https-proxy "http://127.0.0.1:3128"
+npm config set prefix "/usr/lib/node_modules/"
+
+-- Restaurar backup do arquivo .npmrc
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_npmrc .npmrc
+
+—- Comandos importantes do npm (Obs: mas versões acima da gallium (16.15.0) usar
+    --location=global no lugar de -g
+npm list
+npm list --location=global --depth=0
+npm update --location=global
+npm list --location=global
+npm update --location=global
+npm cache verify
+npm cache clean --force
+npm update packageName
+npm uninstall packageName
+npm show packageName@* version
+
+sudo npm update --location=global packageName
+sudo npm uninstall --location=global packageName
+
+***** Instalar Golang
+https://www.freecodecamp.org/news/how-to-install-go-in-arch-linux-using-pacman/
+https://wiki.archlinux.org/title/Go#Installation
+sudo pacman -S go go-tools 
+
+—- Se for necessário, alterar a variável de ambiente GOPATH
+go env -w GOPATH="/home/wiltonj/go"
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export GOLANG_HOME=/usr/lib/go
+export PATH=$PATH:$GOLANG_HOME/bin:$HOME/go/bin
+
+—- Instalar ou atualizar gopls (Antes verificar se já está instalado)
+go install golang.org/x/tools/gopls@latest
+ 
+—- Intalar ferramentas do golang
+go install golang.org/x/lint/golint@latest
+go install golang.org/x/tools/cmd/gotype@latest
+go install github.com/sqs/goreturns@latest
+go install github.com/kisielk/errcheck@latest
+
+***** Instalar java
+sudo pacman -S jdk8-openjdk openjdk8-doc openjdk8-src
+sudo pacman -S jdk11-openjdk openjdk11-doc openjdk11-src
+sudo pacman -S jdk-openjdk openjdk-doc openjdk-src
+
+-- Comando para saber as VM's java instaladas
+archlinux-java status
+
+-- Comando para mudar a VM's java default
+sudo archlinux-java set java-8-openjdk
+
+-- Comando para desfazer a VM's java dafault
+sudo archlinux-java unset
+
+-- Diretório do java /usr/lib/jvm
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export JAVA_HOME=/usr/lib/jvm/default
+export JRE_HOME=/usr/lib/jvm/default
+# export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+export PATH=$PATH:$JAVA_HOME/bin
+
+export MAVEN_OPTS=-Xmx512m
+export M2_HOME=$HOME/devtools/maven
+export PATH=$PATH:$M2_HOME/bin
+
+***** Instalar Python
+sudo pacman -S python-pip
+
+-- Restaurar o backup do arquivo .pylintrc
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
+
+-- Instalar o spyder
+sudo pip install pylint
+sudo pip install spyder
+
+-- Instalar utils
+sudo pip install pyflakes flake8 pycodestyle jedi-language-server
+
+—- Para saber se um pacote está instalado. O parâmetro --format pode ser configurado em pip.conf
+pip3 list --format=(legacy|columns)
+
+-- Restaurar o backup do arquivo .pip
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.tar.gz
+unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.zip
+ou 
+—- Criar o arquivo $HOME/.pip/pip.conf
+[list]
+format=columns
+
+—- Remover pacote
+sudo pip3 uninstall pacote
+
+***** Instalar vim
+sudo pacman -S vim ctags clang
+
+—- Instalar pacote para coc-sh
+npm install --location=global bash-language-server
+
+—- Instalar fontes extras para o vim
+https://wiki.debian.org/pt_BR/Fonts#Adicionando_fontes
+
+—- Acessar o site NerdFonts
+https://www.nerdfonts.com/
+https://github.com/ryanoasis/nerd-fonts#font-installation
+
+—- Fazer download das fontes
+“Droid Sans Mono Nerd Font”
+“DejaVu Sans Mono Nerd Font Complete”	
+“Roboto Mono”
+Arquivos .ttf e .otf
+—- Copiar os arquivos de font para o diretório .local/share/fonts
+mkdir -p .local/share/fonts
+—- Executar os comandos
+fc-cache
+fc-cache -fv
+—- Outros comando 
+fc-list
+fc-list :spacing=mono
+fc-match -s Helvetica
+
+-- Criar o diretório ~/vim-backup
+
+—- Instalar vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+-- Restaurar backup do arquivo .viminfo
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_viminfo .viminfo
+
+-- Restaurar backup do arquivo .vimrc
+cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vimrc .vimrc
+
+-- Restaurar backup do diretório .vim
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vim.tar.gz
+unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vim.zip
+
+—- Editar arquivo ~/.vim/coc-settings.json
+nano ~/.vim/coc-settings.json
+Alterar diretório do node
+
+—- Colocar a linha abaixo no arquivo .bashrc
+export EDITOR=vim
+
+-- editar o .vimrc e executar o comando abaixo
+vim .vimrc
+:PlugUpdate
+:CocUpdate
+
+-- Configurar para o root
+su
+cd /root
+mkdir vim-backup
+cp /home/wiltonj/.vimrc .
+cp /home/wiltonj/.viminfo .
+cp -R /home/wiltonj/.vim/ .vim/
+exit
+
+***** Instalar Android SDK
+https://developer.android.com/studio/#downloads (Command line tools only)
+—- Instalar libs 32bits
+sudo pacman -S lib32-ncurses lib32-glibc lib32-gcc-libs lib32-readline lib32-zlib lib32-fontconfig
+yay -S lib32-libstdc++5
+
+—- Executar o comando abaixo e verificar se tem a linha "en_US.utf8"
+locale -a
+
+—- Se a linha não existe, descomentar a linha que tem en_US.utf8 no arquivo /etc/locale.gen e executar:
+sudo locale-gen
+
+—- Unzip o arquivo commandlinetools-linux-*_latest.zip no diretório devtools
+cd ~/devtools
+mkdir android-sdk
+unzip commandlinetools-linux-*_latest.zip
+mv cmdline-tools/ android-sdk
+
+—- incluir as linhas abaixo no arquivo .bashrc
+export CHROME_EXECUTABLE=/usr/bin/google-chrome-stable
+export ANDROID_HOME=$HOME/devtools/android-sdk
+export ANDROID_KEYSTORE=$HOME/gdrive/ti/certificados/android/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+export REPO_OS_OVERRIDE=linux
+export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+
+-- Restaurar o backup do arquivo .pip
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_android.tar.gz
+ou 
+—- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
+### User Sources for Android SDK Manager
+#Wed Mar 14 22:55:42 ICT 2018
+count=0
+
+—- Executar sdkmanager
+sdkmanager --sdk_root=$ANDROID_HOME --list
+sdkmanager --sdk_root=$ANDROID_HOME --update
+sdkmanager --sdk_root=$ANDROID_HOME --licenses
+
+—- Criar o arquivo package.txt e incluir as linhas abaixo
+tools
+platform-tools
+platforms;android-32
+build-tools;32.0.0
+cmdline-tools;latest
+extras;google;google_play_services
+extras;google;webdriver
+sources;android-31
+add-ons;addon-google_apis-google-24
+system-images;android-25;default;x86
+system-images;android-25;default;x86_64
+system-images;android-31;default;arm64-v8a
+system-images;android-31;default;x86_64
+system-images;android-32;google_apis;arm64-v8a
+system-images;android-32;google_apis;x86_64
+system-images;android-32;google_apis_playstore;arm64-v8a
+system-images;android-32;google_apis_playstore;x86_64
+
+—- Instalar os pacotes
+sdkmanager --sdk_root=$ANDROID_HOME --package_file=package.txt
+sdkmanager --sdk_root=$ANDROID_HOME --update
+
+***** Instalar Flutter
+https://www.rockyourcode.com/how-to-get-flutter-and-android-working-on-arch-linux/
+
+yay -S flutter
+
+-- Permissão
+sudo gpasswd -a $USER flutterusers
+sudo chown -R :flutterusers /opt/flutter
+sudo chmod -R g+w /opt/flutter/
+Opcional
+sudo chown -R $USER:flutterusers /opt/flutter
+
+-- Instalação manual
+https://flutter.dev/docs/get-started/install/chromeos
+https://flutter.dev/docs/get-started/install/linux
+cd ~/devtools
+tar xf flutter_linux_3.0.1-stable.tar.xz (versão estável)
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export FLUTTER_HOME=$HOME/devtools/flutter
+export PATH=$PATH:$FLUTTER_HOME/bin
+
+-- Instalar os pacotes
+sudo pacman -S glu ninja
+
+-- Instalar dependências
+flutter precache --android --ios --web --linux
+flutter doctor
+flutter doctor --android-licenses
+
+-- Testar a instalação
+flutter create teste
+cd teste
+flutter run
+
+- Criar projeto web
+flutter channel beta (temporário)
+flutter upgrade
+flutter config --enable-web
+flutter create projeto
+cd projeto
+flutter update-packages (temporário)
+flutter run -d chrome
+flutter build web
+
+—- Adiciona suporte a web para um projeto existente
+flutter create .
+
+—- Comandos úteis do Flutter para ter sempre à mão:
+flutter config → Lista configurações
+flutter config --no-analytics
+flutter create → cria um novo projeto com toda a estrutura padrão de pastas, código boilerplate e testes.
+flutter run → compila e dá build em um determinado projeto.
+flutter run -d <id do dispositivo>→ compila e dá build em um determinado projeto tendo como alvo um dispositivo específico.
+flutter install → instala um projeto Flutter no dispositivo conectado.
+flutter packages get → adiciona dependências ao projeto.
+flutter test → executa teste unitário.
+flutter doctor → mostra informações sobre o processo de instalação do Flutter.
+flutter devices → lista todos os dispositivos conectados, com informações como: nome do dispositivo, id do dispositivo e versão do Android .
+s → realiza uma captura de tela do aplicativo em execução e a armazena na pasta do projeto.
+r → realiza hot reload do projeto.
+R → realiza hot restart do projeto.
+q → encerra o projeto.
+flutter help →lista estes e todos os outros comandos disponíveis para serem executados com Flutter.
+
+***** Instalar VsCode
+—- Fazer download do site da Microsoft (https://code.visualstudio.com/Download) ou instalar do repositório AUR
+yay visual-studio-code-bin
+
+—- Se fizer download e descompactar no diretório /home/wiltonj/devtools
+tar xzf ../Downloads/code-stable-x64-1652813090.tar.gz
+
+—- Recuperar os arquivos abaixo do backup
+cd ~
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vscode.tar.gz
+cd /tmp
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_config.tar.gz
+cd .config
+mv Code ~/.config
+
+—- Para aumentar o limite de arquivos sendo monitorados:
+# ver o número atual
+cat /proc/sys/fs/inotify/max_user_watches
+
+# Inserir a linha abaixo no final do arquivo /etc/sysctl.conf (no archlinux criar o arquivo /etc/sysctl.d/40-max-user-watches.conf).
+fs.inotify.max_user_watches=524288
+
+# executar:
+sudo sysctl -p
+# no archlinux
+sudo sysctl --system
+
+—- Criar atalho (para instalação manual)
+echo -e '[Desktop Entry]\n Version=1.0\n Name=vscode\n Exec=/home/wiltonj/devtools/VSCode-linux-x64/code\n Icon=/home/wiltonj/devtools/VSCode-linux-x64/resources/app/resources/linux/code.png\n Type=Application\n Categories=Application' | sudo tee /usr/share/applications/vscode.desktop
+
+—- Colocar as linhas abaixo no arquivo .bashrc (para instalação manual)
+export VSCODE_HOME=$HOME/devtools/VSCode-linux-x64
+export PATH=$PATH:$VSCODE_HOME
+
+—- Plugin flutter
+No menu View > Command Palette….
+Digite install e selecione  Extensions: Install Extensions
+Digite flutter e instale Flutter
+
+***** Instalar banco de dados - MongoDB
+yay -S mongodb-bin mongodb-tools-bin
+
+—- Executar o comando abaixo se der o erro “gpg: keyserver receive failed: Erro genérico‘
+gpg --keyserver pgp.mit.edu --recv-key 5CC908FDB71E12C2
+
+-- Configurar mongodb
+
+- Editar o arquivo /etc/mongodb.conf
+Alterar o bindIp para o IP da máquina.
+
+- Iniciar o servidor
+sudo systemctl start mongodb
+
+- Testar
+mongo --host <ip-maquina> --port 27017
+
+- Sair do mongo (exit)
+sudo chown -R mongodb: /var/lib/mongodb
+sudo chown -R mongodb: /var/log/mongodb
+
+- Criar um usuário no banco local
+mongo --host <ip-maquina> --port 27017
+use admin
+db.createUser({user: 'admin', pwd: 'malcxkwmvg59o', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+
+- Editar o arquivo /etc/mongodb.conf
+security:
+ authorization: enabled
+
+- Reiniciar o mongodb
+sudo systemctl restart mongodb
+
+- Conectar o cliente com um usuário
+mongo --host <ip-maquina> --port 27017 -u admin -p --authenticationDatabase "admin"
+
+- Criar usuários
+use admin
+db.createUser({user: 'wilton', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'wilton'}, {role: 'dbAdmin', db: 'wilton'}]})
+db.createUser({user: 'seluz', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'seluz'}, {role: 'dbAdmin', db: 'seluz'}]})
+
+***** Dar permissão para o usuário wilton alterar o banco seluz
+db.grantRolesToUser('wilton', [{role: 'readWrite', db: 'seluz'}])
+db.grantRolesToUser('wilton', [{role: 'dbAdmin', db: 'seluz'}])
+
+obs: fazer o mesmo (criar usuários e configurar security no servidor remoto)
+mongo --host marte --port 27017
+
+—- Conectar o cliente com um usuário
+mongo --host <ip-maquina> --port 27017 -u admin -p --authenticationDatabase "admin"
+mongo --host marte --port 27017 -u admin -p --authenticationDatabase "admin"
+
+mongo mongodb://admin:@<ip-maquina>:27017/admin
+mongo mongodb://admin:@marte:27017/admin
+
+-- Exemplo de comando para criar usuário:
+
+—- Grant role para usuário (dbAdmin, dbOwner, userAdmin, read, readWrite)
+db.createUser({user: 'admin', pwd: 'admin', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+db.grantRolesToUser('admin', ['dbAdminAnyDatabase', 'readWriteAnyDatabase'])
+db.grantRolesToUser('admin', [{role: 'root', db: 'admin'}])
+
+—- Alterar a senha do usuário
+db.changeUserPassword('usuario', 'nova-senha')
+
+—- Trocar usuário corrente
+db.auth('usuario', 'senha')
+
+—- Remover usuário
+db.dropUser('usuario')
+
+—- Listar usuário corrente
+db.runCommand({connectionStatus : 1})
+
+—- Listar todos os usuário
+use <banco>
+db.getUsers()
+ou
+db.system.users.find(null, {user:1})
+
+—- Configurar para iniciar o mongodb no boot
+sudo systemctl enable  mongodb
+
+—- Autenticação/autorização
+http://ednilsonamaral.me/autenticacao-no-mongodb/
+https://docs.mongodb.com/manual/core/authentication/
+https://pt.stackoverflow.com/questions/205519/cria%C3%A7%C3%A3o-e-altera%C3%A7%C3%A3o-de-usu%C3%A1rios-e-permiss%C3%B5es
+
+—- Conectando ao banco de dados
+mongo mongodb://wilton:@<ip-maquina>:27017/seluz
+
+***** restart vm do crontini
+Voltar para crosh
+vmc stop termina
+vmc start termina
+exit 
+vmc container termina penguin
+vmc container termina arch
+exit
+vsh termina penguin
+vsh termina arch
+
+***** Colocar as linhas abaixo no arquivo .bashrc (para instalação manual)
+### ----- site da seluz - versão nodejs
+
+export NODE_ENV=desenvolvimento
+export LOG_ACESSOS=sim
+
+# --- Local
+# source config-mongodb.sh local
+
+# --- Desenvolvimento
+source config-mongodb.sh desenv
+export EMAIL_USAR_SENDGRID=sim
+export EMAIL_FROM=wjps@wilton.jose.nom.br
+export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
+export EMAIL_SENDGRID_API_KEY=SG.8rbZhrQ4Sq28bsmMqbEh6g.yfDNSmdbXs7L8bjNdJ6G7mm96s4GHH1EM9X-37NUBlQ
+
+# --- Producao
+# source config-mongodb.sh prod
+# export EMAIL_USAR_SENDGRID=sim
+# export EMAIL_FROM=site@seluz.org.br
+# export EMAIL_NODEMAILER_USUARIO=site@seluz.org.br:kpg89d33
+# export EMAIL_SENDGRID_API_KEY=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

@@ -1,0 +1,538 @@
+Comando VIM
+------------
+
+--------------------------------------------------------------------------------
+** Mapeamento
+--------------------------------------------------------------------------------
+
+Tecla    : Tecla mapeada
+-----------------------------------------------------
+<CR>     : Enter
+<ESC>    : Escape
+<LEADER> : normalmente \
+<BAR>    : | pipe
+<CWORD>  : Palavra sob o cursor
+<CFILE>  : Arquivo sob o cursor
+
+<SFILE>  : Conteúdo do arquivo sob o cursor
+<LEFT>   : Salta um caractere para esquerda
+<UP>     : Equivale clicar em 'seta acima'
+<M-F4>   : A tecla (ALT = M) mais a tecla F4
+<C-f>    : Control f
+<BS>     : Backspace
+<space>  : Espaço
+<TAB>    : Tab
+-----------------------------------------------------
+
+--------------------------------------------------------------------------------
+** Abrir arquivo
+--------------------------------------------------------------------------------
+vim +10 arquivo     - abre "arquivo" colocando cursor na linha 10
+vim + arquivo       - abre "arquivo" colocando cursor na ultima linha
+vim +$ arquivo      - abre "arquivo" colocando cursor na ultima linha
+vim +/set arquivo   - abre "arquivo" localizando a palavra "set"
+vim -d arq1 arq2    - abre "arq1" e "arq2" no modo diff
+vim -u arquivo -N   - abre "arquivo" sem as configurações do .vimrc
+vim -p arq1 arq2    - abre cada arquivo numa tab
+
+Destrava quando digita ctrl-s --> <C-q>
+
+--------------------------------------------------------------------------------
+** Recupera arquivo
+--------------------------------------------------------------------------------
+vim -r           - lista arquivos para recuperar
+vim -r <arquivo> - recupera "arquivo"
+
+--------------------------------------------------------------------------------
+** Modos do vim
+--------------------------------------------------------------------------------
+Normal   - o que é digitado são comandos
+Inserção - o que é digitado é o texto. Deverá estar visível uma linha na parte de baixo:
+           -- INSERÇÃO --
+Execução - o que é digitado são comandos. Após digitar : (dois pontos) irá aparecer
+           na parte de baixo do editor uma linha para digitar o comando.
+           Teste com :ls e ESC para sair
+
+** Entrar no modo inserção
+i  - insere na posição atual, vem de 'insert'
+I  - insere no começo da linha
+a  - acrescenta na posição atual, vem de 'append'
+A  - acrescenta ao final da linha
+o  - insere na linha abaixo, já criando uma nova linha
+O  - insere na linha acima, já criando uma nova linha
+ea - insere após a palavra
+cc - deleta a linha e entra no modo de inserção, vem de 'clear'
+C  - deleta linha a frente do cursor e entra em modo de inserção, vem de 'clear'
+s  - deleta caracter e entra no modo de inserção 'substitute'
+S  - deleta linha e entra no modo de inserção
+
+<C-h>  - deleta a caracter anterior ao cursor
+<C-w>  - deleta a palavra antes do cursor
+<C-j>  - insere uma nova linha
+<C-t>  - move a linha para a direita
+<C-d>  - move a linha para a esquerda
+<C-n>  - auto-complete
+
+Para sair do modo inserção <ESC>
+
+** Entrar no modo Execução
+Estando no modo normal digitar :
+Exemplo:
+:help palavra
+:k     - página do manual para o palavra abaixo do cursor
+:close - fecha painel atual
+
+:e arquivo    - abre o "arquivo"
+:e!           - desfaz todas as alterações e recarrega o arquivo corrente
+:e arq1 arq2  - abre os arquivos "arq1" e "arq2"
+:e.           - abre gerenciador de arquivo do vim
+
+:r arquivo    - copia o "arquivo" para dentro do arquivo atual
+:r !comando   - coloca resultado do comando abaixo da linha corrente (:r !date)
+:find arquivo - busca e abre o "arquivo"
+
+:w                   - salva o arquivo corrente
+:w !sudo tee %       - salva o arquivo corrente usando sudo
+:w arquivo           - salva com o nome "arquivo"
+:wn                  - salva e vai para o proximo arquivo
+:<li>,<lf>w arquivo  - salva as linhas entre "li" e "lf" no "arquivo"
+:saveas arquivo      - salva com o nome "arquivo"
+
+:retab - altera todos os caracteres tab's do arquivo para espaços
+:q     - fecha o editor
+:q!    - fecha o editor abandomando as alterações no arquivo corrente
+:only  - fecha todos os arquivos exceto o atual
+:wq    - salva o arquivo corrente e fecha editor
+:wqa   - salva o arquivo corrente e fecha todas tabs
+
+:!  - executa comando shell
+:.! - executa comando shell inserindo resultado no lugar da linha atual
+:n! - executa comando shell inserindo resultado num buffer novo
+
+:terminal                - abre o terminal na parte superior da tela
+:terminal ++rows=5       - abre o terminal com 5 linhas na parte superior da tela
+:below terminal ++rows=5 - abre o terminal com 5 linhas na parte de baixo da tela
+
+<c-z>  - vai para a janela do shell
+jobs   - na janela do shell lista os processos
+fg <n> - volta para processo do vim (olhar o número na lista do jobs)
+
+--------------------------------------------------------------------------------
+** Movimentação de cursor
+--------------------------------------------------------------------------------
+h|j|k|l  - direita, baixo, cima, esquerda
+w        - pula uma palavra
+<n>w     - pula "n" palavras
+W        - pula uma palavra - contendo pontuação
+e        - pula para o final da palavra
+E        - pula para o final da palavra - contendo pontuação
+b        - volta uma palavra
+B        - volta uma palavra - contendo pontuação
+<n>b     - volta "n" palavras
+%        - proxima ocorrência dos pares (), [] e {}
+
++        - primeiro caracter da linha seguinte
+-        - primeiro caracter da linha anterior
+
+0        - inicio da linha
+$|g_     - final da linha
+_        - primeiro caracter da linha
+
+gg               - primeira linha do arquivo
+G                - ultima linha do arquivo
+:<n>|<n>gg|<n>G  - linha "n"
+H                - primeiro caracter da primeira linha da tela
+M                - meio da tela
+L                - ultima linha da tela
+
+<C-e>    - scroll para cima
+<C-y>    - scroll para baixo
+
+<C-b>    - volta página - coloca cursor na ultima linha da tela
+<C-f>    - avança página - coloca cursor na primeira linha da tela
+
+<C-u>    - volta página - cursor permanece na altura atual da tela
+<C-d>    - avança página - cursor permanece na altura atual da tela
+
+<C-o>    - volta para a posição anterior do cursor
+<C-i>    - avança para a próximo posição do cursor
+
+<n>|     - posiciona na coluna "n"
+z<CR>    - redesenha a tela colocando a linha atual no topo
+<n>z<CR> - redesenha a tela colocando a linha "n" no topo
+zz       - posiciona a linha atual no centro da tela
+
+}        - vai para o próximo parágrafo (ou função/bloco)
+{        - vai para o parágrafo (ou função/bloco) anterior
+
+g,       - vai para o próxima alteração
+g;       - vai para alteração anterior
+
+--------------------------------------------------------------------------------
+** Movimentação entre janelas
+--------------------------------------------------------------------------------
+<C-ws>       - divide a janela
+<C-wv>       - divide a janela verticalmente
+<C-wq>       - fecha a janela
+<C-w=>       - faz as janelas do mesmo tamanho
+
+<C-ww>       - move entre tabs
+<C-w> setas  - move entre tabs
+<C-w>h|j|k|l - move entre tabs
+
+--------------------------------------------------------------------------------
+** Movimentação entre TABS (abas)
+--------------------------------------------------------------------------------
+:tabnew           - abre nova tab
+:tabnew arquivo   - abre "arquivo" em outra tab
+:tabe arquivo     - abre "arquivo" em outra tab
+:tab ball         - coloca cada buffer aberto numa tab diferente
+
+:tabn|gt         - proxima tab
+:tabp|gT         - tab anterior
+:tabm<n>         - mova a tab atual para a posição "n"
+:tabc            - fecha a tab atual
+:tabo            - fecha as tabs menos a tab atual
+:tabdo <comando> - executa o comando em todas as tabs (:tabdo q - fecha todas as tabs)
+<n>gt            - vai para a tab de número "n"
+
+--------------------------------------------------------------------------------
+** Movimentação entre buffers
+--------------------------------------------------------------------------------
+:ls              - lista os buffers existentes
+:ls!             - lista os buffers existentes (inclusive os escondidos)
+:badd arquivo    - cria um buffer e abre o "arquivo"
+:b<n>            - vai para o buffer "n"
+:b!<n>           - esconde o buffer atual (mesmo se alterado) e vai para buffer "n"
+:bn|<A-Right>    - proximo buffer
+:bp|<A-Left>     - buffer anterior
+:b arquivo       - troca para o buffer que tem o "arquivo"
+:bd              - remove buffer atual
+:bd!             - remove buffer atual abandomando alterações
+:bd<n>           - remove buffer número "n"
+:bw              - remove buffer atual e posiciona no proximo
+:bw!             - remove buffer atual abandomando alterações
+:bw<n>           - remove buffer número "n"
+:b <texto><CR>   - lista os buffers cujo nome possui "texto"
+:sp arquivo      - abre "arquivo" num novo buffer e divide a tela
+:vs arquivo      - abre "arquivo" num novo buffer e divide a tela (vertical)
+
+--------------------------------------------------------------------------------
+** Modo alteração texto
+--------------------------------------------------------------------------------
+r            - altera caracter
+R            - altera todos os caracteres até ESC
+cw           - altera do cursor ao final da palavra
+ciw          - altera a palavra
+cgg          - altera até o inicio do arquivo
+cG           - altera até o final do arquivo
+c0           - altera até o inicio da linha
+c$           - altera até o final da linha
+J            - junta duas linhas
+gJ           - junta duas linhas sem deixar espaço
+s            - apaga o caracter sobre o cursor e entra no modo insert
+S            - substituição da linha corrente
+~            - altera caracter do cursor para caixa alta (vise-versa)
+<n>~         - altera os "n" caracteres para caixa alta (vise-versa)
+U            - converte caracteres selecionados para caixa alta
+u            - converte caracteres selecionados para caixa baixa
+gUw          - altera palavra para caixa alta (o cursor tem que ficar no primeiro caracter da palavra)
+guw          - altera palavra para caixa baixa (o cursor tem que ficar no primeiro caracter da palavra)
+<n>a-<esc>   - repete o caracter (-) n vezes
+
+.            - repete ultimo comando
+u            - desfazer
+U            - restaurar linha inteira
+<C-r>        - refazer
+
+ci[|'|"|(|{  - troca tudo que estiver entre [], '', "", (), {}
+ca[|'|"|(|{  - apaga tudo que estiver entre [], '', "", (), {} (inclusive)
+ciP          - troca o paragrafo
+cit          - troca tuod que estiver entre uma tag <tag></tag>
+
+<C-R>        - refaz o comando (pode ser usado após um "u")
+
+--------------------------------------------------------------------------------
+** Deletar texto
+--------------------------------------------------------------------------------
+x            - deleta um caracter
+<n>x         - deleta "n" caracteres
+
+dd           - deleta linha corrente
+dw           - deleta a palavra do cursor
+<n>dw        - deleta "n" palavras
+di[|'|"|(|{  - deleta tudo que estiver entre [], '', "", (), {}
+df<caracter> - deleta tudo do cursor até o "caracter"
+<n>dd        - deleta "n" linhas a partir da corrente
+dgg          - deleta linha corrente até a primeira linha do aquivo
+dG           - deleta linha corrente até ultima linha do aquivo
+d0           - deleta do cursor até o inicio da linha
+d$           - deleta do cursor até o final da linha
+D            - deleta até o final da linha corrente
+:<li>,<lf>d  - deleta as linhas entre "li" e "lf"
+
+--------------------------------------------------------------------------------
+** Copiando texto
+--------------------------------------------------------------------------------
+yy          - copia linha corrente
+yw          - copia palavra corrente
+<n>yw       - copia "n" palavras
+<n>yy       - copia "n" linhas
+ygg         - copia até a primeira linha do arquivo
+yG          - copia até a ultima linha do arquivo
+y0          - copia até o inicio da linha
+y$          - copia até o final da linha
+:<li>,<lf>d - copia as linhas entre "li" e "lf"
+
+--------------------------------------------------------------------------------
+** Seleção de texto
+--------------------------------------------------------------------------------
+v        - inicia marcacao de bloco orientado a caracter
+V        - inicia marcacao de bloco orientado a linha
+o        - vai para inicio/fim da seleção
+<C-v>    - inicia marcacao de bloco (colunas)
+O        - vai para inicio/fim do bloco
+
+aw   - seleciona palavras
+ab   - seleciona bloco ()
+aB   - seleciona bloco {}
+at   - seleciona bloco tag
+ib   - seleciona texto interno do bloco ()
+iB   - seleciona texto interno do bloco {}
+it   - seleciona texto interno do bloco tag
+
+>    - desloca seleção para direita
+<    - desloca seleção para esquerda
+y    - copia seleção
+d    - deleta seleção
+~    - alterna seleção entre maiúscula e minúscula
+u    - seleção para lowercase
+U    - seleção para uppercase
+
+--------------------------------------------------------------------------------
+** Operações com blocos
+--------------------------------------------------------------------------------
+m<bloco>   - marca inicio do bloco
+:marks     - lista marcadores
+'<bloco>   - localiza o bloco
+:'<bloco>  - localiza o bloco
+:delm a b  - deleta marcas indicadas
+:delm!     - deleta todas as marcas
+]'|['      - navegar entre marcadores
+
+- colocar o cursor na ultima linha do bloco
+d'<bloco>   - deleta o bloco
+y'<bloco>   - copia o bloco
+
+--------------------------------------------------------------------------------
+** Mover/copiar texto
+--------------------------------------------------------------------------------
+-  Copiar ou deletar texto ("dd" - deletar ou "yy" - copiar)
+
+p    - colar abaixo do cursor
+P    - colar acima do cursor
+
+--------------------------------------------------------------------------------
+** Registradores
+--------------------------------------------------------------------------------
+:reg     - lista os registradores com seus conteúdos
+
+"<a-z>   - define registrador - cmd - comando copia/deleta
+"<A-Z>   - acrescenta ao registrador
+"+       - registrador da área de transferência do S.O.
+
+- use em conjunto com os comandos de copiar, deletar e colar (y|d|p)
+
+--------------------------------------------------------------------------------
+** Procurar texto
+--------------------------------------------------------------------------------
+/<texto>      - começa a procura pelo inicio do arquivo
+/\<palavra\>  - procura uma palavra
+?<texto>      - começa a procura pelo final do arquivo
+n             - proxima
+N             - anterior
+:g/<texto>    - procura por "texto" e mostra todas as ocorrências
+
+<A-F2> - cancela a busca
+<A-F3> - alterna entre mostrar texto pesquisado e não mostrar
+*      - procura pela palavra sobre o cursor
+g*     - procura pela palavra sobre o cursor (Sem ser palavra cheia)
+#      - procura pela palavra sobre o cursor no sentido contrario
+g#     - procura pela palavra sobre o cursor no sentido contrario (Sem ser palavra cheia)
+%      - localiza onde abre e fecha {, [, (, <tag>
+
+:noh   - remove destaque dos resultados da busca
+
+--------------------------------------------------------------------------------
+** Procura texto em vários arquivos
+--------------------------------------------------------------------------------
+:vimgrep /<expReg>/[g][j] files  - começa a procura pelo inicio do arquivo
+                                   [g] - procura todas as ocorrências
+                                   [j] - não mostra a primeira ocorrência
+:cn    - próxima ocorrência
+:cp    - ocorrência anterior
+:cope  - abre uma janela com a lista de ocorrências
+:ccl   - fecha a janela quick
+:cw    - mostra a relação de ocorrências
+
+:vimgrep /<texto>/ `find . -type f`
+
+--------------------------------------------------------------------------------
+** Substituir texto
+--------------------------------------------------------------------------------
+:s/<old>/<new>             - troca primeira ocorrências na linha
+:s/<old>/<new>/c           - troca primeira ocorrências na linha pedindo confirmação
+:s/<old>/<new>/g           - troca todas ocorrências na linha
+:<li>,<lf>s/<old>/<new>    - troca todas ocorrências nas linhas entre "li" e "lf"
+:.,<lf>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha atual e "lf"
+:.,$s/<old>/<new>          - troca todas ocorrências nas linhas entre linha atual e a última linha
+:.,+<n>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha atual e mais "n" linhas
+:<li>,<lf>s/<old>/<new>/g  - troca todas ocorrências nas linhas entre "li" e "lf"
+
+:%s/<old>/<new>/g          - troca todas ocorrências no arquivo
+:%s/<old>/<new>/gc         - troca todas ocorrências no arquivo pedindo confirmação
+:%s/<old>/<new>/gi         - troca todas ocorrências no arquivo ignora maiúscula e minúscula
+
+:g/<old>/s//<new>          - troca primeira ocorrência em cada linha do arquivo
+:g/<old>/s//<new>/g        - troca primeira ocorrência no arquivo todo
+:g/<old>/s//<new>/gp       - troca primeira ocorrência no arquivo todo
+
+Obs: c = confirmação; g = global; p = mostra linha(s) alterada(s).
+
+--------------------------------------------------------------------------------
+** Indentar texto
+--------------------------------------------------------------------------------
+>>     - para a direita
+<<     - para a esquerta
+<n>>>  - as "n" linha para a direita
+<n><<  - as "n" linha para a esquerda
+=      - indenta um bloco selecionado no modo visual
+=gg    - indenta ate o inicio do arquivo
+=G     - indenta ate o final do arquivo
+gg=G   - indenta o buffer inteiro
+
+--------------------------------------------------------------------------------
+** Autocomplete com ctags
+--------------------------------------------------------------------------------
+:!ctags -R --language-force=java -h java -f~/.vim/tags /dir.src.java/
+:!ctags -R .
+
+--------------------------------------------------------------------------------
+** Autocomplete
+--------------------------------------------------------------------------------
+- no modo de inserção
+<C-x + C-n>  - palavras
+<C-n>        - proximo item no menu complete
+<C-p>        - item anterior no menu complete
+<C-x + C-l>  - linha
+<C-x + C-f>  - sistema de arquivo
+
+--------------------------------------------------------------------------------
+** File explore Netrw
+--------------------------------------------------------------------------------
+:Explore|<F5>     - abre o file explore do diretório do file corrente
+:Vexplore         - abre o fale explore (vertical)
+<enter>           - abre o arquivo
+p                 - abre numa nova janela
+-                 - vai para o diretório parente
+u                 - volta para o diretório anterior no histórico
+g<m>              - volta para o diretório com a marca <m> (m<marca>)
+gh                - mostra/esconde arquivo ocultos do sistema
+d                 - cria um diretório
+%                 - cria um novo arquivo
+R                 - rename o arquivo
+i                 - muda a visualização
+I                 - remove/ativa o banner
+:e<space> <C-d>   - mostra arquivos
+:!ls              - lista arquivos
+
+--------------------------------------------------------------------------------
+** Plugin Tasklist
+--------------------------------------------------------------------------------
+:TaskList   - mostra a task list
+\t          - lista os TODO's
+<cr>        - coloca o cursor na linha do TODO
+q           - fecha
+
+--------------------------------------------------------------------------------
+** Plugin CtrlP - Busca de arquivos
+--------------------------------------------------------------------------------
+:CtrlP <diretorio>    - inicia o CtrlP no diretório informado
+<C-p>                 - ativa a busca de arquivo.
+:help ctrlp-commands  - help dos comandos.
+
+--------------------------------------------------------------------------------
+** Plugin nerdcommenter - Comentar linhas
+--------------------------------------------------------------------------------
+<leader>cc            - comenta a linha
+<n><leader>cc         - comenta "n" linhas
+<leader>ci            - inverte comentário
+<n><leader>ci         - inverte comentário de "n" linhas
+<n><leader>c<space>   - alterna o estado de comentário da(s) linha(s) selecionada(s).
+
+--------------------------------------------------------------------------------
+** Plugin taglist
+--------------------------------------------------------------------------------
+<F8>                 - listar tags numa tab
+
+--------------------------------------------------------------------------------
+** Plugin surround - Envolver texto por tags, (, [, ", etc
+--------------------------------------------------------------------------------
+veeeS"          - envolve texto selecionado - v: modo visualização, e: um para cada palavra, S": envolver com "
+v<selecionar>S" - envolve texto selecionado com ""
+ysiw"           - envolve a palavra sobre o cursor com ""
+ys<n>aw"        - envolve "n" palavras sobre o cursor com ""
+ys<n>aw<p>      - envolve "n" palavras sobre o cursor com <p>
+yss)            - envolve a linha inteira com ()
+yss<p>          - envolve a linha inteira com <p>
+
+ds"             - remove ""
+dst             - remove tags
+cs"*            - troca "" por **
+cst<em>         - troca a tag mais interna por <em>
+
+--------------------------------------------------------------------------------
+** Plugin fugitive - GIT
+--------------------------------------------------------------------------------
+:git <comando>        - mesmo comando que daria no shell
+:Gwrite|:Gw           - salva o arquivo atual e já adiciona no index para o próximo commit
+:Gblame               - faz um split da tela, mostrando do lado direito o fonte que já estava aberto
+                        e do lado esquerdo, o último commit (SHA1) e o autor do commit
+:Gread                - descarta as alterações locais e recupera o arquivo atual na sua última revisão
+                        dentro do repositório do Git (ou seja, revert)
+:Gdiff                - mostra um diff da versão atual com a versão no repositório, com splits
+:Gcommit              - faz o commit dos arquivos que estão no index
+:Gstatus              - faz um "git status", mas deixa que você altere os arquivos no index
+                        (usando "-" para adicionar ou remover o arquivo -- leia o texto com atenção)
+                        e faça commit dos selecionados (usando "cc") [Note que ambos os comandos devem
+                        ser usados em modo normal dentro do split aberto por :Gstatus.]
+
+--------------------------------------------------------------------------------
+** Plugin Coc.vim
+--------------------------------------------------------------------------------
+<leader>cc           - comenta a linha
+<leader>rn           - rename
+<leader>a            - açoes no código
+<leader>i            - formatação imports
+<leader>f            - formatação seleção
+<leader>qf           - fix corrente
+<TAB>                - completar
+<S-space>            - completar
+<C-space>            - completar
+k                    - mostra o tipo de um simbolo
+K                    - mostra documentação simbolo
+]g|[g                - navegar por erros
+gd                   - definição
+gy                   - definição de tipo
+gr                   - referencia
+gi                   - implementação
+<space>a             - CocList diagnostico
+
+--------------------------------------------------------------------------------
+** Diversos
+--------------------------------------------------------------------------------
+<C-t>           - abre um terminal
+<C-k>i          - mostra/esconde barras de indentação
+<space>         - barra de espaço colapsa ou expande blocos
+<leader>;       - coloca ; no final da linha
+

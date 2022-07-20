@@ -1,0 +1,63 @@
+
+Passo 1. Abra um terminal;
+Passo 2. Se a instalação do pacote falhar devido a questão de dependências, execute
+         o comando abaixo (ele automaticamente resolverá as dependências ou removerá
+         o pacote, se as dependências não estiverem disponíveis:
+
+sudo apt-get -f install && sudo dpkg --configure -a
+
+Passo 3. Se o erro avisar que você precisa executar o comando dpkg --configure -a,
+         faça o que ele diz:
+
+sudo dpkg --configure -a
+
+
+Passo 4. Se ocorrer um problema com MergeList, aparecendo como uma falha com o erro
+         “Package: header”, como no exempo abaixo:
+
+E: Encountered a section with no Package: header
+E: Problem with MergeList…
+E: The package lists or status file could not be parsed or opened.
+
+Apague as listas de pacotes e depois atualize o APT para recirá-las,
+usando os dois comando a seguir:
+
+sudo rm /var/lib/apt/lists/* -vf
+sudo apt-get update
+
+Passo 5. Agora se ocorrer um problema com um bloqueio sobre o cache do apt, como no
+         exemplo abaixo:
+
+E: Could not get lock /var/cache/apt/archives/lock – open (11: Resource temporarily unavailable)
+
+Exclua os bloqueios executando os comandos abaixo, um por um:
+
+sudo fuser -cuk /var/lib/dpkg/lock
+sudo rm -f /var/lib/dpkg/lock
+sudo fuser -cuk /var/cache/apt/archives/lock
+sudo rm -f /var/cache/apt/archives/lock
+
+Pronto! Talvez um dessas dicas resolva o seu problema. Mas se você tive alguma outra
+        dica para ajudar a corrigir pacotes quebrados em sistemas baseados no Debian,
+        por favor, não deixe de comentar aqui.
+
+
+=================================================================================================
+
+- status  half-installed
+
+sudo dpkg --force-remove-reinstreq --force-depends --purge libapache-mod-security
+
+ou
+
+sudo gedit /var/lib/dpkg/status
+
+Procurar "jedit" e alterar a linha que contém "Status" para:
+Status: install ok installed
+
+Salvar
+
+sudo apt-get update
+sudo apt-get --purge remove jedit
+
+

@@ -1,0 +1,36 @@
+- Dar o boot pelo Vista
+
+- Logar como Administrador
+
+- Iniciar/Programas/Acessórios
+
+- Clicar com o botão direito em Prompt de Comando. Vai abrir o menu de contexto. 
+  Clicar em Executar como Administrador
+
+- mostrará a estrutura da configuração do boot
+> bcdedit /enum all 
+
+- {legacy} refere-se ao XP e {current} ao Vista
+
+- Para renomear o texto que aparece no boot: (o que ficar entre aspas aparecerá 
+  no boot).
+
+> bcdedit /set {legacy} description "Windows XP"
+> bcdedit /set {current} description "Windows Vista"
+
+- Configura o Vista como padrão no boot:
+> bcdedit /default {current}
+
+- Configura o XP como padrão no boot
+> bcdedit /default {legacy}
+
+- Ordem do boot
+- Primeiro XP, depois Vista:
+> bcdedit /displayorder {legacy} {current}
+
+- Primeiro Vista, depois XP:
+> bcdedit /displayorder {current} {legacy}
+
+- Configura o tempo de espera para iniciar o boot (sendo XX a quantidade 
+  em segundos)
+> bcdedit.exe /timeout XX

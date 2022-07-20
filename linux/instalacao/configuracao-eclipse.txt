@@ -1,0 +1,38 @@
+
+*-----* Configurando o subclipse
+
+*--* Instalar o JavaHL (Para o subclipse)
+
+sudo apt-get install libsvn-java
+
+*--* Localizar a biblioteca libsvnjavahl-1.so
+
+sudo find / -name libsvnjavahl-1.so
+
+*--* Incluir no arquivo eclipse.ini:
+
+sudo leafpad /opt/java/eclipse-luna/eclipse.ini
+
+-vmargs
+-Djava.library.path=<diretorio da lib "libsvnjavahl-1.so"
+
+*--* Para configurar proxy incluir no arquivo eclipse.ini:
+
+-Dhttp.proxyHost=localhost
+-Dhttp.proxyPort=3128
+
+*--* Incluir no arquivo ~/.subversion/config:
+
+sudo vi ~/.subversion/config
+
+[auth]
+### Set password stores used by Subversion. They should be
+### delimited by spaces or commas. The order of values determines
+### the order in which password stores are used.
+### Valid password stores:
+###   gnome-keyring        (Unix-like systems)
+###   kwallet              (Unix-like systems)
+###   keychain             (Mac OS X)
+###   windows-cryptoapi    (Windows)
+password-stores =
+

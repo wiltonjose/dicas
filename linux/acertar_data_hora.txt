@@ -1,0 +1,23 @@
+
+======> ----- Acertar data e hora
+
+sudo date
+
+sudo date -s "07/02/2015"
+sudo date -s "13:30"
+sudo date -s "07/02/2015 13:30"
+sudo date 070213302015
+
+=====> ----- BIOS
+
+sudo hwclock
+
+sudo hwclock -w
+ou
+sudo hwclock --systohc
+
+sudo hwclock -s
+ou 
+sudo hwclock --hctosys
+
+sudo hwclock --set --date="mm/dd/yy hh:mm:ss"

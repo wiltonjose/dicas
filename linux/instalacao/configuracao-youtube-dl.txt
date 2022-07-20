@@ -1,0 +1,20 @@
+É bem comum as pessoas gostarem de um vídeo no YouTube e baixa-lo para sua máquina local. 
+
+Não que isto seja mesmo um problema. Há um programa de linha de comando, o youtube-dl, 
+que faz o mesmo e até melhor, porque não precisa carregar todo o vídeo antes, bastando 
+indicar na linha de comando o endereço do vídeo que se quer baixar.
+
+De quebra, vamos ver como converter esse vídeo FLV em AVI, usando o canivete-suíço FFMPEG.
+
+Você precisará instalar os pacotes youtube-dl e ffmpeg, o que pode ser feito, pelo 
+terminal ou através da Central de Programas ou Synaptic.
+
+Depois de instalar, abra um terminal (Aplicativos | Acessórios | Terminal) e execute as seguintes ações:
+
+Atualize duas vezes o youtube-dl: sudo youtube-dl –U ; sudo youtube-dl –U
+
+Depois de atualizado, digite: youtube-dl –o nomedoarquivo.flv “URI do vídeo”
+
+Por exemplo: youtube-dl -o example.flv “http://www.youtube.com/watch?v=EQZcZq9IhKg”
+
+Agora, converta o vídeo descarregado para o formato .avi com: ffmpeg –i nomedoarquivo.flv nomedoarquivo.avi

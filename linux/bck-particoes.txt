@@ -1,0 +1,10 @@
+sudo partclone.ext4 -c -s /dev/sda1 > gzip -c > /media/ablive/dados/sda1.pcl.gz
+sudo partclone.ext4 -c -s /dev/sda3 > gzip -c > /media/ablive/dados/sda3.pcl.gz
+
+sudo dd if=/dev/sda2 | gzip -c > /media/ablive/dados/sda2.img.gz
+
+sudo dd if=/dev/sda of=/media/ablive/dados/sda.mbr bs=512 count=10
+sudo sfdisk -d /dev/sda > sda.sf
+
+
+

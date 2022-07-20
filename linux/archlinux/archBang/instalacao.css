@@ -1,0 +1,149 @@
+body {
+  background-repeat:repeat-x;
+  background-position:top;
+  background-color:#fff;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", "sans-serif" !important;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  margin: 0;
+  padding: 15px;
+  list-style: none;
+  text-decoration: none;
+  text-align: left;
+}
+
+hr {
+  margin: 10px 0px 10px 0px;
+  border-top: 1px solid #c1c1c1;
+}
+
+a {
+  cursor: pointer;
+}
+
+body, table, h1, h2, h3, h4, h5, pre, code {
+  color: #222;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: black;
+  background: none;
+  font-weight: normal;
+  margin: 0;
+  overflow: hidden;
+  padding-top: .5em;
+  padding-bottom: .17em;
+  border-bottom: 1px solid #aaa;
+}
+
+h3, h4, h5, h6 {
+  border-bottom: none;
+  font-weight: bold;
+}
+
+h3, h4, h5 {
+  margin-bottom: .3em;
+}
+
+h1 {
+  display: block;
+  font-weight: bold;
+  font-size: 192%;
+  font-weight: bold;
+  -webkit-margin-before: 0.67em;
+  -webkit-margin-after: 0.67em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+h2 {
+  display: block;
+  font-size: 155%;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+  background: white;
+  color: black;
+  border-bottom: 1px solid #aaa;
+  border-right: none;
+  line-height: 1.5em;
+  -webkit-margin-before: 0.83em;
+  -webkit-margin-after: 0.83em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+h3 {
+  display: block;
+  font-size: 134%;
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+h4 {
+  display: block;
+  font-weight: bold;
+  font-size: 122%;
+  -webkit-margin-before: 1.33em;
+  -webkit-margin-after: 1.33em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+h5 {
+  display: block;
+  font-weight: bold;
+  font-size: 110%;
+  -webkit-margin-before: 1.33em;
+  -webkit-margin-after: 1.33em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+p {
+  margin: .4em 0 .5em 0;
+  display: block;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+pre {
+  border: 1px solid #bcd;
+  overflow: auto;
+  margin: 10px;
+  padding: 10px;
+}
+
+pre, code {
+  background-color: #ebf1f5;
+  font-family: monospace;
+}
+
+ul {
+  list-style-type: square;
+  margin: .3em 0 0 1.6em;
+  padding: 0;
+}
+
+.pre-superior {
+  margin-bottom: 0;
+  border-bottom:none;
+  padding-bottom:0.8em;
+}
+
+.pre-inferior {
+  margin-top: 0;
+  border-top-style:dashed;
+  padding-top: 0.8em;
+}
+
+
+

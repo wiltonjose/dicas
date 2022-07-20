@@ -1,0 +1,67 @@
+
+Sites
+https://superuser.com/questions/932115/systemd-decrypt-luks-device-on-access
+https://askubuntu.com/questions/155869/how-do-i-get-ubuntu-to-not-mount-my-encrypted-partitions-on-boot
+http://man7.org/linux/man-pages/man5/fstab.5.html
+https://blog.tinned-software.net/automount-a-luks-encrypted-volume-on-system-start/​
+
+
+======> ----- Criar partição criptografada
+
+=====> ----- Listar as partições disponíveis
+
+lsblk
+ou
+sudo fdisk -l 
+ou
+sudo mount -l -t ext4
+ou
+df -hT
+
+=====> ----- Criar
+
+sudo cryptsetup luksFormat /dev/sdax
+sudo cryptsetup open --type luks /dev/sdax crypt
+sudo mkfs.ext4 /dev/mapper/crypt
+
+=====> ----- Montar a partição
+
+mkdir /home/wilton/.dados
+sudo cryptsetup open --type luks /dev/sdax crypt
+sudo mount -t ext4 /dev/mapper/crypt /home/wilton/.dados
+sudo chown -R wilton.users /home/wilton/.dados
+
+=====> ----- Montar a partição do hd externo (backup)
+
+sudo mkdir /mnt/bck
+sudo cryptsetup open --type luks /dev/sdbx bck
+sudo mount -t ext4 /dev/mapper/bck /mnt/bck
+sudo chown -R wilton.users /mnt/bck
+
+=====> ----- Desmontar a partição
+
+sudo umount -t ext4 /home/wilton/.dados
+sudo cryptsetup close crypt
+
+=====> ----- Montar automaticamente (fstab)
+
+-- Para descobrir o UUID da partição
+
+sudo blkid
+ou
+sudo ls -l /dev/disk/by-uuid 
+
+====> ----- Configurar fstab
+
+-- Alterar o arquivo /etc/fstab
+/dev/mapper/crypt /home/wilton/.dados ext4 defaults 0 2
+
+====> ----- Configurar crypttab
+
+-- Alterar o arquivo /etc/crypttab
+crypt UUID=d152321b-2902-4193-a71a-589363636948 none luks
+
+====> ----- Pode ser colocada a execução da montagem no arquivo .config/openbox/autstart
+
+# montar particao
+(sleep 1s && xterm -fg white -bg black -geometry 52x5 -e mountdados.sh) &

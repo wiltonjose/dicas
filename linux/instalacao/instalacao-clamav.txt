@@ -1,0 +1,32 @@
+
+
+# ================================================== #
+CLAMAV
+# ================================================== #
+
+*-----* Atualizar sistema
+
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+*-----* Incluir repositório PPA do clamav
+
+deb http://ppa.launchpad.net/ubuntu-clamav/ppa/ubuntu maverick main 
+deb-src http://ppa.launchpad.net/ubuntu-clamav/ppa/ubuntu maverick main 
+
+*-----* Executar o comando para instalar a chave 
+        Pegar a chave em https://launchpad.net/~ubuntu-clamav/+archive/ppa
+        (Dir. ~/Download/Linux/Clamav)
+
+sudo apt-key add clamav_key.asc
+ou
+udo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5ADC2037
+
+*-----* Instalar o clamav
+
+sudo apt-get install clamav
+
+*-----* Intalar o clamtk (download em http://clamtk.sf.net)
+
+sudo dpkg -i clamtk_4.31-1_all.deb
+

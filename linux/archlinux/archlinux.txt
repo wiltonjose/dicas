@@ -1,0 +1,1088 @@
+
+Site oficial: https://www.archlinux.org/
+
+
+======> ----- Download archlinux
+
+wget http://br.mirror.archlinux-br.org/iso/2018.01.01/archlinux-2018.01.01-x86_64.iso
+
+======> ----- Gravando a iso no pendrive
+
+sudo dd if=archlinux-2018.01.01-x86_64.iso of=/dev/sdb bs=4MB
+
+
+======> ----- Criar partição criptografada
+
+=====> ----- Veja arquivo criptografar_particao.txt
+
+
+======> ----- Acertar data e hora
+
+=====> ----- Veja arquivo acertar_data_hora.txt
+
+
+======> ----- Proxy (durante instalação)
+
+=====> ----- Veja arquivo configurar_proxy.txt
+
+
+======> ----- Instalar medit
+
+sudo pacman -S medit
+
+
+====================================================================================================
+#======> ----- Instalação do archlinux
+====================================================================================================
+
+======> ----- Mudar teclado para abnt2
+
+loadkeys br-abnt2
+
+
+======> ----- Verificar fonts de console existente
+
+ls -l /usr/share/kbd/consolefonts/
+
+
+======> ----- Mudar a fonte
+
+setfont lat4-19
+
+
+======> ----- Voltar para fonte original:
+
+setfont
+
+
+======> ----- Muda a lingua da instalação para portugues br
+
+nano /etc/locale.gen
+
+
+======> ----- descomentar essas linhas:
+
+en_US.UTF-8 UTF-8
+pt_BR.UTF-8 UTF-8
+
+
+======> ----- Executar esses comandos:
+
+locale-gen
+export LANG=pt_BR.UTF-8
+
+
+======> ----- WIFI
+
+wifi-menu
+
+
+======> ----- testa coneccao com a internet
+
+ping -c3 www.google.com
+
+
+======> ----- mostra as particoes
+
+fdisk -l
+
+
+======> ----- comecar o particionamento
+
+cfdisk /dev/sdb
+
+
+======> ----- se for GPT criar uma particao de boot BIOS de 2Mb
+
+/dev/sdb1 -   2MB - boot BIOS
+/dev/sdb2 -  32GB - linux swap
+/dev/sdb3 - 150GB - linux - /
+/dev/sdb4 - 760GB - linux - /home
+
+
+======> ----- formatar as particoes
+
+mkfs.ext4 /dev/sdb3
+mkfs.ext4 /dev/sdb4
+
+
+======> ----- formatar a particao swap e ligar
+
+mkswap /dev/sdb2
+swapon /dev/sdb2
+
+
+======> ----- ver o layout do particionamento
+
+lsblk /dev/sdb
+
+
+======> ----- montar as particoes
+
+mount /dev/sdb3 /mnt
+
+
+======> ----- criar a pasta home e montar a particao home
+
+mkdir /mnt/home
+mount /dev/sdb4 /mnt/home
+
+
+======> ----- instalar o sistema base
+
+pacstrap /mnt base base-devel
+
+
+======> ----- Gerar o arquivo fstab que decreve as particoes
+======> ----- ATENÇÃO! essa setas direcionais não devem ser copiadas, o you tube não deixa colocar as orgirnais.
+                    digite eles diretamente mesmo e entre elas não tem espaço!
+
+genfstab -U -p /mnt >> /mnt/etc/fstab
+
+
+======> ----- ver o que esta escrito nesse arquivo
+
+cat /mnt/etc/fstab
+
+
+======> ----- logando na instalacao para setar algumas outras coisas
+
+arch-chroot /mnt
+
+
+======> ----- muda a lingua novamente
+
+nano /etc/locale.gen
+
+
+======> ----- descomentar essas linhas:
+
+en_US.UTF-8 UTF-8
+pt_BR.UTF-8 UTF-8
+
+
+======> ----- executar esse comando:
+
+locale-gen
+
+
+======> ----- criar o aquirvo de conf de lingua
+======> ----- ATENÇÂO! mesmo problema das setas anteriores
+
+echo LANG=pt_BR.UTF-8 >> /etc/locale.conf
+export LANG=pt_BR.UTF-8
+
+
+======> ----- setando configuracoes de teclado para que persistam pos reboot
+
+nano /etc/vconsole.conf
+
+
+======> ----- adiciona essas linhas no arquivo e salva
+
+KEYMAP=br-abnt2
+FONT=Lat2-Terminus16
+FONT_MAP=
+
+
+======> ----- setando fuso horario
+
+ls /usr/share/zoneinfo/America
+ln -s /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+
+
+======> ----- sincronizando o relogio de hardware com o do sistema
+
+hwclock --systohc --utc
+
+
+======> ----- setando a rede cabeada
+
+systemctl enable dhcpcd.service
+
+
+======> ----- configurar os repositorios pacman para 32 e 64
+======> ----- descomentar multilib
+
+nano /etc/pacman.conf
+
+
+======> ----- sincronizar os repositorios
+
+pacman -Sy
+
+
+======> ----- criar senha de root
+
+passwd
+
+
+======> ----- criar usuario e definir senha
+
+useradd -m -g users -G wheel,storage,power -s /bin/bash wilton
+passwd wilton
+
+
+======> ----- instalar sudo
+
+pacman -S sudo
+
+
+======> ----- editar os propriedades de sudo
+======> ----- descomentar a linha que mostra "%wheel ALL=(ALL) ALL"
+
+EDITOR=nano visudo
+
+
+======> ----- baixar e instalar grub
+
+pacman -S grub-bios
+grub-install --target=i386-pc --recheck /dev/sdb
+cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+
+
+======> ----- criar o arquivo de configuracao do grub
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+
+======> ----- sair do arch-chroot
+
+exit
+
+
+======> ----- desmontar as particoes
+
+umount /mnt/home
+umount /mnt
+
+
+======> ----- reiniciar
+
+reboot
+
+
+======> ----- COMECAR A CONFIGURAR O ARCHLINUX
+======> ----- setando rede wireless
+
+sudo pacman -S wireless_tools wpa_supplicant wpa_actiond netcf dialog ifplugd
+
+-- Os comandos abaixo não são necessários usar NetworkManager
+
+sudo ls -l /etc/netctl
+sudo netctl enable wlp3s0-Atlantis
+
+
+======> ----- mudar o nome do host
+
+sudo hostnamectl set-hostname saturno
+
+
+======> ----- conectar o computador a internet
+
+sudo wifi-menu
+ping -c 3 www.google.com
+
+
+======> ----- comprimindo as entradas e saídas do Linux
+
+sudo mkinitcpio -p linux
+
+
+======> ----- Utilitários de rede
+
+sudo pacman -S networkmanager networkmanager-vpnc networkmanager-pptp networkmanager-openconnect network-manager-applet
+sudo pacman -S gvfs gvfs-smb sshfs samba smbclient
+
+
+======> ----- ativar o gerenciador de rede automaticamente
+
+sudo systemctl enable NetworkManager
+
+-- Usar o comando abaixo para conectar na rede
+
+nmtui-connect
+
+======> ----- Configurar o samba
+
+sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf
+
+-- alterar o parâmetro "workgroup" no arquivo /etc/samba/smb.conf
+
+-- Inicializar no boot
+
+sudo systemctl enable smbd
+sudo systemctl enable nmbd
+
+
+======> ----- setar o som
+
+pacman -S alsa-utils alsa-oss
+alsamixer
+
+
+======> ----- testar o som
+
+speaker-test -c 2
+amixer sset Master unmute
+aplay /usr/share/sounds/alsa/Noise.wav
+cat /proc/asound/card*/codec* |grep Codec
+
+
+======> ----- se não passar nos testes do som
+
+sudo pacman -S pulseaudio pulseaudio-alsa
+pulseaudio --start
+
+
+======> ----- Gravar configuração do som
+
+alsactl store
+
+
+======> ----- Configurar o uso da memória de swap
+
+-- verificar o valor atual
+
+cat /proc/sys/vm/swappiness
+
+-- se o valor for muito alto alterar para um valor menor
+-- inserir a linha abaixo no arquivo /etc/sysctl.d/99-sysctl.conf
+
+vm.swappiness=5
+
+-- executar o comando abaixo:
+
+sudo sysctl --system
+
+
+======> ----- instalar xorg e um monte de ferramentas
+
+sudo pacman -S xorg-server xorg-xinit xorg-server-utils xterm
+
+
+======> ----- configurar teclado abnt2 no ambiente X:
+
+localectl set-x11-keymap br abnt2
+
+
+-- Descubra qual sua placa de vídeo com o comando abaixo:
+
+lspci | grep VGA
+
+
+======> ----- instalar driver de video
+======> ----- Instalar o que for o seu:
+
+virtualbox-guest-utils - para o virtualbox
+nvidia - para placas nvidia
+xf86-video-ati - para placas amd-radeon
+xf86-video-intel - para drivers da intel
+
+
+======> ----- Video ATI:
+
+sudo pacman -S xf86-video-ati
+
+
+======> ----- Video Intel:
+
+sudo pacman -S xf86-video-intel
+
+
+======> ----- Video NVIDIA:
+
+sudo pacman -S xf86-video-nouveau
+ou
+sudo pacman -S nvidia
+
+
+======> ----- Se estiver usando uma máquina virtual, use um driver de vídeo genérico:
+
+sudo pacman -S xf86-video-vesa
+
+
+======> ----- esse foi o que usei, substitua pelo seu respectivo:
+======> ----- instalar os opcionais - se quiser, claro
+
+sudo pacman -S nvidia
+
+
+======> ----- Instalando touchpad:
+
+sudo pacman -S xf86-input-synaptics
+
+
+======> ----- instalar AUR
+
+sudo nano /etc/pacman.conf
+
+
+======> ----- escrever:
+
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/x86_64
+
+
+sudo pacman -Syy
+
+
+======> ----- Otimizar pacman selecionando repositórios mais rápidos
+
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bck
+rankmirrors -v -n 40 /etc/pacman.d/mirrorlist.bck > mirrorlist
+sudo cp mirrorlist /etc/pacman.d/mirrorlist
+
+
+======> ----- checar se tem atualizacoes
+
+sudo pacman -Syyu
+
+
+======> ----- instalar yaourt
+
+sudo pacman -S yaourt linux-headers
+yaourt -Su --aur
+
+
+======> ----- Implementação do OpenGL - graficos 3D
+
+sudo pacman -S mesa
+
+
+======> ----- Criar diretórios (Documents, Music, Pictures, etc.)
+
+sudo pacman -S xdg-user-dirs
+xdg-user-dirs-update
+
+
+======> ----- Openbox
+
+sudo pacman -S openbox
+
+
+======> ----- Verificar necessidade de copiar o arquivo .xinitrc para o diretório root.
+
+cp /etc/X11/xinit/xinitrc ~/.xinitrc
+
+
+======> ----- Conteúdo do arquivo .xinitrc
+
+#!/bin/bash
+export DE=openbox
+# Dbus fix
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    eval "$(dbus-launch --sh-syntax --exit-with-session)"
+fi
+/usr/bin/xdg-user-dirs-update
+/usr/bin/openbox-session > ~/.openbox_startup.log 2>&1
+
+
+======> ----- Copiar os arquivos de configuração
+
+cp -R /etc/xdg/openbox ~/.config/
+
+
+======> ----- Colocar o comando "xset -b" no inicio do arquivo ~/.config/openbox/autostart
+
+xset -b &
+
+
+======> ----- Colocar a linha abaixo no arquivo ~/.config/openbox/environment
+
+LANG=pt_BR.UTF8
+
+
+======> ----- Abrir o openbox
+
+startx
+
+====================================================================================================
+
+
+======> ----- Fontes
+
+sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
+yaourt -S  ttf-ms-fonts
+
+
+======> ----- Instalar aplicativos de configuração
+======> ----- obconf - openbox
+======> ----- lxappearance - aparencia do openbox
+======> ----- lxinput - teclado e mouse
+======> ----- lxrandr - monitor
+
+sudo pacman -S xorg-xrandr obconf lxappearance lxinput lxrandr
+
+sudo pacman -S openbox-themes gnome-themes-standard arc-gtk-theme arc-icon-theme
+yaourt -S vertex-themes
+yaourt -S openbox-theme-arcbox
+
+
+======> ----- instalar slim
+
+sudo pacman -S slim slim-themes archlinux-themes-slim
+sudo systemctl enable slim.service
+sudo medit /etc/slim.conf
+- Fazer as alterações abaixo:
+----------------------------------
+tema do arch archlinux-simplyblack
+auto_login yes
+default_user wilton
+sessions openbox-session
+halt_cmd halt
+reboot_cmd reboot
+------------------------
+sudo reboot
+
+
+======> ----- Diversos
+======> ----- feh - visualizar imagens e papel de parede
+======> ----- parcellite - gerenciador de clipboard
+======> ----- tint2 - barra de tarefas
+======> ----- spacefm - gerenciador de arquivos
+======> ----- scrot - print screen
+======> ----- slock - bloqueia a tela
+======> ----- xautolock - auto bloqueio da tela
+======> ----- archlinux-xdg-menu - gerar menu para o openbox
+======> ----- ufw - Firewall
+======> ----- gufw - interface grafica para firewall
+======> ----- gigolo - front-end para gerenciar conexões remotas
+
+sudo pacman -S feh lxterminal volumeicon tint2 spacefm gparted openssh iputils putty moc hardinfo
+sudo pacman -S testdisk scrot tree xorg-xcalc youtube-dl conky parcellite
+sudo pacman -S firefox firefox-i18n-pt-br flashplugin xarchiver file-roller filezilla vlc wget transmission-gtk
+sudo pacman -S lxhotkey gucharmap gpicview simple-scan guvcview evince mtpaint xfburn usb-creator-gtk
+yaourt -S google-chrome
+
+sudo pacman -S p7zip tar gzip bzip2 unrar unzip
+sudo pacman -S htop sloc xautolock archlinux-xdg-menu screenfetch parcellite
+sudo pacman -S ufw gufw
+yaourt -S gigolo
+
+
+======> ----- Editar arquivo .config/openbox/autostart e incluir as linhas abaixo:
+
+# Monitores
+# Executar "xrandr -q" para saber o nome dos monitores
+# (sleep 2 && xrandr --output VGA1 --auto --output HDMI1 --auto --right-of VGA1)
+
+# panel
+(sleep 1s && tint2) &
+
+# gerenciador de clipboard
+(sleep 1s && parcellite) &
+
+# Set wallpaper
+(sleep 1s && feh --bg-scale /home/wilton/imagens/papelParede/archLinux/SIoLm5x-arch-linux-wallpaper.png) &
+
+# Enable as required
+#xbacklight -set 100 &
+#/usr/bin/synclient TouchpadOff=1 &
+#xxkb &
+#setxkbmap us &
+
+# Networking system tray applet
+(sleep 3 && nm-applet) &
+
+# Volume control
+# (sleep 3 && volumeicon) &
+
+# Onscreen system stats
+(sleep 3 && conky) &
+
+# autolock
+(sleep 1s && xautolock -time 10 -locker slock) &
+
+
+======> ----- Colocar as linha abaixo no arquivo .bashrc
+### ----- Colocar as linha abaixo no arquivo .bashrc
+
+alias lxterminal='lxterminal --geometry=160x40'
+export PATH=$PATH:$HOME/bin
+
+### ----- Colocado pelo nvm
+
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export MONGODB_USUARIO=wilton
+export MONGODB_SENHA=senha
+export MONGODB_SERVIDOR_PORTA=localhost:27017
+export MONGODB_BD=seluz
+# export MONGODB_SERVIDOR_PORTA=tatooine.mongodb.umbler.com:37842
+
+export SERVIDOR_EMAIL_USUARIO=wjps@wilton.jose.nom.br
+export SERVIDOR_EMAIL_SENHA=senha
+
+screenfetch
+parcellite
+
+
+======> ----- Configurar slock no arquivo .config/openbox/rc.xml
+
+    <keybind key="W-l">
+      <action name="Execute">
+        <command>slock</command>
+      </action>
+    </keybind>
+
+
+======> ----- Inicialização do firewall no boot
+
+sudo systemctl enable ufw
+
+-- Iniciar o firewall
+
+sudo systemctl start ufw
+
+
+======> ----- Configurando openssh
+
+-- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo:
+
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile	.ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM yes
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+AllowUsers wilton
+
+-- Configurar o firewall para aceitar a porta 22
+
+-- Inicar o daemon sshd
+
+sudo systemctl start sshd
+
+-- Conectar ao servidor
+
+ssh usuario@endereço.ip.do.destino
+
+-- copiando arquivos e diretórios para outra máquina via ssh
+
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+
+======> ----- Editor vim
+
+sudo pacman -S gvim ctags clang
+
+-- criar o diretório ~/vim-backup
+
+cp ~/ti/linux/vim/Vundle/_vimrc ~/.vimrc
+tar xzf ~/ti/linux/vim/Vundle/_vim.tar.gz
+
+-- editar o .vimrc e executar o comando abaixo
+
+:PluginUpdate
+
+-- configurar para o root
+
+su
+cd /root
+sudo mkdir vim-backup
+sudo cp /home/wilton/.vimrc .
+sudo cp -R /home/wilton/.vim/ .vim/
+
+
+======> ----- Configurando a impressora
+
+sudo pacman -S cups cups-pdf libcups ghostscript gsfonts system-config-printer
+
+-- inicializando no boot
+
+sudo systemctl enable org.cups.cupsd
+
+-- configurar permissões do administrador
+
+sudo groupadd printadmin
+sudo gpasswd -a wilton printadmin
+sudo gpasswd -a wilton lp
+
+-- alterar arquivo /etc/cups/cups-files.conf. Parâmetro SystemGroup
+
+SystemGroup sys root printadmin
+
+-- criar link simbolico para /var/spool/cups-pdf/wilton no home do usuário
+
+ln -s /var/spool/cups-pdf/wilton pdf
+
+-- para administrar impressoras
+
+http://localhost:631
+
+-- para localizar drive para impressoras acessar:
+
+http://www.openprinting.org/printers
+
+
+======> ----- Gerando menu do openbox
+
+xdg_menu --format openbox3 --root-menu /etc/xdg/menus/arch-applications.menu > xdg-menu.xml
+
+-- Atualizar o arquivo .config/openbox/menu.xml
+
+
+======> ----- Instalação do cups
+
+sudo pacman -S cups cups-pdf
+
+sudo pacman -S ghostscript
+sudo pacman -S gsfonts
+
+-- Iniciar cups
+
+sudo systemctl start org.cups.cupsd
+
+sudo systemctl enable org.cups.cupsd
+
+-- Adicionar grupos
+
+sudo groupadd printadmin
+sudo groupadd lp
+
+sudo gpasswd -a wilton printadmin
+sudo gpasswd -a wilton lp
+
+-- Alterar configuração - Alterar a linha SystemGroup
+
+sudo medit /etc/cups/cups-files.conf
+
+SystemGroup sys root printadmin
+
+-- Configurar as impressoras usar a URL http://localhost:631/
+
+-- Criar uma impressora virtual PDF
+
+-- Criar o link simbolico abaixo:
+
+cd ~
+ln -s /var/spool/cups-pdf/wilton pdf
+
+-- Instalar CUPS (Client)
+
+sudo pacman -S libcups
+
+-- Para localizar drive para impressoras acessar Open Printing (http://www.openprinting.org/printers)
+
+
+======> ----- Configurar mais de um monitor
+
+-- Verificar os monitores existentes
+
+xrandr -q
+
+-- Colocar as linhas abaixo no arquivo "~/.config/openbox/autostart". Alterando conforme os monitores listados acima.
+
+# Monitores
+# Executar "xrandr -q" para saber o nome dos monitores
+(sleep 2s && xrandr --output VGA-1 --auto --output HDMI-1 --auto --right-of VGA-1)
+
+
+======> ----- Office, editor imagens e ebook/pdf
+
+======> ----- evince - visualizador de PDF
+======> ----- calibre - visualizador de ebook
+
+sudo pacman -S libreoffice-fresh-pt-BR gimp epdfview evince calibre
+
+
+======> ----- Instalação VirtualBox
+
+sudo pacman -S virtualbox virtualbox-host-dkms virtualbox-guest-iso qt4
+
+-- Obs: O arquivo .iso está localizado em usr/lib/virtualbox/additions/VBoxGuestAdditions.iso e
+        deve ser montado manualmente dentro da máquina virtual.
+
+-- Configurar o virtualbox
+
+sudo gpasswd -a $USER vboxusers
+
+-- Carregar o módulo manualmente - Antes de iniciar o virtualbox
+
+sudo modprobe vboxdrv
+
+-- Para carregar o módulo no boot. Criar o arquivo /etc/modules-load.d/virtualbox.conf e
+   inserir a linha abaixo:
+
+vboxdrv
+
+
+====================================================================================================
+#======> ----- Desenvolvimento
+====================================================================================================
+
+
+=====> ----- Controle de versão - Subversion e Git
+
+sudo pacman -S subversion git
+
+=====> ----- Ferramentas
+
+sudo apt-get install ghex hexedit meld sqlite sqlite-doc curl
+
+=====> ----- Banco de dados - MongoDB e sqlite
+
+sudo pacman -S mongodb mongodb-tools sqlite sqlite-doc
+
+-- Configurar mongdb
+
+sudo mongod -f /etc/mongodb.conf
+
+-- Num outro terminal executar o mongo
+
+mongo
+
+-- Sair do mongo (exit)
+
+sudo chown -R mongodb: /var/lib/mongodb
+sudo chown -R mongodb: /var/log/mongodb
+
+sudo systemctl start mongodb
+
+sudo systemctl enable  mongodb
+
+=====> ----- Instalação Node.js
+
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+yaourt -S watchman
+
+-- Alterar permissão de execução para o arquivo "~/.nvm/nvm.sh"
+
+cd ~/.nvm
+chmod u+x nvm.sh
+
+-- Fechar o terminal e abrir outro.
+
+-- Instalar node
+
+nvm install 6.11.1
+nvm install 7.10.1
+nvm install 8.2.1
+
+-- mudar versão atual do node
+
+nvm use 5.12.0
+
+-- Comando importantes do nvm
+
+nvm --version
+nvm ls-remote
+nvm install 9.9.9
+nvm install 8.2.1 --reinstall-packages-from=7.11.1
+nvm install --lts=argon
+nvm uninstall 9.9.9
+nvm ls
+nvm alias default 8.2.1
+nvm use 9.9.9
+nvm which 9.9.9
+
+-- Configurar npm
+
+npm config set temp /temp
+npm config set strict-ssl false
+npm config set registry "http://registry.npmjs.org/"
+
+Obs: Verificar se é necessário
+npm config set proxy "http://127.0.0.1:3128"
+npm config set https-proxy "http://127.0.0.1:3128"
+npm config set prefix "/usr/lib/node_modules/"
+
+-- Instalar pacotes
+
+npm install -g nodemon node-gyp node-pre-gyp typescript @angular/cli vtop npm-check-updates eslint
+
+-- Comandos importantes do npm
+
+npm list
+npm list -g
+npm update -g
+npm cache clean
+npm update packageName
+npm uninstall packageName
+
+sudo npm update -g packageName
+sudo npm uninstall -g packageName
+
+=====> ----- VsCode
+
+-- Fazer download do site da Microsoft (https://code.visualstudio.com/Download)
+
+-- Descompactar no diretório /opt
+
+=====> ----- Java
+
+sudo pacman -S jdk8-openjdk openjdk8-doc openjdk8-src
+yaourt -S jdk
+
+-- Configurar java
+
+-- Criar o arquivo /etc/profile.d/jdk.sh e inserir as linhas abaixo:
+
+export JAVA_HOME=/usr/lib/jvm/default
+export PATH=$PATH:$JAVA_HOME/bin
+
+-- Criar arquivo /etc/profile.d/jre.sh e inserir as linhas abaixo:
+
+# Do not change this unless you want to completely by-pass Arch Linux' way
+# of handling Java versions and vendors. Instead, please use script `archlinux-java`
+export PATH=${PATH}:/usr/lib/jvm/default/bin
+export JRE_HOME=/usr/lib/jvm/default/jre
+
+-- Comando para saber as VM's java instaladas
+
+archlinux-java status
+
+-- Comando para mudar a VM's java default
+
+sudo archlinux-java set java-8-jdk
+
+-- Comando para desfazer a VM's java dafault
+
+sudo archlinux-java unset
+
+-- Diretório do java /usr/lib/jvm
+
+-- Criar grupo de usuário para ferramentas java e adicionar o usuário wilton ao grupo
+
+sudo groupadd java
+sudo gpasswd -a wilton java
+
+=====> ----- Instalação maven
+
+-- Fazer download no site https://maven.apache.org/download.cgi
+
+-- Descompactar no diretório /opt
+
+-- Criar link simbolico para maven
+
+sudo ln -s apache-maven-x.x.x maven
+
+-- Mudar proprietário do diretório do maven
+
+sudo find /opt/apache-maven-x.x.x -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java /opt/apache-maven-x.x.x
+sudo chmod -R ug+rwx /opt/apache-maven-x.x.x
+
+-- Criar arquivo /etc/profile.d/maven.sh e inserir o conteúdo abaixo:
+
+#!/bin/bash
+
+export MAVEN_OPTS=-Xmx512m
+export M2_HOME=/opt/maven
+export PATH=$PATH:$M2_HOME/bin
+
+-- Recuperar o diretório .m2 no /home/wilton
+
+=====> ----- Instalação tomcat
+
+-- Fazer download no site https://tomcat.apache.org/download-80.cgi
+
+-- Descompactar no diretório /opt
+
+-- Criar link simbolico para maven
+
+sudo ln -s apacheapache-tomcat-x.x.x tomcat
+
+-- Mudar proprietário do diretório do tomcat
+
+sudo find /opt/apache-tomcat-x.x.x -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java /opt/apache-tomcat-x.x.x
+sudo chmod -R ug+rwx /opt/apache-tomcat-x.x.x
+
+-- Alterar a senha do usuário tomcat, manager e admin no arquivo /opt/tomcat/conf/tomcat-users.xml
+
+-- Copiar o arquivo .keystore para o diretório /home/wilton
+
+-- Criar arquivo /etc/profile.d/tomcat.sh e inserir o conteúdo abaixo:
+
+#!/bin/bash
+
+## Colocar no final do arquivo. -- /etc/profile.d/tomcat.sh
+## Configuracoes para a versão do tomcat
+export CATALINA_HOME=/opt/tomcat
+
+=====> ----- Instalação android studio
+
+-- Fazer download no site https://developer.android.com/studio/index.html#downloads
+
+-- Descompactar no diretório /opt
+
+-- Mudar proprietário do diretório do android-studio
+
+sudo find /opt/android-studio -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java /opt/android-studio
+sudo chmod -R ug+rwx /opt/android-studio
+
+-- Instalar jdk8-openjdk-infinality
+
+yaourt -S jdk8-openjdk-infinality
+
+-- Instalar bibliotecas de 32 bits
+
+sudo pacman -S lib32-ncurses lib32-zlib lib32-fontconfig swt
+
+-- Criar o diretório /opt/android/sdk
+
+-- Mudar proprietário do diretório do android-studio
+
+sudo find /opt/android -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java /opt/android
+sudo chmod -R ug+rwx /opt/android
+
+-- Executar o android-studio e executar a configuração inicial
+
+-- Criar o arquivo /etc/profile.d/android-sdk.sh e inserir as linhas abaixo:
+
+export ANDROID_HOME=/opt/android/sdk
+export ANDROID_SWT=/usr/share/java
+export PATH=$PATH:$ANDROID_HOME/tools
+
+export ANDROID_KEYSTORE=/home/wilton/ti/certificados/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+
+-- Criar o arquivo /etc/profile.d/android-sdk-platform-tools.sh e inserir as linhas abaixo:
+
+export PATH=$PATH:/opt/android/sdk/platform-tools
+
+-- Atualizar android sdk
+
+android update sdk --no-ui
+
+-- Executar o comando abaixo e verificar se tem a linha "en_US.utf8"
+
+locale -a
+
+-- Se a linha não existe, descomentar a linha que tem en_US.utf8 no arquivo /etc/locale.gen e executar o comando abaixo:
+
+sudo locale-gen
+
+-- Configurar para usar o dispositivo. Executar o comando lsusb para descobrir o vender Id e product id do dispositivo.
+
+lsusb
+
+Bus 004 Device 005: ID 22b8:2e76 Motorola PCS
+Bus 004 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+
+-- Criar o arquivo /etc/udev/rules.d/51-android.rules e inserir as linhas abaixo:
+
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",MODE="0666",OWNER="wilton"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="android_fastboot"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
+
+-- Recarregar as regras udev
+
+sudo udevadm control --reload-rules
+
+-- Instalar Media Transfer Protocol
+
+sudo pacman -S mtpfs gvfs-mtp
+
+-- Descomentar a linha que tem "user_allow_other" no arquivo "/etc/fuse.conf"

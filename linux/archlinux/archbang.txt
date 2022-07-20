@@ -1,0 +1,1095 @@
+Site oficial: http://archbang.org/
+https://www.youtube.com/watch?v=rxN9jNXiy-c
+
+======> ----- Download archbang
+
+wget https://sourceforge.net/projects/archbang/files/ArchBang/archbang-summer-2606-x86_64.iso
+
+======> ----- Gravando a iso no pendrive
+
+sudo dd if=archbang-summer-2606-x86_64.iso of=/dev/sdb bs=4MB
+
+
+=====================================================================================
+----- Instalação do archbang
+http://archbang.org/guide/
+=====================================================================================
+
+======> ----- Dar boot pela USB e executar a instalação
+
+lsblk
+sudo cfdisk /dev/sda
+
+/dev/sda1 -   2MB - boot BIOS
+/dev/sda2 -  32GB - linux swap
+/dev/sda3 - 899GB - linux - / (restante do disco)
+
+sudo mkfs.ext4 /dev/sda3
+sudo mkswap /dev/sda2
+sudo swapon /dev/sda2
+sudo mount /dev/sda3 /mnt
+sudo abinstall
+
+
+======> ----- Acertar data e hora - arquivo acertar_data_hora.txt
+
+-- verificar com o comando abaixo se existe diretórios e/ou arquivos 
+   com user = wilton e group = http
+sudo find / -group http -exec echo '{}' \; > ~/teste.txt
+
+-- Se existir, alterar user para root e group para root.
+sudo find / -group http -exec chown root.root {} \;
+
+
+======> ----- Configurar locale.gen
+
+-- Alterar o arquivo /etc/locale.gen
+Descomentar as linhas abaixo e conferir se as demais estão comentadas.
+pt_BR.UTF-8 UTF-8
+pt_BR ISO-8859-1
+
+-- Executar:
+sudo locale-gen
+
+
+======> ----- Configurar o teclado abnt2 após o termino da instalação
+
+====> ----- Veja arquivo teclado_abnt2.txt
+
+
+======> ----- Proxy (primeira parte)
+
+====> ----- Veja arquivo configurar_proxy.txt
+
+
+======> ----- configurar os repositorios pacman para 32 e 64
+
+====> ----- Incluir as linhas abaixo no arquivo /etc/pacman.conf
+
+sudo nano /etc/pacman.conf
+
+====> ----- escrever:
+
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/x86_64
+
+====> ----- Descomentar todas as linhas com "#Server =" no arquivo /etc/pacman.d/mirrorlist
+
+config_edit
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+sudo pacman -Syyu archlinux-keyring
+
+====> ----- Atualizar o banco de dados local do pacman
+
+sudo pacman -Syy
+
+====> ----- instalar yay
+
+sudo pacman -S git go base-devel cmake
+cd /tmp
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+rm -rf yay/
+yay -Syyu
+
+====> ----- Instalar pacman-contrib
+
+sudo pacman -S pacman-contrib
+
+====> ----- Otimizar pacman selecionando repositórios mais rápidos
+
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bck
+rankmirrors -v -n 40 /etc/pacman.d/mirrorlist.bck > mirrorlist
+sudo cp mirrorlist /etc/pacman.d/mirrorlist
+
+
+======> ----- Configurar o autocomplete com sudo
+
+-- Colocar a linha abaixo no arquivo .bashrc
+complete -cf sudo
+
+
+======> ----- Proxy (segunda parte)
+
+====> ----- Veja arquivo configurar_proxy.txt
+
+reboot
+
+
+======> ----- checar se tem atualizacoes
+
+sudo pacman -Syyu
+
+
+======> ----- COMECAR A CONFIGURAR O ARCHLINUX
+
+systemctl list-unit-files --type=service | grep enabled
+
+
+======> ----- Instalar medit
+
+yay -S medit 
+
+-- Configurar o esquema de cores para oblivion
+
+
+======> ----- Criar partição criptografada
+
+----- Veja arquivo criptografar_particao.txt
+
+
+======> ----- Conferir arquivo /etc/shells
+
+-- Verificar o valor na variável de ambiente SHELL está no arquivo /etc/shells 
+env | grep SHELL
+
+-- Incluir o valor de SHELL no arquivo /etc/shells 
+
+
+======> ----- Utilitários de rede
+
+sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
+
+======> ----- Comandos comuns smbclient
+
+https://debian-handbook.info/browse/pt-BR/stable/sect.windows-file-server-with-samba.html
+
+-- Lista compartilhamentos públicos
+smbclient -L //servidor
+
+-- Conecta ao compartilhamento de um servidor.
+smbclient //servidor/share
+
+-- montar um compartilhamento
+sudo mount.cifs //servidor/share /mnt/share -o user=wilton,rw,vers=1.0
+
+
+======> ----- setar o som
+
+sudo pacman -S alsa-utils alsa-oss
+alsamixer
+
+
+======> ----- testar o som
+
+aplay /usr/share/sounds/alsa/Noise.wav
+cat /proc/asound/card*/codec* |grep Codec
+
+
+======> ----- se não passar nos testes do som
+
+sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth 
+pulseaudio --start
+
+
+======> ----- Gravar configuração do som
+
+sudo alsactl store
+
+
+======> ----- Configurar bluetooth
+
+sudo pacman -S bluez bluez-utils 
+sudo systemctl enable bluetooth
+sudo systemctl start bluetooth
+
+rfkill 
+ID TYPE      DEVICE                SOFT         HARD
+ 0 wlan      acer-wireless desbloqueado desbloqueado
+ 1 wlan      phy0          desbloqueado desbloqueado
+ 2 bluetooth hci0          desbloqueado desbloqueado
+
+Obs: verificar se bluetooth está bloqueado. Se estiver executar: rfkill unblock 2
+
+bluetoothctl
+
+[bluetooth]# power on
+[bluetooth]# agent on
+[bluetooth]# default-agent
+[bluetooth]# devices
+[bluetooth]# scan on
+[NEW] Device 00:1D:43:6D:03:26 Lasmex LBT10
+[bluetooth]# pair 00:1D:43:6D:03:26
+[bluetooth]# connect 00:1D:43:6D:03:26
+[bluetooth]# trust 00:1D:43:6D:03:26
+[bluetooth]# scan off
+
+Se der o erro org.bluez.Error.Failed 
+
+pulseaudio -k
+[bluetooth]# connect 00:1D:43:6D:03:26
+…
+[bluetooth]# scan off
+[bluetooth]# exit
+
+
+======> ----- Configurar o uso da memória de swap
+
+-- verificar o valor atual
+cat /proc/sys/vm/swappiness
+
+-- se o valor for muito alto alterar para um valor menor
+-- inserir a linha abaixo no arquivo /etc/sysctl.d/99-sysctl.conf
+vm.swappiness=5
+
+-- executar o comando abaixo:
+sudo sysctl --system
+
+
+======> ----- Implementação do OpenGL - graficos 3D
+
+sudo pacman -S mesa
+
+
+======> ----- Fontes
+
+sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
+yay -S  ttf-ms-fonts
+
+-- Novas fontes colocar em ~/.fonts depois executar:
+
+fc-cache
+fc-list | grep fonte
+
+
+======> ----- Instalar aplicativos de configuração
+======> ----- obconf - openbox
+======> ----- lxappearance - aparencia do openbox
+======> ----- lxinput - teclado e mouse
+======> ----- lxrandr - monitor
+
+sudo pacman -S xorg-xrandr obconf lxrandr lxinput
+
+
+======> ----- Configurar mais de um monitor
+
+-- Verificar os monitores existentes
+xrandr -q
+
+-- Colocar as linhas abaixo no arquivo "~/.config/openbox/autostart". Alterando conforme os monitores listados acima.
+
+# Monitores
+# Executar "xrandr -q" para saber o nome dos monitores
+# (sleep 1s && xrandr --output VGA-1 --auto --output HDMI-1 --auto --right-of VGA-1)
+# (sleep 1s && xrandr --output eDP1 --auto --output DP1 --auto --right-of eDP1)
+(sleep 1s && xrandr --output eDP1 --auto --output HDMI1 --auto --left-of eDP1)
+
+
+======> ----- instalar slim
+
+sudo pacman -S slim slim-themes archlinux-themes-slim
+sudo medit /etc/slim.conf
+
+-- Fazer as alterações abaixo:
+------------------------
+# Commands for halt, login, etc.
+# halt_cmd        	/sbin/shutdown -h now
+# reboot_cmd      	/sbin/shutdown -r now
+halt_cmd        	halt
+reboot_cmd         reboot
+
+# welcome message. Available variables: %host, %domain
+welcome_msg         Welcome to %host
+
+# Session message. Prepended to the session name when pressing F1
+# session_msg         Session:
+
+# shutdown / reboot messages
+shutdown_msg       The system is halting...
+reboot_msg         The system is rebooting...
+
+# default user, leave blank or remove this line
+# for avoid pre-loading the username.
+# default_user    	simone
+default_user wilton
+
+# Focus the password field on start when default_user is set
+# Set to "yes" to enable this feature
+focus_password      yes
+
+# Automatically login the default user (without entering
+# the password. Set to "yes" to enable this feature
+#auto_login      	no
+auto_login      	no
+
+# current theme, use comma separated list to specify a set to
+# randomly choose from
+current_theme   	default
+current_theme archlinux-simplyblack
+
+# Lock file
+lockfile            /var/lock/slim.lock
+
+# Log file
+logfile             /var/log/slim.log
+------------------------
+sudo systemctl enable slim.service
+
+-- Verificar no arquivo .bash_profile a necessidade de retirar (comentar) 
+   a linha que inicia o X (startx)
+Por exempo: [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
+
+-- Desabilitar login automático
+sudo systemctl edit getty@tty1
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --skip-login --noclear %I 38400 linux
+
+-- Inicialização do firewall no boot
+sudo pacman -S ufw gufw
+sudo systemctl enable ufw
+sudo systemctl start ufw
+
+-- Reiniciar o sistema
+reboot
+
+======> ----- Diversos
+======> ----- rmlint - verifica arquivos duplicados e vazios. 
+                       Diretórios vazios e symlinks quebrados
+======> ----- ncdu - localiza arquivos e diretórios grandes
+======> ----- feh - visualizar imagens e papel de parede
+======> ----- imagemagick - tratamento de imagens (convert, junta, etc) 
+              https://terminalroot.com.br/2015/03/tratamento-de-imagens-com-imagemagick.html
+======> ----- tint2 - barra de tarefas
+======> ----- scrot - print screen
+======> ----- slock - bloqueia a tela
+======> ----- xautolock - auto bloqueio da tela
+======> ----- archlinux-xdg-menu - gerar menu para o openbox
+
+sudo pacman -S putty moc hardinfo rmlint
+sudo pacman -S testdisk scrot tree xorg-xcalc youtube-dl
+sudo pacman -S imagemagick
+sudo pacman -S firefox firefox-i18n-pt-br
+sudo pacman -S xarchiver file-roller filezilla vlc transmission-gtk
+sudo pacman -S lxhotkey gucharmap gpicview simple-scan guvcview evince mtpaint xfburn
+sudo pacman -S p7zip tar gzip bzip2 unrar unzip
+sudo pacman -S xterm xautolock screenfetch
+sudo pacman -S jdk-openjdk openjdk-doc openjdk-src
+sudo pacman -S chromium
+yay -S google-chrome
+sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre geogebra
+
+
+======> ----- Configurar o xterm
+
+-- Copiar o arquivo ~/ti/linux/archlinux/_config/_Xresources para home
+cp ~/ti/linux/archlinux/_config/_Xresources ~/.Xresources
+
+-- Executar
+xrdb -merge ~/.Xresources
+
+-- Alterar o arquivo ~/.xinitrc. Incluir a linha abaixo:
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+
+
+======> ----- Configurar o lxterminal
+
+-- Alterar o arquivo .config/lxterminal/lxterminal.conf
+geometry_columns=186
+geometry_rows=46
+geometry_x=10
+geometry_y=10
+
+
+======> ----- configuração o picom (compton)
+
+sudo pacman -S picom
+
+-- Copiar arquivo de configuração para ~/.config/picom/picom.conf
+cp /etc/xdg/picom.conf ~/.config/picom.conf
+
+-- Alterar os parâmetros abaixo e retirar o chromium do parâmetro shadow-exclude.
+shadow = true;
+shadow-radius = 12;
+shadow-offset-x = -15;
+shadow-offset-y = -15;
+shadow-opacity = 0.75;
+frame-opacity = 1.0;
+
+wintypes:
+{
+  ...
+  popup_menu = { opacity = 0.9; }
+  ...
+};
+
+
+
+
+======> ----- configuração do scrot
+
+scrot opcoes [nomeArquivo]
+
+# Permite a seleção da janela ou área a ser capturada.
+scrot -s
+
+# Captura a janela com foco
+sleep 5s && scrot -ucd 3
+
+# Captura uma parte da tela
+sleep 5s && scrot -scd 3
+
+# -b            = inclui a borda da janela
+# -d            = intervalo de tempo antes da captura
+# -c            = conta o tempo conforme definido em -d
+# -u            = captura a janela que tem o foco
+# -e comando    = executa o comando após a captura
+# -t percentual = percentual do tamanho da imagem
+# -q percentual = relação qualidade e opção de compressão do arquivo
+
+
+======> ----- Editar arquivo .xinitrc ou .config/openbox/autostart e incluir as linhas abaixo:
+
+
+******************************************************************
+# Monitores
+# Executar "xrandr -q" para saber o nome dos monitores
+# (sleep 2 && xrandr --output DP1 --auto --output HDMI3 --auto --right-of DP1) &
+(sleep 2 && xrandr --output eDP1 --auto --output DP1 --auto --right-of eDP1) &
+# (sleep 2 && xrandr --output eDP1 --auto --output DP1 --auto --left-of eDP1) &
+
+# Set wallpaper
+sleep 2 && feh --bg-scale ~/Backgrounds/coast-min.jpg) &
+# sleep 2 && feh --bg-scale /home/wilton/Imagens/papelParede/archLinux/SIoLm5X-arch-linux-wallpaper.png) &
+
+# Enable as required
+#xbacklight -set 100 &
+#/usr/bin/synclient TouchpadOff=1 &
+
+# Xorg keyboard map change for your own country/keyboard layout
+# setxkbmap gb &
+
+if [ "$WINDOW_MANAGER" == "openbox" ]; then
+  # Onscreen system stats
+  conky &
+  # Panel
+  tint2 &
+fi
+
+# Network Manager Applet
+(sleep 2 && nm-applet) &
+
+# File manager desktop mode
+#pcmanfm --desktop &
+
+# Effects
+(sleep 2 && picom -b -c) &
+
+# Volume
+(sleep 2 && volumeicon) &
+
+# Dunst onscreen messages
+(sleep 2 && dunst) &
+
+# autolock
+(sleep 2 && xautolock -time 60 -locker slock) &
+
+# configuracao do xterm
+(sleep 2 && [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources) &
+
+# montar particao compactada
+(sleep 2 && xterm -fg white -bg black -geometry 52x5 -e mountdados.sh) &
+******************************************************************
+
+
+======> ----- Colocar as linha abaixo no arquivo .bashrc (ver arquivo cloudready.txt)
+
+
+======> ----- Configurar temas openbox
+
+sudo pacman -S arc-gtk-theme arc-icon-theme 
+sudo pacman -S gtk-engine-murrine gnome-themes-standard
+yay -S openbox-theme-arcbox openbox-arc-git
+
+obconf -> Arc-Dark, Aparência fontes - tamanho 8
+lxAppearence -> Widget - Arc-Dark, Fonte padrão - Sans Regular 8, Ícones - Arc, 
+                Borda - Sample-slate
+
+-- Gerando menu do openbox
+xdg_menu --format openbox3 --root-menu /etc/xdg/menus/arch-applications.menu > xdg-menu.xml
+
+-- Atualizar o arquivo .config/openbox/menu.xml
+
+-- Configurar .config/openbox/rc.xml
+  <keybind key="W-p">
+    <action name="Execute">
+      <command>code</command>
+    </action>
+  </keybind>
+  <keybind key="W-s">
+    <action name="Execute">
+      <command>sqldeveloper.sh</command>
+    </action>
+  </keybind>
+  <keybind key="W-x">
+    <action name="Execute">
+      <command>eclipse</command>
+    </action>
+  </keybind>
+
+
+======> ----- Configurar slock, google chrome e mousepad no arquivo .config/openbox/rc.xml
+
+  <keybind key="W-l">
+    <action name="Execute">
+      <command>slock</command>
+    </action>
+  </keybind>
+  <keybind key="W-w">
+    <action name="Execute">
+      <command>google-chrome-stable</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <name>Web Browser</name>
+      </startupnotify>
+    </action>
+  </keybind>
+  <keybind key="W-e">
+    <action name="Execute">
+      <command>mousepad</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <name>mousepad</name>
+      </startupnotify>
+    </action>
+  </keybind>
+
+
+======> ----- Configurar scrot (captura de tela)
+
+  <keybind key="Print">
+    <action name="Execute">
+      <command>sleep 5s && scrot</command>
+    </action>
+  </keybind>
+  <keybind key="A-Print">
+    <action name="Execute">
+      <command>sleep 5s && scrot -ubcd 3</command>
+    </action>
+  </keybind>
+  <keybind key="C-Print">
+    <action name="Execute">
+      <command>sleep 5s && scrot -scd 3</command>
+    </action>
+  </keybind>
+
+
+======> ----- Configurando openssh
+
+sudo pacman -S openssh 
+
+-- Alterar o arquivo /etc/ssh/sshd_config. 
+   Colocar as linhas abaixo e comentar todas as configurações já existentes.
+
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile	.ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+AllowUsers wilton
+
+-- Restaurar backup do diretório .ssh 
+
+-- Configurar o firewall para aceitar a porta 22
+
+-- Inicar o daemon sshd
+sudo systemctl start sshd
+
+-- Conectar ao servidor
+ssh usuario@endereço.ip.do.destino
+
+-- copiando arquivos e diretórios para outra máquina via ssh
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+-- configurando aplicação padrão
+xdg-mime default medit.desktop text/plain
+
+
+======> ----- Instalar NodeJs
+
+- Site nvm https://github.com/creationix/nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+yay -S watchman
+
+-- Alterar permissão de execução para o arquivo "~/.config/nvm/nvm.sh"
+cd ~/.nvm
+chmod u+x nvm.sh
+
+-- Fechar o terminal e abrir outro.
+
+-- Instalar node
+nvm install 10.21.0
+nvm install 14.5.0
+nvm install 15.14.0
+
+-- mudar versão atual do node
+nvm use 10.21.0
+
+-- Comando importantes do nvm
+nvm --version
+nvm ls-remote
+nvm install 9.9.9
+nvm install 8.2.1 --reinstall-packages-from=7.11.1
+nvm install --lts=argon
+nvm uninstall 9.9.9
+nvm ls
+nvm alias default 10.21.0
+nvm use 9.9.9
+nvm which 9.9.9
+
+-- Configurar npm
+npm config set temp /tmp
+npm config set strict-ssl false
+npm config set registry "http://registry.npmjs.org/"
+
+Obs: Verificar se é necessário
+npm config set proxy "http://127.0.0.1:3128"
+npm config set https-proxy "http://127.0.0.1:3128"
+npm config set prefix "/usr/lib/node_modules/"
+
+-- Instalar pacotes
+npm install -g nodemon node-gyp node-pre-gyp typescript @angular/cli 
+npm install -g vtop npm-check-updates eslint jslint gulp dts-gen @nestjs/cli
+npm install -g @nestjs/platform-fastify
+
+-- Comandos importantes do npm
+npm list
+npm list -g
+npm update -g
+npm cache clean
+npm update packageName
+npm uninstall packageName
+npm show packageName@* version
+
+sudo npm update -g packageName
+sudo npm uninstall -g packageName
+
+
+======> ----- Instalar NodeJs, configurar Java e instalar maven (ver arquivo cloudready.txt)
+
+
+======> ----- Editor vim
+
+sudo pacman -S gvim ctags clang
+yay -S vim-plug
+
+    >>> To use vim-plug, please check the file /usr/share/vim-plug/vimrc.sample
+    >>> and update your ~/.vimrc file, accordingly
+
+-- criar o diretório ~/vim-backup
+
+-- Restaurar backup do arquivo .vimrc
+
+-- Restaurar backup do diretório .vim
+
+-- editar o .vimrc e incluir a linha abaixo
+let g:ycm_server_python_interpreter="/usr/bin/python"
+let g:airline_theme='google_dark'
+
+-- editar o .vimrc e executar o comando abaixo
+:PluginUpdate
+
+-- configurar para o root
+su
+cd /root
+sudo mkdir vim-backup
+sudo cp /home/wilton/.vimrc .
+sudo cp -R /home/wilton/.vim/ .vim/
+exit
+
+
+======> ----- Configurando a impressora
+
+sudo pacman -S cups cups-pdf system-config-printer
+
+-- inicializando no boot
+sudo systemctl enable cups
+sudo systemctl start cups
+
+-- configurar permissões do administrador
+sudo groupadd printadmin
+sudo gpasswd -a wilton printadmin
+sudo gpasswd -a wilton lp
+
+-- alterar arquivo /etc/cups/cups-files.conf. Parâmetro SystemGroup
+SystemGroup sys root printadmin
+
+-- criar link simbolico para /var/spool/cups-pdf/wilton no home do usuário
+ln -s /var/spool/cups-pdf/wilton pdf
+
+-- para administrar impressoras
+http://localhost:631
+
+-- Instalar CUPS (Client)
+sudo pacman -S libcups
+
+-- para localizar drive para impressoras acessar:
+http://www.openprinting.org/printers
+
+-- Configurar impressora com system-config-printer
+Trabalho: smb:\\usuario:senha@printserver\is0432
+          ipp://is0432:631/ipp
+          socket://is0432 ou socket://is0432:9100
+
+
+======> ----- Instalação VirtualBox
+
+sudo pacman -S virtualbox virtualbox-host-modules-arch virtualbox-guest-iso
+
+-- Obs: O arquivo .iso está localizado em /usr/lib/virtualbox/additions/VBoxGuestAdditions.iso
+        e deve ser montado manualmente dentro da máquina virtual.
+
+-- Configurar o virtualbox
+sudo gpasswd -a $USER vboxusers
+
+-- Configurar preferências
+Preferências | Geral | Pasta Padrão para Máquinas | /home/wilton/VirtualBoxVMs
+Preferências | Entrada | Máquina Virtual | Combinação de Teclas do Hospedeiro | Alt Gr
+
+-- Carregar o módulo manualmente - Antes de iniciar o virtualbox
+sudo modprobe vboxdrv
+
+-- Para carregar o módulo no boot. Criar o arquivo /etc/modules-load.d/virtualbox.conf e
+   inserir a linha abaixo:
+vboxdrv
+
+
+======> ----- Instalação do Cub Linux no Virtualbox
+
+-- Fazer Download
+https://www.osboxes.org/cub-linux/ (Cub = Chromium + Ubuntu)
+https://www.osboxes.org/cub-linux/
+
+-- Descompactar o arquivo 1RC-64.7z no diretório VirtualBoxVMs
+
+-- Criar a máquina virtual no virtualbox
+Sistema | Placa mãe | Memória Base | 3072MB
+Sistema | Placa mãe | Ordem de boot | marcar apenas disco rígido
+Monitor | Memória de vídeo | 128MB
+
+-- Alterar a senha do usuário osboxes
+1) Precione a tecla SHIFT enquanto o máquina virtual inicia. Vai aparecer o menu do GRUB
+2) Seleciona “Advanced options for CubLinux”
+3) Selecione “Cub Linux, with Linux 4.2.0…-generic (Recorvery mode)”
+4) No Recovery menu selecionar “Root    Drop to root shell prompt”
+5) Executar mount -rw -o remount /
+6) Alterar a senha do root passwd osboxes
+7) exit e reboot
+
+-- instalar virtualbox-guest-iso
+Menu -> Dispositivos | Inserir Imagem do CD dos Adicionais para convidado…
+Dentro do CubLinux o CD é montado em /media/osboxes/VBox_GAs_6.1.10
+
+-- Ir para o diretório /media/osboxes/VBox_GAs_6.1.10 e executar:
+VBoxLinuxAdditions.run
+
+-- Atualizar o sistema (CubLinux)
+sudo apt update
+sudo apt dist-upgrade
+
+
+======> ----- Instalação VMWare
+
+https://computingforgeeks.com/install-vmware-workstation-on-arch-linux-manjaro/
+
+
+=====================================================================================
+----- Desenvolvimento
+=====================================================================================
+
+
+====> ----- Controle de versão - Git
+
+sudo pacman -S git tk
+
+==> ----- configurar o Git
+
+-- Restaurar o backup do arquivo .gitconfig
+
+-- Gerar um par de chave ssh
+ssh-keygen
+
+-- Cadastrar a chave pública no servidor Git (Github ou trabalho)
+Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
+
+-- Gerar arquivo de configuração ~/.gitconfig (ou restaurar o backup do arquivo .gitconfig)
+git config --global user.email SEU_EMAIL@dominio.com.br
+git config --global user.name SEU_LOGIN
+git config --global merge.tool vimdiff
+git config --global pull.rebase false
+Se for necessário configurar proxy
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+
+====> ----- Ferramentas
+
+sudo pacman -S ghex hexedit meld sqlite sqlite-doc curl
+yay -S postman-bin
+
+
+====> ----- Instalação do Java
+
+sudo pacman -S jdk-openjdk openjdk-doc openjdk-src
+
+
+====> ----- Instalação do Android sdk (ver arquivo cloudready.txt)
+
+sudo pacman -S jre8-openjdk
+
+when you use a non-reparenting window manager,
+set _JAVA_AWT_WM_NONREPARENTING=1 in /etc/profile.d/jre.sh
+
+yay -S android-sdk android-sdk-build-tools android-sdk-platform-tools android-platform
+yay -S android-emulator android-udev
+
+The android-tools package provides adb, #fastboot, e2fsdroid and mke2fs.android from the SDK Platform-Tools along with mkbootimg and ext2simg.
+
+-- Instalar libs 32bits
+yay -S lib32-libstdc++5
+
+-- Executar o comando abaixo e verificar se tem a linha "en_US.utf8"
+locale -a
+
+-- Se a linha não existe, descomentar a linha que 
+   tem en_US.utf8 no arquivo /etc/locale.gen e executar:
+sudo locale-gen
+
+-- colocar a linha abaixo no arquivo .bashrc:
+# export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+
+export ANDROID_SDK_ROOT=$HOME/.sdkdev/android-sdk
+export ANDROID_HOME=$HOME/.sdkdev/android-sdk
+export ANDROID_KEYSTORE=$HOME/ti/certificados/android/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+export REPO_OS_OVERRIDE=linux
+
+export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+
+-- Permissão
+sudo chmod g+w /opt/android-sdk
+sudo groupadd android-sdk
+sudo gpasswd -a wilton android-sdk
+sudo setfacl -R -m g:android-sdk:rwx /opt/android-sdk
+sudo setfacl -d -m g:android-sdk:rwX /opt/android-sdk
+
+-- Atualizar android sdk
+Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
+### User Sources for Android SDK Manager
+#Wed Mar 14 22:55:42 ICT 2018
+count=0
+
+-- executar sdkmanager (Ver quais já estão instalados - ls -l /opt/android)
+sudo archlinux-java set java-8-openjdk/jre 
+sdkmanager --sdk_root=$ANDROID_HOME --list
+sdkmanager --sdk_root=$ANDROID_HOME --update
+sdkmanager --sdk_root=$ANDROID_HOME --licenses
+sdkmanager --sdk_root=$ANDROID_HOME "sources;android-30" 
+
+
+====> ----- Instalação do flutter
+
+https://www.rockyourcode.com/how-to-get-flutter-and-android-working-on-arch-linux/
+
+yay -S flutter
+
+-- Permissão
+sudo gpasswd -a $USER flutterusers
+sudo chown -R :flutterusers /opt/flutter
+sudo chmod -R g+w /opt/flutter/
+Opcional
+sudo chown -R $USER:flutterusers /opt/flutter
+
+flutter doctor --android-licenses
+flutter doctor -v
+
+-- Instalção manual
+https://flutter.dev/docs/get-started/install/chromeos
+https://flutter.dev/docs/get-started/install/linux
+
+cd ~/.sdkdev
+tar xf flutter_linux_v1.17.4-stable.tar.xz (versão estável)
+tar xf flutter_linux_1.19.0-4.3.pre-beta.tar.xz (versão beta)
+
+- Instalar os pacotes
+sudo pacman -S glu
+
+- Alterar o PATH no arquivo .bashrc
+export CHROME_EXECUTABLE=/usr/bin/chromium
+
+export PATH=$PATH:$HOME/.sdkdev/flutter/bin
+
+- Instalar dependências
+flutter precache --android --ios --web --linux
+flutter doctor
+flutter doctor --android-licenses
+
+- Testar a instalação
+flutter create teste
+cd teste
+flutter run
+
+- Criar projeto web
+flutter channel beta (temporário)
+flutter upgrade
+flutter config --enable-web
+flutter create projeto
+cd projeto
+flutter update-packages (temporário)
+flutter run -d chrome
+flutter build web
+
+- Adiciona suporte a web para um projeto existente
+flutter create .
+
+***** Comandos úteis do Flutter para ter sempre à mão:
+flutter create → cria um novo projeto com toda a estrutura padrão de pastas, código boilerplate e testes.
+flutter run → compila e dá build em um determinado projeto.
+flutter run -d <id do dispositivo>→ compila e dá build em um determinado projeto tendo como alvo um dispositivo específico.
+flutter install → instala um projeto Flutter no dispositivo conectado.
+flutter packages get → adiciona dependências ao projeto.
+flutter test → executa teste unitário.
+flutter doctor → mostra informações sobre o processo de instalação do Flutter.
+flutter devices → lista todos os dispositivos conectados, com informações como: nome do dispositivo, id do dispositivo e versão do Android .
+s → realiza uma captura de tela do aplicativo em execução e a armazena na pasta do projeto.
+r → realiza hot reload do projeto.
+R → realiza hot restart do projeto.
+q → encerra o projeto.
+flutter help →lista estes e todos os outros comandos disponíveis para serem executados com Flutter.
+
+
+====> ----- Instalação do VsCode
+
+- Fazer download do site da Microsoft (https://code.visualstudio.com/Download) ou instalar do repositório AUR
+
+yay visual-studio-code-bin
+
+- Se fizer download descompactar no diretório /home/wilton/.sdkdev
+
+- Recuperar os arquivos abaixo do backup
+cd ~
+tar xzf <dirMontado>/bck/saturno/ultimo/home/_vscode.tar.gz
+cd ~/temp
+tar xzf <dirMontado>/bck/saturno/ultimo/home/_config.tar.gz
+cd .config
+mv Code ~/.config
+
+- Para aumentar o limite de arquivos sendo monitorados:
+# ver o número atual
+cat /proc/sys/fs/inotify/max_user_watches
+
+# Inserir a linha abaixo no final do arquivo /etc/sysctl.conf (no archlinux criar o arquivo /etc/sysctl.d/40-max-user-watches.conf).
+fs.inotify.max_user_watches=524288
+
+# executar:
+sudo sysctl -p
+# no archlinux
+sudo sysctl --system
+
+- Plugin flutter
+No menu View > Command Palette….
+Digite install e selecione  Extensions: Install Extensions
+Digite flutter e instale Flutter 
+
+
+====> ----- Configurar acesso a um device android pela USB
+
+-- Configurar para usar o dispositivo. Executar o comando lsusb para descobrir o vender Id e product id do dispositivo.
+
+lsusb
+
+Bus 001 Device 007: ID 22b8:2e82 Motorola PCS motorola one
+
+-- Criar o arquivo /etc/udev/rules.d/51-android.rules e inserir as linhas abaixo:
+
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",MODE="0666",OWNER="wilton"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="android_fastboot"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
+SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",MODE="6860",OWNER="wilton"
+SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="android_fastboot"
+SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
+
+-- Recarregar as regras udev
+
+sudo udevadm control --reload-rules
+
+-- Instalar Media Transfer Protocol
+
+sudo pacman -S mtpfs gvfs-mtp
+
+-- Descomentar a linha que tem "user_allow_other" no arquivo "/etc/fuse.conf"
+
+
+
+====> ----- Instalação do Android studio
+
+https://developer.android.com/studio?hl=pt-br
+
+-- Editar o arquivo /etc/profile.d/sdkdev.sh e incluir o caminho do android studio “/home/wilton/.sdkdev/android-studio/bin”
+
+
+====> ----- Instalação dos complementos para python
+
+sudo pacman -S python-pip
+sudo pip install pylint
+
+-- Instalar o spyder
+
+sudo pip install spyder
+sudo pip install pyflakes
+sudo pip install flake8
+sudo pip install pycodestyle
+sudo pip install jedi-language-server
+
+Para saber se um pacote está instalado. O parâmetro --format pode ser configurado em pip.conf
+pip3 list --format=(legacy|columns)
+Criar o arquivo $HOME/.pip/pip.conf
+[list]
+format=columns
+
+Remover pacote
+sudo pip3 uninstall pacote
+
+
+====> ----- Instalação banco de dados - MongoDB (ver arquivo cloudready.txt)
+
+
+====> ----- Instalação tomcat
+
+-- Fazer download no site https://tomcat.apache.org/download-80.cgi
+
+-- Descompactar no diretório /opt
+
+-- Criar link simbólico para tomcat
+
+sudo ln -s apacheapache-tomcat-x.x.x tomcat
+
+-- Mudar proprietário do diretório do tomcat
+
+sudo find /opt/apache-tomcat-x.x.x -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java /opt/apache-tomcat-x.x.x
+sudo chmod -R ug+rwx /opt/apache-tomcat-x.x.x
+
+-- Alterar a senha do usuário tomcat, manager e admin no arquivo /opt/tomcat/conf/tomcat-users.xml
+
+-- Copiar o arquivo .keystore para o diretório /home/wilton
+
+-- Criar arquivo /etc/profile.d/tomcat.sh e inserir o conteúdo abaixo:
+
+#!/bin/bash
+## Colocar no final do arquivo. -- /etc/profile.d/tomcat.sh
+## Configuracoes para a versão do tomcat
+export CATALINA_HOME=/opt/tomcat
+

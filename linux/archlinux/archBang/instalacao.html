@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+
+<html lang='pt-br' ng-app="app">
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Instalação ArchLinux (archbang)</title>
+
+  <link rel="stylesheet" href="instalacao.css" />
+</head>
+
+<body>
+  <h1>Instalação ArchLinux (Arch Bang)</h1>
+  <h2>- Download do ISO</h2>
+  <p>Fazer download do ISO no site oficial do <a href="http://bbs.archbang.org/">Arch Bang</a>.</p>
+  <p>http://sourceforge.net/projects/archbang/files/archbang-031215-x86_64.iso</p>
+
+  <pre>$ wget http://sourceforge.net/projects/archbang/files/archbang-031215-x86_64.iso</pre>
+
+  <h2>- Gravar a imagem ISO no Pen Drive</h2>
+  <p>Executar o comando abaixo.</p>
+  <pre>$ sudo dd if=archbang-031215-x86_64.iso of=/dev/sdb bs=4MB</pre>
+
+  <p><b>OBS:</b> O parâmetro "of" do comando acima é o device do pen drive na USB. Para listar os devices da máquina:</p>
+  <pre>$ lsblk</pre> ou
+  <pre>$ sudo fdisk -l</pre> ou
+  <pre>$ sudo mount -l -t ext4</pre> ou
+  <pre>$ df -hT</pre>
+
+  <p>Dar boot pelo pen drive.</p>
+
+  <h2>- Partições</h2>
+
+  <p>Usar o gdisk para perticionar o disco. Criar quatro partições conforme abaixo:</p>
+  <pre>
+/                    100GB   8300  ext4
+[swap]                32GB   8200
+/home                303GB   8300  ext4
+/home/wilton/crypt    32GB   8300  ext4
+  </pre>
+
+  <h2>- Criptografar uma partição</h2>
+
+  <p>Criar a partição luks com cryptsetup</p>
+
+  <pre>$ sudo cryptsetup luksFormat /dev/sda8</pre>
+
+  <p>Fornecer uma senha para destravar a partição (l1l2l3l4f1f2f3).</p>
+
+  <p>Formatar a partição luks com o file system ext4.</p>
+
+  <pre>
+$ sudo cryptsetup open --type luks /dev/sda8 crypt
+$ sudo mkfs.ext4 /dev/mapper/crypt
+  </pre>
+
+  <h4>Montar a partição</h4>
+
+  <pre>
+$ mkdir /home/wilton/crypt
+$ sudo chown -R wilton.users /home/wilton/crypt
+
+$ sudo cryptsetup open --type luks /dev/sda4 crypt
+$ sudo mount -t ext4 /dev/mapper/crypt /home/wilton/crypt
+  </pre>
+
+  <pre>
+$ mkdir /media/bck
+$ sudo chown -R wilton.users /media/bck
+
+$ sudo cryptsetup open --type luks /dev/sdb3 bck
+$ sudo mount -t ext4 /dev/mapper/bck /media/bck
+  </pre>
+
+  <h4>Desmontar a partição</h4>
+
+  <pre>
+$ sudo umount -t ext4 /home/wilton/crypt
+$ sudo cryptsetup close crypt
+  </pre>
+
+  <h4>Montar a partição automaticamente (fstab)</h4>
+
+  <p>Para descobrir o UUID da partição</p>
+
+  <pre>
+$ sudo blkid
+
+/dev/sda1: UUID="043451cf-c548-4cc9-8258-ef19e16e35e4" TYPE="ext4" PARTLABEL="Linux filesystem" PARTUUID="50fc7996-2385-48dc-bcc3-0ef8ed13ad48"
+/dev/sda2: UUID="cee43345-d459-435a-a355-e353535357c7" TYPE="swap" PARTLABEL="Linux swap" PARTUUID="7044f91c-4ec4-47c5-add2-033279028540"
+/dev/sda3: UUID="7e1f6461-d354-4f35-ab35-8e355f345006" TYPE="ext4" PARTLABEL="Linux filesystem" PARTUUID="15e3ab00-8abc-4fd8-ba18-43474bf7bdc7"
+/dev/sda4: UUID="d152321b-2902-4193-a71a-589363636948" TYPE="crypto_LUKS" PARTUUID="8755197c-7ac5-449e-901d-0dfc78230502"
+/dev/mapper/crypt: UUID="cd34343441191-4234-9343-03454546542c" TYPE="ext4"
+/dev/sdf1: LABEL="NTFS" UUID="2914343414C5535B" TYPE="ntfs" PARTUUID="5546ef16-01"
+/dev/sdf2: LABEL="dados" UUID="8223233e-33c1-4023-bdb0-5435bfd35b26" TYPE="ext4" PARTUUID="5546ef16-02"
+/dev/sdf3: UUID="d2023332-7b39-4841-b05a-31b0900c27fc" TYPE="crypto_LUKS" PARTUUID="5546ef16-03"
+/dev/mapper/luks-d24546b2-7565-4565-b56a-3156565627fc: LABEL="bck" UUID="996838bc-ab05-4af1-89ac-3a94d35d0837" TYPE="ext4"
+  </pre>
+
+  <p>ou</p>
+
+  <pre>
+$ sudo ls -l /dev/disk/by-uuid
+
+lrwxrwxrwx 1 root root 10 Jul 15 03:57 035451cf-c548-4cc9-8258-ef19e16e35e4 -&gt; ../../sda1
+lrwxrwxrwx 1 root root 10 Jul 15 04:05 294545345555668B -&gt; ../../sdf1
+lrwxrwxrwx 1 root root 10 Jul 15 03:57 74242344-de44-4fab-ab69-8e3353453506 -&gt; ../../sda3
+lrwxrwxrwx 1 root root 10 Jul 15 04:05 8242421e-33c1-4023-bdb0-543353535b26 -&gt; ../../sdf2
+lrwxrwxrwx 1 root root 10 Jul 15 04:06 992424bc-ab05-4af1-89ac-3a94d6366637 -&gt; ../../dm-1
+lrwxrwxrwx 1 root root 10 Jul 15 04:03 c2424225-1191-4248-951c-033655535d2c -&gt; ../../dm-0
+lrwxrwxrwx 1 root root 10 Jul 15 03:57 ce525b37-d6d9-4f8a-a290-e363693637c7 -&gt; ../../sda2
+lrwxrwxrwx 1 root root 10 Jul 15 04:02 d152321b-2902-4193-a71a-589363636948 -&gt; ../../sda4
+lrwxrwxrwx 1 root root 10 Jul 15 04:06 d20442b2-7b39-4841-b05a-3124406347fc -&gt; ../../sdf3
+  </pre>
+
+  <p>Alterar o arquivo /etc/fstab</p>
+
+  <pre>$ sudo vim /etc/fstab</pre>
+
+  <p>Inserir a linha abaixo:</p>
+
+  <pre>/dev/mapper/crypt /home/wilton/crypt ext4 defaults 0 2</pre>
+
+  <p>Alterar o arquivo /etc/crypttab</p>
+
+  <pre>$ sudo vim /etc/crypttab</pre>
+
+  <p>Inserir a linha abaixo:</p>
+
+  <pre>crypt UUID=d152321b-2902-4193-a71a-589363636948 none luks</pre>
+
+  <p><strong>Obs: </strong> Use o UUID da partição criptografa (/dev/sda4).</p>
+
+  <h2>- Acertar data e hora do sistema</h2>
+
+  <p>Informar a data no formato mes/dia/ano.</p>
+
+  <p>Listar a data e hora atual.</p>
+
+  <pre>$ sudo date</pre>
+
+  <p>Para alterar:</p>
+
+  <pre>
+$ sudo date -s "07/02/2015"
+$ sudo date -s "13:30"
+$ sudo date -s "07/02/2015 13:30"
+$ sudo date 070213302015
+  </pre>
+
+  <h2>- Acertar data e hora da BIOS</h2>
+
+  <p>Informar a data no formato mes/dia/ano.</p>
+
+  <p>Listar a data e hora atual.</p>
+
+  <pre>$ sudo hwclock</pre>
+
+  <p>Para ajustar o horário da BIOS e atualizar o horário do sistema:</p>
+
+  <pre>$ sudo hwclock -w"</pre> ou
+  <pre>$ sudo hwclock --systohc"</pre>
+
+  <p>Para ajustar o sistema baseado no horário da BIOS:</p>
+
+  <pre>$ sudo hwclock -s"</pre> ou
+  <pre>$ sudo hwclock --hctosys"</pre>
+
+  <p>Acertar a data e hora da BIOS:</p>
+
+  <pre>$ sudo hwclock --set --date="mm/dd/yy hh:mm:ss"</pre>
+
+  <h2>- Gerenciamento de pacotes</h2>
+
+  <h4>Configurar os repositórios</h4>
+
+  <p>Alterar o arquivo /etc/pacman.conf</P>
+
+  <pre>$ sudo geany /etc/pacman.conf</pre>
+
+  <p>Colocar o caracter de omentário nas linhas abaixo:</p>
+
+  <pre>
+#[archassault]
+#SigLevel = Required DatabaseOptional TrustedOnly
+#Include = /etc/pacman.d/archassault-mirrorlist
+  </pre>
+
+  <p>incluir as linhas abaixo:</p>
+
+  <pre>
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/$arch
+  </pre>
+
+  <p>Atualizar o banco de dados do repositório</p>
+
+  <pre>$ sudo pacman -Sy</pre>
+
+  <p>Atualizar os pacotes</p>
+
+  <pre>$ sudo pacman -Syyu</pre>
+
+  <p>Tirar o backup do arquivo /etc/pacman.d/mirrorlist</p>
+
+  <pre>$ sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bck</pre>
+
+  <p>Otimizar o pacman selecionando os repositórios mais rápidos.</p>
+
+  <pre>
+$ rankmirrors -v -n 15 /etc/pacman.d/mirrorlist.bck > mirrorlist
+$ sudo cp mirrorlist /etc/pacman.d/mirrorlist
+  </pre>
+
+  <p>Instalar o gerenciador de pacotes do repositório AUR (yaourt) - (<a href="https://wiki.archlinux.org/index.php/Yaourt#Installation">Doc. ArchLinux</a>)</p>
+
+  <pre>$ sudo pacman -S yaourt base-devel</pre>
+
+  <p>Instalar linux headers</p>
+
+  <pre>$ sudo pacman -S linux-headers</pre>
+
+  <p>Atualizar os pacotes do AUR</p>
+
+  <pre>$ yaourt -Su --aur</pre>
+
+  <p>Executar o boot</p>
+
+  <pre>$ sudo shutdown -r now</pre>
+
+  <p>Atualizar o sistema</p>
+  <pre>$ sudo pacman -Syyu</pre>
+  <pre>$ yaourt -Su --aur</pre>
+
+  <h4>Comandos importantes</h4>
+
+  <p>Instalar</p>
+  <pre>$ sudo pacman -S pacote</pre>
+
+  <p>Remover</p>
+  <pre>$ sudo pacman -Rncs pacote</pre>
+
+  <p>Remover pacotes orfãos</p>
+  <pre>$ sudo pacman -Rncs $(pacman -Qtdq)</pre>
+
+  <p>Lista todos os pacote instalado (Acrescentar um i para info completas)</p>
+  <pre>$ pacman -Q</pre>
+
+  <p>Pesquisa pacote instalado</p>
+  <pre>$ pacman -Q pacote</pre>
+
+  <p>Lista arquivos do pacote instalado</p>
+  <pre>$ pacman -Ql pacote</pre>
+
+  <p>Limpar o cache do pacman</p>
+  <pre>$ pacman -Sc</pre>
+  <pre>$ pacman -Scc</pre>
+
+  <h2>- Verificar configurações de rede</h2>
+
+  <pre>
+<a href="https://wiki.archlinux.org/index.php/Configuring_Network_%28Portugu%C3%AAs%29">ArchLinux - Configuring Network (Português)</a>
+
+<a href="https://wiki.archlinux.org/index.php/Network_configuration#Local_network_hostname_resolution">ArchLinux - Network configuration</a>
+
+<a href="https://wiki.archlinux.org/index.php/Network_Debugging">ArchLinux - Network Debugging</a>
+
+<a href="http://www.guiafoca.org/cgs/guia/avancado/ch-rede.html">Guia Foca GNU/Linux - Rede</a>
+  </pre>
+
+  <h4>Contornar problema de envio do hostname para o DHCP Server - (<a href="https://bbs.archlinux.org/viewtopic.php?id=195388">Forums ArchLinux</a>)</h4>
+
+  <p>Listar as interfaces de rede</p>
+
+  <pre>
+$ nmcli con show
+
+NAME     UUID                                  TYPE            DEVICE
+enp0s25  1caa65a9-70ec-4fdd-b6e0-b967ea09fb3b  802-3-ethernet  enp0s25
+  </pre>
+
+  <p>Verificar o nome (id) do device. Se for necessário alterar no "Network Connections" no menu "Applications/Settings".</p>
+
+  <p>Configurar o hostname fornecido pelo SO</p>
+
+  <pre>
+$ nmcli con show enp0s25 | grep ipv4.dhcp-hostname
+
+ipv4.dhcp-hostname:                     --
+
+$ nmcli con modify enp0s25 ipv4.dhcp-hostname `hostname`
+  </pre>
+
+  <h4>Contornar problema de keys para pacman - (<a href="https://wiki.archlinux.org/index.php/Pacman/Package_signing">Wiki ArchLinux</a>)</h4>
+
+  <pre>
+$ sudo pacman-key --init
+$ sudo pacman-key --populate archlinux
+
+$ sudo pacman -Sy archlinux-keyring
+  </pre>
+
+  <h4>Instalação do Avahi - (<a href="https://wiki.archlinux.org/index.php/Avahi">Doc. ArchLinux</a>)</h4>
+
+  <pre>
+$ sudo pacman -S avahi
+$ sudo pacman -S nss-mdns
+  </pre>
+
+  <p>Iniciar o serviço</p>
+
+  <pre>$ sudo systemctl start avahi-daemon</pre>
+
+  <p>Iniciar o serviço no boot</p>
+
+  <pre>$ sudo systemctl enable avahi-daemon</pre>
+
+  <p>Alterar o arquivo /etc/nsswitch.conf</p>
+
+  <pre>$ sudo geany /etc/nsswitch.conf</pre>
+
+  <p>Alterar a linha abaixo:</p>
+
+  <pre>hosts: files dns myhostname</pre>
+
+  <p>para</p>
+
+  <pre>hosts: files mdns_minimal [NOTFOUND=return] dns myhostname</pre>
+
+  <p>Alterar o arquivo /etc/hosts</p>
+
+  <pre>$ sudo geany /etc/hosts</pre>
+
+  <p>Inserir a linha</p>
+
+  <pre>
+#
+# /etc/hosts: static lookup table for host names
+#
+
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	localhost.localdomain	archbang mp2482lnx
+::1		localhost.localdomain	localhost mp2482lnx
+  </pre>
+
+  <p>ou</p>
+
+  <pre>
+#
+# /etc/hosts: static lookup table for host names
+#
+
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	localhost.localdomain	localhost
+127.0.0.1	mp2482lnx.senado.gov.br	mp2482lnx
+::1		localhost.localdomain	localhost
+# End of file
+    </pre>
+
+  <p>Listar os serviços existentes na rede</p>
+
+  <pre>avahi-browse -alr</pre>
+
+  <h4>Comandos importantes - (<a href="http://linoxide.com/linux-command/use-ip-command-linux/">How To Use Ip Command In Linux with Examples</a>)</h4>
+
+  <pre>
+$ ping -c 3 www.google.com
+$ lspci -v
+$ dmesg | grep atl1
+$ ls /sys/class/net
+
+$ ip link set eth0 up
+$ ip link set eth0 down
+$ ip link show
+$ ip link show dev wlp0s29u1u1
+
+$ ip addr list
+$ ip addr show
+  </pre>
+
+  <img src="Linux-Nettools-vs-Iproute2.png" style="max-width: 70%; height: auto;" />
+
+  <h2>- Configurar o proxy - (<a href="https://wiki.archlinux.org/index.php/Proxy_settings">Doc. ArchLinux</a>)</h2>
+
+  <h4>Configurar o proxy para o wget - (<a href="https://wiki.archlinux.org/index.php/Wget">Doc. ArchLinux</a>)</h4>
+
+  <p>Proxy do Senado</p>
+
+  <pre>http://usuario:senha@av-web.senado.gov.br:80</pre>
+
+  <p>Alterar o arquivo /etc/wgetrc</P>
+
+  <pre>$ sudo geany /etc/wgetrc</pre>
+
+  <p>Procurar as linhas com as configurações do proxy e alterar conforme abaixo.</p>
+
+  <pre>
+http_proxy = http://usuario:senha@av-web.senado.gov.br:80
+https_proxy = http://usuario:senha@av-web.senado.gov.br:80
+ftp_proxy = http://usuario:senha@av-web.senado.gov.br:80
+
+# If you do not want to use proxy at all, set this to off.
+use_proxy = on
+  </pre>
+
+  <p>Criar o script profile.sh no diretório /etc/profile.d</p>
+
+  <pre>$ sudo geany /etc/profile.d/profile.sh</pre>
+
+  <p>Inserir a linha abaixo:</p>
+
+  <pre>
+#!/bin/bash
+
+## Colocar no final do arquivo. -- /etc/profile.d/profile.sh
+## Configuracoes de PROXY
+## Para configurar usuaro e senha do proxy: http://usuario:senha@servidor:80/
+
+export all_proxy="http://usuario:senha@av-web.senado.gov.br:80/"
+export http_proxy=$all_proxy
+export https_proxy=$all_proxy
+export ftp_proxy=$all_proxy
+export socks_proxy=$all_proxy
+export rsync_proxy=$all_proxy
+
+export no_proxy="*.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*"
+
+export ALL_PROXY=$all_proxy
+export HTTP_PROXY=$all_proxy
+export HTTPS_PROXY=$all_proxy
+export FTP_PROXY=$all_proxy
+export SOCKS_PROXY=$all_proxy
+export RSYNC_PROXY=$all_proxy
+
+export NO_PROXY=$no_proxy
+  </pre>
+
+  <h4>Configurar o proxy para o sudo</h4>
+
+  <p>Alterar o arquivo /etc/sudoers</p>
+
+  <pre>$ sudo geany /etc/sudoers</pre> ou
+  <pre>$ sudo visudo</pre>
+
+  <p>Inserir a linha abaixo:</p>
+
+  <pre>Defaults env_keep+="all_proxy http_proxy https_proxy ftp_proxy socks_proxy rsync_proxy no_proxy ALL_PROXY HTTP_PROXY HTTPS_PROXY FTP_PROXY SOCKS_PROXY RSYNC_PROXY NO_PROXY"</pre>
+
+  <h4>Configurar o pacman para trabalhar com wget (proxy)</h4>
+
+  <p>Alterar o arquivo /etc/pacman.conf</P>
+
+  <pre>$ sudo geany /etc/pacman.conf</pre>
+
+  <p>Retirar o caracter de comentário na linha abaixo:</p>
+
+  <pre>#XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u</pre>
+
+  <h4>Instalar e configurar o cntlm</h4>
+
+  <h5>Instalação</h5>
+
+  <pre>$ yaourt -S cntlm</pre>
+
+  <h5>Configuração</h5>
+
+  <pre>$ sudo cntlm -H</pre> ou
+  <pre>$ sudo cntlm -H -M http://av-web.senado.gov.br:80</pre>
+
+  <p>Após informar a password copiar as linhas do "PassLM" e "PassNT" para o arquivo /etc/cntlm.conf. Exemplo:</p>
+
+  <pre>
+PassLM      FF9EF4A844B020E42029B7CDF44D542E
+PassNT      3770D467EFFFFFB77BB311C4C298A2C8
+  </pre>
+
+  <p>Alterar o arquivo /etc/cntlm.conf</p>
+
+  <pre>$ sudo geany /etc/cntlm.conf</pre>
+
+  <p>Inserir as linhas abaixo:</p>
+
+  <pre>
+Username    wilton
+Domain      senado
+PassLM      FF9EF4A844B020E42029B7CDF44D542E
+PassNT      3770D467EFFFFFB77BB311C4C298A2C8
+Proxy       av-web.senado.gov.br:80
+NoProxy     *.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*
+Listen      3128
+Auth        NTLM
+  </pre>
+
+  <p><b>OBS:</b> Não esquecer de substituir os valores de "PassLM" e "PassNT".</p>
+
+  <p>Alterar o arquivo /etc/wgetrc</p>
+
+  <pre>
+$ sudo geany /etc/wgetrc
+
+Trocar "http://usuario:senha@av-web.senado.gov.br:80" por "http://127.0.0.1:3128"
+  </pre>
+
+  <p>Alterar o arquivo /etc/profile.d/profile.sh</p>
+
+  <pre>
+$ sudo geany /etc/profile.d/profile.sh
+
+Trocar "http://usuario:senha@av-web.senado.gov.br:80" por "http://127.0.0.1:3128"
+  </pre>
+
+  <p>Para iniciar:</p>
+
+  <pre>$ sudo cntlm -v</pre>
+
+  <p>Para iniciar no boot:</pre>
+
+    <pre>$ sudo systemctl enable cntlm.service</pre>
+
+    <p>Alterar o arquivo /etc/pacman.conf</P>
+
+    <pre>$ sudo geany /etc/pacman.conf</pre>
+
+    <p>Colocar o caracter de comentário na linha abaixo:</p>
+
+    <pre>XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u</pre>
+
+    <h4>Configurar o proxy para o GNOME3</h4>
+
+    <p>Executar os comandos abaixo:</p>
+
+    <pre>
+$ gsettings set org.gnome.system.proxy mode 'manual'
+$ gsettings set org.gnome.system.proxy.http host '127.0.0.1'
+$ gsettings set org.gnome.system.proxy.http port 3128
+$ gsettings set org.gnome.system.proxy.https host '127.0.0.1'
+$ gsettings set org.gnome.system.proxy.https port 3128
+$ gsettings set org.gnome.system.proxy.ftp host '127.0.0.1'
+$ gsettings set org.gnome.system.proxy.ftp port 3128
+$ gsettings set org.gnome.system.proxy ignore-hosts "['*.senado.leg.br,*.senado.gov.br,*.congressonacional.leg.br,*.cn.leg.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.congressonacional.leg.br,.cn.leg.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*']"
+  </pre>
+
+    <p>Executar o boot na máquina.</p>
+
+    <pre>$ sudo shutdown -r now</pre>
+
+    <h2>- Configurações</h2>
+
+    <p>Alterar arquivo ~/.bashrc</p>
+
+    <pre>$ geany ~/.bashrc</pre>
+
+    <p>Inserir as linhas abaixo:</p>
+
+    <pre>
+## ---- Configuracoes local do usuario
+
+alias lxterminal='lxterminal --geometry=170x40'
+export PATH=$PATH:$HOME/bin:$HOME/.node_modules/bin
+  </pre>
+
+    <h4>Configurar screen lock</h4>
+
+    <p>Alterar arquivo ~/.config/openbox/rc.xml</p>
+
+    <pre>$ geany ~/.config/openbox/rc.xml</pre>
+
+    <p>Inserir as linhas abaixo:</p>
+
+    <pre>
+    &lt;keybind key="W-l"&gt;
+      &lt;action name="Execute"&gt;
+        &lt;command&gt;slock&lt;/command&gt;
+      &lt;/action&gt;
+    &lt;/keybind&gt;
+  </pre>
+
+    <h4>Instalar xautolock</h4>
+
+    <pre>$ sudo pacman -S xautolock</pre>
+
+    <p>Configurar o xautolock</p>
+
+    <p>Alterar o arquivo ~/.config/openbox/autostart</p>
+
+    <pre>$ geany ~/.config/openbox/autostart</pre>
+
+    <p>Inserir as linhas abaixo:</p>
+
+    <pre>
+# autolock
+(sleep 1s && xautolock -time 10 -locker slock) &
+  </pre>
+
+    <h4>Configurar Impressora (CUPS) - (<a href="https://wiki.archlinux.org/index.php/CUPS#Installation">Doc. ArchLinux</a>)</h4>
+
+    <h5>Instalar CUPS (Server)</h5>
+
+    <pre>$ sudo pacman -S cups cups-pdf</pre>
+
+    <p>Verificar se ghostscript e gsfonts estão instalados</p>
+
+    <pre>
+$ pacman -Q | grep ghostscript
+$ pacman -Q | grep gsfonts
+  </pre>
+
+    <p>Se não estiver</p>
+
+    <pre>
+$ sudo pacman -S ghostscript
+$ sudo pacman -S gsfonts
+  </pre>
+
+    <p>Para iniciar o cups</p>
+
+    <pre>$ sudo systemctl start org.cups.cupsd.service</pre>
+
+    <p>Para iniciar o cups no boot</p>
+
+    <pre>$ sudo systemctl enable org.cups.cupsd.service</pre>
+
+    <p>Configurar permissoes de administrador</p>
+
+    <pre>
+$ sudo groupadd printadmin
+
+# for printer administration
+$ sudo gpasswd -a wilton printadmin
+
+# for printing priviledges
+$ sudo gpasswd -a wilton lp
+  </pre>
+
+    <p>Alterar o arquivo /etc/cups/cups-files.conf</p>
+
+    <pre>$ sudo geany /etc/cups/cups-files.conf</pre>
+
+    <p>Alterar a linha que possui SystemGroup</p>
+
+    <pre>SystemGroup sys root printadmin</pre>
+
+    <p>Para configurar uma impressora usar a URL <a href="http://localhost:631">Adminitração do CUPS</a></p>
+
+    <p>Adicionar uma impressora vitual PDF usando a URL acima.</p>
+
+    <p>A impressora virtual PDF grava o arquivo em /var/spool/cups-pdf/${USER}</p>
+
+    <p>Criar um link simbólico para /var/spool/cups-pdf/wilton dentro de /home/wilton</p>
+
+    <pre>$ ln -s /var/spool/cups-pdf/wilton pdf</pre>
+
+    <h5>Instalar CUPS (Client)</h5>
+
+    <pre>$ sudo pacman -S libcups</pre>
+
+    <h5>Para localizar drive para impressoras acessar <a href="http://www.openprinting.org/printers"><strong>Open Printing</strong></a></h5>
+
+    <p><b>OBS:</b> Impressoras no trabalho: socket://ie9999:9100</p>
+
+    <h4>Configurar a aparência do gerenciador de janelas</h4>
+
+    <h5>Fontes</h5>
+
+    <pre>$ sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-ms-fonts</pre>
+
+    <h3>Openbox - (<a href="https://wiki.archlinux.org/index.php/Openbox">Doc. ArchLinux</a>)</h3>
+
+    <pre>
+$ sudo pacman -S openbox-themes
+$ sudo pacman -S gtk-theme-orion
+  </pre>
+
+    <h4>Configurar Openbox</h4>
+
+    <h5>Menu openbox - (<a href="https://wiki.archlinux.org/index.php/Xdg-menu#OpenBox">Doc. ArchLinux</a>)</h5>
+
+    <p>Arquivo: ~/.config/openbox/menu.xml</p>
+
+    <p>Gerar menu com as aplicações instaladas manualmente</p>
+
+    <pre>$ xdg_menu --format openbox3 --root-menu /etc/xdg/menus/arch-applications.menu > xdg-menu.xml</pre>
+
+    <h5>"Customize look and fell" - Usando o lxappearance altere para o tema preferido. Exemplo: BSM Simple Dark</h5>
+
+    <h3>Firewall - (<a href="https://wiki.archlinux.org/index.php/Uncomplicated_Firewall">Doc. ArchLinux</a>)</h3>
+
+    <pre>$ sudo pacman -S ufw gufw</pre>
+
+    <p>Para iniciar o serviço no boot</p>
+
+    <pre>$ sudo systemctl enable ufw.service</pre>
+
+    <p>Para configurar as regras</p>
+
+    <pre>$ sudo gufw</pre>
+
+    <h2>- Restaurar o backup</h2>
+
+    <h2>- Instalar o Dropbox</h2>
+
+    <h4>Instalar os pacotes dropbox - (<a href="https://wiki.archlinux.org/index.php/Dropbox#Installation">Doc. ArchLinux</a>)</h4>
+
+    <pre>$ yaourt -S dropbox</pre>
+
+    <h4>Configuração</h4>
+
+    <p>Criar o arquivo /etc/sysctl.conf (caso não exista)</p>
+
+    <pre>$ sudo geany /etc/sysctl.conf</pre>
+
+    <p>Criar o arquivo /etc/sysctl.d/99-sysctl.conf (caso não exista)</p>
+
+    <pre>$ sudo geany /etc/sysctl.d/99-sysctl.conf</pre>
+
+    <p>Inserir a linha abaixo:</p>
+
+    <pre>fs.inotify.max_user_watches = 100000</pre>
+
+    <p>Executar o comando sysctl:</p>
+
+    <pre>sudo sysctl --system</pre>
+
+    <h4>Instalar dropbox-cli</h4>
+
+    <p>É um cliente linha de comando para o Dropbox.</p>
+
+    <pre>$ yaourt -S dropbox-cli</pre>
+
+    <p>Comandos básicos:</p>
+
+    <pre>
+$ dropbox-cli start
+$ dropbox-cli status
+$ dropbox-cli stop
+  </pre>
+
+    <h2>- Configurar o uso da memória de swap</h2>
+
+    <p>Verificar o conteúdo do arquivo /proc/sys/vm/swappiness</p>
+
+    <pre>$ cat /proc/sys/vm/swappiness</pre>
+
+    <p>Se o valor for muito alto, alterar para um menor. <br/>Alterar o arquivo /etc/sysctl.conf ou /etc/sysctl.d/99-sysctl.conf</p>
+
+    <pre>$ sudo geany /etc/sysctl.d/99-sysctl.conf</pre>
+
+    <p>Inserir a linha abaixo:</p>
+
+    <pre>vm.swappiness=5</pre>
+
+    <p>Executar o comando sysctl:</p>
+
+    <pre>sudo sysctl --system</pre>
+
+    <h2>- Configuração do som</h2>
+
+    <p>Testar:</p>
+
+    <pre>$ speaker-test -c 2</pre>
+
+    <p>Se a resposta for parecida com as linhas abaixo, é um indicado de falha.</p>
+
+    <pre>
+speaker-test 1.1.0
+
+Playback device is default
+Stream parameters are 48000Hz, S16_LE, 2 channels
+Using 16 octaves of pink noise
+ALSA lib pcm_dmix.c:1022:(snd_pcm_dmix_open) unable to open slave
+Playback open error: -2,No such file or directory
+  </pre>
+
+    <p>Execute o comando abaixo:</p>
+
+    <pre>$ amixer sset Master unmute</pre>
+
+    <p>Se a resposta for parecida com a linha abaixo, é um indicado de falha.</p>
+
+    <pre>amixer: Unable to find simple control 'Master',0</pre>
+
+    <p>Execute o comando abaixo:</p>
+
+    <pre>$ aplay /usr/share/sounds/alsa/Noise.wav</pre>
+
+    <p>No caso de erro em algum dos testes acima, execute os comandos abaixo: - (<a href="https://wiki.archlinux.org/index.php/PulseAudio#Installation">Doc. ArchLinux</a>)</p>
+
+    <pre>
+$ cat /proc/asound/card*/codec* |grep Codec
+
+Codec: Intel Haswell HDMI
+Codec: Realtek ALC290
+  </pre>
+
+    <pre>$ sudo pacman -S pulseaudio pulseaudio-alsa</pre>
+
+    <p>Iniciar o pulseaudio</p>
+
+    <pre>
+$ pulseaudio --start
+$ pulseaudio --kill (stop)
+  </pre>
+
+    <p>Instalar o moc:</p>
+
+    <pre>$ sudo pacman -S moc</pre>
+
+    <h2>- Configurar utilização de dois monitores de vídeo</h2>
+
+    <p>Instalar xorg-xrandr</p>
+
+    <pre>$ sudo pacman -S xorg-xrandr</pre>
+
+    <p>Com o comando abaixo verificar os monitores existentes</p>
+
+    <pre>$ xrandr -q</pre>
+
+    <p>Alterar o arquivo ~/.config/openbox/autostart
+
+      <pre>$ geany ~/.config/openbox/autostart</pre>
+
+      <p>Inserir as linhas abaixo:</p>
+
+      <pre>
+# Monitores
+# Executar "xrandr -q" para saber o nome dos monitores
+(sleep 2s && xrandr --output VGA-1 --auto --output HDMI-1 --auto --right-of VGA-1)
+  </pre>
+
+      <h2>- Executar o boot na máquina.</h2>
+
+      <pre>$ sudo shutdown -r now</pre>
+
+      <h2>- Instalar pacotes</h2>
+
+      <h3>Editor vim</h3>
+
+      <pre>$ sudo pacman -S gvim ctags clang vim-omnicppcomplete </pre>
+
+      <p>Entrar no .vimrc e executar:</p>
+
+      <pre>:PluginUpdate</pre>
+
+      <p>Incluir no arquivo package.json a dependencia tern-node-mongodb-native e tern-gulp</p>
+
+      <pre>
+$ cd ~/.vim/bundle/tern_for_vim
+$ geany package.json
+$ npm install
+  </pre>
+
+      <p>Executar os comandos abaixo:</p>
+
+      <pre>
+$ cd ~/.vim/bundle/YouCompleteMe
+$ install.sh --clang-completer --tern-completer
+  </pre>
+
+      <p>Criar o diretório ~/vim-backup</p>
+
+      <pre>$ mkdir ~/vim-backup</pre>
+
+      <p>Recuperar o backup do arquivo .vimrc e do diretório ~/.vim</p>
+
+      <pre>
+$ cp ~/ti/linux/vim/Vundle/_vimrc ~/.vimrc
+$ tar xzf ~/ti/linux/vim/Vundle/_vim.tar.gz
+  </pre>
+
+      <p>Configurar o vim para o root</p>
+
+      <pre>
+$ cd /root
+$ sudo mkdir vim-backup
+$ sudo cp /home/wilton/.vimrc .
+$ sudo cp -R /home/wilton/.vim/ .vim/
+  </pre>
+
+      <h3>Rede/antivirus/compactadores</h3>
+
+      <pre>
+$ sudo pacman -S iputils openssh clamav p7zip tar gzip bzip2 unrar unzip
+$ yaourt -S gigolo
+  </pre>
+
+      <h4>Instalação Samba - (<a href="https://wiki.archlinux.org/index.php/Samba">Doc. ArchLinux</a>)</h4>
+
+      <pre>$ sudo pacman -S samba</pre>
+
+      <h5>Configurar Samba</h5>
+
+      <p>Copiar o arquivo /etc/samba/smb.conf.default /etc/samba/smb.conf</p>
+
+      <pre>$ sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf</pre>
+
+      <p>Alterar o /etc/samba/smb.conf</p>
+
+      <pre>
+$ sudo geany /etc/samba/smb.conf
+
+Alterar o parâmetro WORKGROUP e verificar outros parâmetros.
+  </pre>
+
+      <p>Iniciar os serviços smbd.service e nmbd.service</p>
+
+      <pre>
+$ sudo systemctl start smbd.service
+$ sudo systemctl start nmbd.service
+  </pre>
+
+      <p>Iniciar os serviços smbd.service e nmbd.service no boot</p>
+
+      <pre>
+$ sudo systemctl enable smbd.service
+$ sudo systemctl enable nmbd.service
+  </pre>
+
+      <p>ou</p>
+
+      <p>Iniciar o serviço smbd.service no primeiro acesso usando o smbd.socket</p>
+
+      <pre>$ sudo systemctl enable smbd.socket</pre>
+
+      <h3>Desenvolvimento</h3>
+
+      <h4>Instalação Subversion - (<a href="https://wiki.archlinux.org/index.php/Subversion_Setup">Doc. ArchLinux</a>)</h4>
+
+      <pre>$ sudo pacman -S subversion</pre>
+
+      <h5>Configurar proxy para subversion</h5>
+
+      <p>Alterar o arquivo ~/.subversion/servers</p>
+
+      <pre>$ geany ~/.subversion/servers</pre>
+
+      <p>Inserir as linhas abaixo:</p>
+
+      <pre>
+[global]
+
+http-proxy-host = 127.0.0.1
+http-proxy-port = 3128
+http-proxy-exceptions = localhost, 127.0.0.0/8, dsvp, dsvp.senado.gov.br, *.senado.gov.br, *.local, *.senado.leg.br, *.congressonacional.leg.br, *.cn.leg.br, *.lexml.gov.br, *.local, 172.28.*, 172.29.*, 172.30.*, 172.31.*
+  </pre>
+
+      <h4>Instalação GIT - (<a href="https://wiki.archlinux.org/index.php/Git">Doc. ArchLinux</a>)</h4>
+
+      <pre>$ sudo pacman -S git</pre>
+
+      <h5>Configurar proxy para GIT</h5>
+
+      <p>Executar:</p>
+
+      <pre>
+$ git config --global http.proxy $http_proxy
+$ git config --global https.proxy $https_proxy
+  </pre>
+
+      <p>Alterar o arquivo ~/.gitconfig</p>
+
+      <pre>$ sudo geany ~/.gitconfig</pre>
+
+      <p>Inserir ou alterar as linhas </P>
+
+      <pre>
+[http]
+  proxy = http://127.0.0.1:3128/
+[https]
+  proxy = http://127.0.0.1:3128/
+  </pre>
+
+      <h4>Instalaçãoi do Mongodb - (<a href="https://wiki.archlinux.org/index.php/MongoDB#Installation">Doc. ArchLinux</a>)</h4>
+
+      <pre>
+$ sudo pacman -S mongodb mongodb-tools
+
+$ sudo mongod -f /etc/mongodb.conf
+$ mongo
+$ sudo chown -R mongodb: /var/lib/mongodb
+$ sudo chown -R mongodb: /var/log/mongodb
+
+$ sudo systemctl start mongodb.service
+
+ou (para iniciar o mongodb no boot)
+
+$ sudo systemctl enable  mongodb.service
+      </pre>
+
+      <h4>Outras ferramentas</h4>
+
+      <pre>
+$ sudo pacman -S kiconedit ghex hexedit meld sqlite sqlite-doc
+$ yaourt -S rhc
+  </pre>
+
+      <h4>Instalação Visual Studio Code</h4>
+
+      <h5>Manual - Download site da Microsoft</h4>
+
+        <p>Fazer download do arquivo no site da Microsoft (<a href="https://code.visualstudio.com/Updates">Download</a>)</p>
+
+        <p>Descompactar o arquivo zip no diretório /opt</p>
+
+        <pre>
+  $ cd /opt
+    $ sudo unzip ~/VSCode-linux-x64-stable.zip
+  </pre>
+
+        <p>Criar um link simbolico no diretório /usr/bin</p>
+
+        <pre>
+    $ cd /usr/bin
+    $ sudo ln -s /opt/VSCode-linux-x64/bin/code visual-studio-code
+  </pre>
+
+        <h4>Instalação Java - (<a href="https://wiki.archlinux.org/index.php/Java">Doc. ArchLinux</a>)</h4>
+
+        <pre>
+$ sudo pacman -S jdk8-openjdk openjdk8-doc openjdk8-src
+$ yaourt -S jdk
+  </pre>
+
+        <p>Criar arquivo /etc/profile.d/jdk.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/jdk.sh</pre>
+
+        <p>Inserir a linhas abaixo:</p>
+
+        <pre>
+export JAVA_HOME=/usr/lib/jvm/default
+export PATH=$PATH:$JAVA_HOME/bin
+  </pre>
+
+        <p>Criar arquivo /etc/profile.d/jre.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/jre.sh</pre>
+
+        <p>Inserir a linhas abaixo:</p>
+
+        <pre>
+# Do not change this unless you want to completely by-pass Arch Linux' way
+# of handling Java versions and vendors. Instead, please use script `archlinux-java`
+export PATH=${PATH}:/usr/lib/jvm/default/bin
+export JRE_HOME=/usr/lib/jvm/default/jre
+  </pre>
+
+        <p>Para saber quais as vm's java estão instaladas</p>
+
+        <pre>$ archlinux-java status</pre>
+
+        <pre>
+Available Java environments:
+  java-8-jdk (default)
+  java-8-openjdk
+  </pre>
+
+        <p>Mudar a vm default</p>
+
+        <pre>$ sudo archlinux-java set java-8-jdk</pre>
+
+        <p>Desfazer a vm default</p>
+
+        <pre>$ sudo archlinux-java unset</pre>
+
+        <p>Diretório</p>
+
+        <pre>/usr/lib/jvm</pre>
+
+        <h4>Instalação Maven</h4>
+
+        <p>Fazer download e descompactar no diretório /opt.</p>
+
+        <h5>Configurar o maven</h5>
+
+        <p>Copiar os arquivos de settings-* para o diretório ~/.m2</p>
+
+        <pre>$ cp ~/Downloads/java/maven/settings-* ~/.m2/</pre>
+
+        <p>Criar o link simbolico para o arquivo settings</p>
+
+        <pre>$ ln -s settings-wilton.xml settings.xml</pre>
+
+        <p>Diretório</p>
+
+        <pre>/opt/maven</pre>
+
+        <h4>Instalação Gradle</h4>
+
+        <pre>$ yaourt -S gradle</pre>
+
+        <h5>Configurar o proxy para o Gradle</h5>
+
+        <p>Criar link para keystore a ser usado.</p>
+
+        <pre>
+$ cd /home/wilton/ti/certificados/android
+$ ln -s wjps-release.keystore release.keystore
+  </pre>
+
+        <p>Alterar o arquivo ~/.gradle/gradle.properties</p>
+
+        <pre>$ geany ~/.gradle/gradle.properties</pre>
+
+        <p>Inserir ou alterar as linhas </P>
+
+        <pre>
+systemProp.http.proxyHost=127.0.0.1
+systemProp.http.proxyPort=3128
+systemProp.http.nonProxyHosts=*.senado.leg.br|*.senado.gov.br|*.congressonacional.leg.br|*.cn.leg.br|*.lexml.gov.br|*.local,.senado.leg.br|.senado.gov.br|.lexml.gov.br|.local|senado.leg.br|senado.gov.br|lexml.gov.br|local|localhost|127.0.0.0/8|172.28.*|172.29.*|172.30.*|172.31.*
+systemProp.https.proxyHost=127.0.0.1
+systemProp.https.proxyPort=3128
+systemProp.https.nonProxyHosts=*.senado.leg.br|*.senado.gov.br|*.congressonacional.leg.br|*.cn.leg.br|*.lexml.gov.br|*.local,.senado.leg.br|.senado.gov.br|.lexml.gov.br|.local|senado.leg.br|senado.gov.br|lexml.gov.br|local|localhost|127.0.0.0/8|172.28.*|172.29.*|172.30.*|172.31.*
+
+ANDROID_KEYSTORE=/home/wilton/ti/certificados/android/release.keystore
+ANDROID_KEY_ALIAS=prodasen-release
+  </pre>
+
+        <p>Diretório</p>
+
+        <pre>/usr/share/java/gradle</pre>
+
+        <h4>Instalação Tomcat 7 e 8 - (<a href="https://wiki.archlinux.org/index.php/Tomcat#Installation">Doc. ArchLinux</a>)</h4>
+
+        <pre>$ sudo pacman -S tomcat7 tomcat8</pre>
+
+        <p>Alterar o arquivo /etc/tomcat8/tomcat-users.xml</p>
+
+        <pre>$ sudo geany /etc/tomcat8/tomcat-users.xml</pre>
+
+        <p>Incluir as linhas abaixo dentro da tag tomcat-users.</p>
+
+        <pre>
+  &lt;role rolename="tomcat"/&gt;
+  &lt;role rolename="manager-gui"/&gt;
+  &lt;role rolename="manager-script"/&gt;
+  &lt;role rolename="manager-jmx"/&gt;
+  &lt;role rolename="manager-status"/&gt;
+  &lt;role rolename="admin-gui"/&gt;
+  &lt;role rolename="admin-script"/&gt;
+
+  &lt;user username="tomcat" password="xxxxxxxx" roles="tomcat"/&gt;
+  &lt;user username="manager" password="xxxxxxxx" roles="manager-gui,manager-script,manager-jmx,manager-status"/&gt;
+  &lt;user username="admin" password="xxxxxxxx" roles="admin-gui"/&gt;
+  </pre>
+
+        <p>Adicionar o usuário usuario ao grupo tomcat8.</p>
+
+        <pre>$ sudo gpasswd -a wilton tomcat8</pre>
+
+        <p>Use o comando systemctl para iniciar e parar o tomcat.</p>
+
+        <pre>
+$ sudo systemctl start tomcat8
+$ sudo systemctl stop tomcat8
+  </pre>
+
+        <p>Diretórios</p>
+
+        <pre>
+/usr/share/tomcat8             - Diretório principal
+/usr/share/java/tomcat8        - Tomcat Java libraries (jars)
+/etc/tomcat8                   - Configurações
+/var/log/tomcat8               - Arquivos de log
+/var/lib/tomcat8/webapps       - Aplicações WEB (deploy)
+/var/tmp/tomcat8               - Arquivos gravados pela aplicação
+  </pre>
+
+        <p>Criar o arquivo /etc/profile.d/tomcat.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/tomcat.sh</pre>
+
+        <p>Inserir as linhas abaixo:</p>
+
+        <pre>
+## Colocar no final do arquivo. -- /etc/profile.d/tomcat.sh
+## Configuracoes para a versão do tomcat
+export CATALINA_HOME=/usr/share/tomcat8
+  </pre>
+
+        <p>Copiar os arquivos senado.jks e _keystore para o diretório /usr/share/tomcat8</p>
+
+        <pre>
+$ sudo cp ~/ti/java/tomcat-config/senado.jks /usr/share/tomcat8/
+$ sudo cp ~/ti/java/tomcat-config/_keystore /usr/share/tomcat8/.keystore
+  </pre>
+
+        <p>Copiar o arquivo catalina.sh para o diretório /usr/share/tomcat8/bin/</p>
+
+        <pre>$ sudo cp ~/ti/java/tomcat-config/bin/catalina8.sh /usr/share/tomcat8/bin/catalina.sh</pre>
+
+        <p>Copiar o arquivo server.xml para o diretório /etc/tomcat8</p>
+
+        <pre>$ sudo cp ~/ti/java/tomcat-config/conf/server8.xml /etc/tomcat8/server.xml</pre>
+
+        <p>Copiar diretório bck para o diretório /etc/tomcat8</p>
+
+        <pre>$ sudo cp -R ~/ti/java/tomcat-config/conf/Catalina/localhost/bck/ /etc/tomcat8/Catalina/localhost/</pre>
+
+        <p>Copiar as bibliotacas abaixo para o diretório /usr/share/java/tomcat8</p>
+
+        <pre>$ sudo cp ~/ti/java/tomcat-config/lib/ojdbc7* /usr/share/java/tomcat8/</pre>
+        <!--
+$ sudo cp ~/ti/java/tomcat8-config/lib/c3p0-* /usr/share/java/tomcat8/
+$ sudo cp ~/ti/java/tomcat8-config/lib/mchange-commons-java* /usr/share/java/tomcat8/
+$ sudo cp ~/ti/java/tomcat8-config/lib/ojdbc6* /usr/share/java/tomcat8/
+-->
+
+        <h4>Instalação Eclipse - (<a href="https://wiki.archlinux.org/index.php/Eclipse">Doc. ArchLinux</a>)</h4>
+
+        <h5>Download site eclipse (<a href="http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/mars1">Site eclipse</a>)</h5>
+
+        <p>Descompactar no diretório /opt/eclipse e executar os comandos abaixo:</p>
+
+        <pre>
+$ cd /opt
+$ sudo mkdir eclipse
+$ sudo groupadd eclipse
+$ sudo gpasswd -a wilton eclipse
+$ sudo find eclipse -type d -exec chmod g+s {} \;
+$ sudo chown -R wilton.eclipse eclipse
+$ sudo chmod -R ug+rwx eclipse
+$ sudo cp ~/ti/linux/archBang/instalacao/configuracoes/icones/eclipse.png /usr/share/icons/hicolor/16x16/apps
+  </pre>
+
+        <p>Adicionar o repositório do subclipse</p>
+
+        <pre>
+Subclipse 1.12.x Update Site
+http://subclipse.tigris.org/update_1.12.x
+  </pre>
+
+        <h4>Instalação Android - (<a href="https://wiki.archlinux.org/index.php/Android">Doc. ArchLinux</a>)</h4>
+
+        <h5>Configurar regras udev para o dispositivo</h5>
+
+        <p>Para descobrir o vender Id e product id do dispositivo</p>
+
+        <pre>
+$ lsusb
+
+Bus 004 Device 005: ID 22b8:2e76 Motorola PCS
+Bus 004 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+  </pre>
+
+        <p>Criar o arquivo /etc/udev/rules.d/51-android.rules</p>
+
+        <pre>$ sudo geany /etc/udev/rules.d/51-android.rules</pre>
+
+        <p>Inserir as linhas abaixo:</p>
+
+        <pre>
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",MODE="0666",OWNER="wilton"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="android_fastboot"
+SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e76",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
+  </pre>
+
+        <p>Recarregar as regras udev</p>
+
+        <pre>$ sudo udevadm control --reload-rules</pre>
+
+        <h4>Instação MTP - (<a href="https://wiki.archlinux.org/index.php/MTP">Doc. ArchLinux</a>)</h4>
+
+        <pre>$ sudo pacman -S mtpfs gvfs-mtp</pre>
+
+        <p>Alterar o arquivo /etc/fuse.conf</p>
+
+        <pre>$ sudo geany /etc/fuse.conf</pre>
+
+        <pre>Retirar o caracter de comentário da linha que contém user_allow_other</pre>
+
+        <p>Detectar o device</p>
+
+        <pre>$ mtp-detect</pre>
+
+        <p>Conectar o device</p>
+
+        <pre>$ mtp-connect</pre>
+
+        <p>Montar o device em ~/mnt</p>
+
+        <pre>$ mtpfs -o allow_other ~/mnt</pre>
+
+        <p>Para desmontar o device em ~/mnt</p>
+
+        <pre>$ fusermount -u ~/mnt</pre>
+
+        <h4>Instalação Android SDK</h4>
+
+        <h5>Download do android (<a href="https://developer.android.com/sdk/index.html#Other">Download Android SDK</a>)</h5>
+
+        <p>Instalar bibliotecas de 32 bits</p>
+
+        <pre>$ sudo pacman -S lib32-alsa-lib lib32-openal lib32-libstdc++5 lib32-libxv lib32-mesa lib32-ncurses lib32-sdl lib32-zlib lib32-fontconfig lib32-libpulse swt</pre>
+
+        <p>Fazer download do Android SDK</p>
+
+        <p>Descompactar o Android SDK no diretório /opt</p>
+
+        <pre>sudo tar xzf ~/Downloads/android/android-sdk_r24.4.1-linux.tgz</pre>
+
+        <p>Configurar permissões</p>
+
+        <pre>
+$ sudo groupadd android
+$ sudo gpasswd -a wilton android
+$ sudo find android-sdk-linux -type d -exec chmod g+s {} \;
+$ sudo chown -R wilton.android /opt/android-sdk-linux
+$ sudo chmod -R ug+rwx /opt/android-sdk-linux
+$ sudo cp ~/ti/linux/archBang/instalacao/configuracoes/icones/android.png /usr/share/icons/hicolor/16x16/apps
+  </pre>
+
+        <p>Criar link para android-sdk e configurar as variáveis de ambiente</p>
+
+        <pre>sudo ln -s android-sdk-linux/ android-sdk</pre>
+
+        <h5>Configurar as variáveis de ambiente</h5>
+
+        <p>Alterar o arquivo /etc/profile.d/android-sdk.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/android-sdk.sh</pre>
+
+        <p>Inserir a linhas abaixo:</p>
+
+        <pre>
+export ANDROID_HOME=/opt/android-sdk
+export ANDROID_SWT=/usr/share/java
+export PATH=$PATH:$ANDROID_HOME/tools
+
+export ANDROID_KEYSTORE=/home/wilton/ti/certificados/release.keystore
+export ANDROID_KEY_ALIAS=wjps-release
+# export ANDROID_KEY_ALIAS=prodasen-release
+  </pre>
+
+        <p>Verificar o arquivo /etc/profile.d/android-sdk-platform-tools.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/android-sdk-platform-tools.sh</pre>
+
+        <p>Tem que ter a linhas abaixo:</p>
+
+        <pre>export PATH=$PATH:/opt/android-sdk/platform-tools</pre>
+
+        <h5>Configurar o proxy no android tools</h5>
+
+        <p>Iniciar o android e alterar o proxy no menu "Tools/Options"</p>
+
+        <pre>$ android</pre>
+
+        <p>ou alterar o arquivo ~/.android/androidtool.cfg</p>
+
+        <pre>$ geany ~/.android/androidtool.cfg</pre>
+
+        <p>Alterar as linhas abaixo:</p>
+
+        <pre>
+http.proxyPort=3128
+http.proxyHost=127.0.0.1
+  </pre>
+
+        <p>Executar o boot</p>
+
+        <pre>$ sudo shutdown -r now</pre>
+
+        <p>Atualizar o android sdk:</p>
+
+        <pre>$ android update sdk --no-ui</pre>
+
+        <p>Complementar a atualização do android sdk:</p>
+
+        <pre>$ android update sdk</pre>
+
+        <h4>Instalação Android Studio</h4>
+
+        <h5>Download do android studio (<a href="https://developer.android.com/sdk/index.html#Other">Download Android SDK</a>)</h5>
+
+        <p>Fazer download do Android Studio</p>
+
+        <p>Descompactar o Android Studio no diretório /opt</p>
+
+        <pre>sudo unzip ~/Downloads/android/android-studio-ide-141.2456560-linux.zip</pre>
+
+        <p>Configurar permissões</p>
+
+        <pre>
+$ sudo groupadd android
+$ sudo gpasswd -a wilton android
+$ sudo find android-studio -type d -exec chmod g+s {} \;
+$ sudo chown -R wilton.android /opt/android-studio
+$ sudo chmod -R ug+rwx /opt/android-studio
+  </pre>
+
+        <p>Verificar o arquivo /etc/profile.d/android-studio.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/android-studio.sh</pre>
+
+        <p>Tem que ter as linhas abaixo:</p>
+
+        <pre>
+export ANDROID_STUDIO=/opt/android-studio
+export PATH=$PATH:$ANDROID_STUDIO/bin
+  </pre>
+
+        <h5>Se ao iniciar Android Studio aparecer a mensagem abaixo, instale o locale conforme a mensagem.</h5>
+
+        <pre>
+Can't use Subversion command line client: svn
+svn: warning: cannot set LC_CTYPE locale
+svn: warning: environment variable LC_ALL is en_US.UTF-8
+svn: warning: please check that your locale name is correct
+  </pre>
+
+        <p>Executar o comando abaixo para verificar se a localidade está instalada.</p>
+
+        <pre>
+$ locale -a
+
+C
+POSIX
+pt_BR.utf8
+  </pre>
+
+        <p>Editar o arquivo /etc/locale.gen</p>
+
+        <pre>$ sudo vim /etc/locale.gen</p></pre>
+
+        <p>Retirar o caracter de comentário da linha que contem a localidade desejada (en_US.UTF-8) </p>
+
+        <p>Executar o comando locale-gen</p>
+
+        <pre>$ sudo locale-gen</pre>
+
+        <h4>Instalação Node.js</h4>
+
+        <h5>Usando o repositório do Archlinux - (<a href="https://wiki.archlinux.org/index.php/Node.js">Doc. ArchLinux</a>)</h5>
+
+        <pre>$ sudo pacman -S nodejs npm</pre>
+
+        <p>Criar o arquivo /etc/profile.d/nodejs.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/nodejs.sh</pre>
+
+        <pre>export NODE_PATH=/usr/lib/node_modules/</pre>
+
+        <p>Atualizar o arquivo .npmrc</p>
+
+        <pre>
+$ npm config set strict-ssl false
+$ npm config set registry "http://registry.npmjs.org/"
+$ npm config set proxy "http://127.0.0.1:3128"
+$ npm config set https-proxy "http://127.0.0.1:3128"
+$ npm config set prefix "/usr/lib/node_modules/"
+  </pre>
+
+        <p>Obs: Outras formas de configurar o .npmrc:</p>
+
+        <p>Executar o comando abaixo:</p>
+
+        <pre>$ npm config edit</pre>
+
+        <p>Criar ou alterar o arquivo ~/.npmrc</p>
+
+        <pre>$ vim ~/.npmrc</pre>
+
+        <p>Inserir as linhas abaixo:</p>
+
+        <pre>
+tmp=/tmp
+proxy=http://127.0.0.1:3128/
+https-proxy=http://127.0.0.1:3128/
+registry=http://registry.npmjs.org/
+strict-ssl=false
+prefix=/usr/lib/node_modules/
+  </pre>
+
+        <p>Diretório de instalação dos módulos</p>
+
+        <pre>/usr/lib/node_modules</pre>
+
+        <h5>Via nvm - (<a href="https://github.com/creationix/nvm">nvm.sh</a>)</h5>
+
+        <p>Fazer download do instalador e executar.</p>
+
+        <pre>$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash</pre>
+
+        <p>Retirar o prefix do arquivo .npmrc</p>
+
+        <p>Permissão de execução para o arquivo "~/.nvm/nvm.sh"</p>
+
+        <pre>
+$ cd ~/.nvm
+$ chmod u+x nvm.sh
+  </pre>
+
+        <p>Instalar nodejs</p>
+
+        <pre>
+$ nvm install 6.11.1
+$ nvm install 7.10.1
+$ nvm install 8.2.1
+
+$ nvm use 6.11.1
+ou
+$ nvm use 8.2.1
+  </pre>
+
+        <p>Diretório de instalação dos módulos</p>
+
+        <pre>/home/wilton/.nvm/versions/node/v8.2.1/lib/node_modules</pre>
+
+        <p>Comandos importantes</p>
+
+        <pre>
+$ nvm --version
+$ nvm install 9.9.9
+$ nvm install 8.2.1 --reinstall-packages-from=7.11.1
+$ nvm install --lts=argon
+$ nvm uninstall 9.9.9
+$ nvm ls
+$ nvm ls-remote
+$ nvm use 9.9.9
+$ nvm which 9.9.9
+  </pre>
+
+        <p>Instalar pacotes com npm - Globais</p>
+
+        <pre>
+$ npm install -g nodemon node-gyp node-pre-gyp typescript @angular/cli vtop npm-check-updates eslint
+  </pre>
+
+        <p>Configurar proxy para typings</p>
+
+        <pre>$ vim ~/.typingsrc</pre>
+
+        <p>Inserir as linhas abaixo:</p>
+
+        <pre>
+{
+  "proxy": "http://127.0.0.1:3128",
+  "httpProxy": "http://127.0.0.1:3128",
+  "httpsProxy": "http://127.0.0.1:3128"
+}
+  </pre>
+
+        <p>O arquivo .typingsrc pode ser colocado no diretório home do usuário ou dentro de cada aplicação.</p>
+
+        <p>Criar ou alterar o arquivo ~/.bowerrc</p>
+
+        <pre>$ vim ~/.bowerrc</pre>
+
+        <p>Inserir as linhas abaixo:</P>
+
+        <pre>
+{
+  "proxy": "http://127.0.0.1:3128",
+  "https-proxy": "http://127.0.0.1:3128",
+  "strict-ssl": false
+}
+  </pre>
+
+        <p>Comandos importantes</p>
+
+        <pre>
+$ npm list
+$ npm list -g
+$ npm update -g
+$ npm cache clean
+$ npm update packageName
+$ npm uninstall packageName
+
+$ sudo npm update -g packageName
+$ sudo npm uninstall -g packageName
+  </pre>
+
+        <p>Restaurar o backup dos arquivos ~/.jshintrc e ~/.jslintrc</p>
+
+        <p>Instalar watchman</p>
+
+        <pre>$ yaourt -S watchman</pre>
+
+        <h3>Disco</h3>
+
+        <pre>$ sudo pacman -S gparted testdisk unetbootin</pre>
+
+        <h3>Browser</h3>
+
+        <pre>
+$ sudo pacman -S chromium curl firefox-i18n-pt-br flashplugin
+$ yaourt -S google-chrome
+  </pre>
+
+        <h3>Cliente email</h3>
+
+        <pre>$ sudo pacman -S claws-mail webkitgtk2</pre>
+        <pre>$ sudo pacman -S sylpheed</pre>
+        <pre>$ sudo pacman -S geary</pre>
+
+        <h5>Configurar o email (Trabalho)</h5>
+
+        <pre>
+Receber mensagens (IMAP)
+
+Servidor:             correio.senado.gov.br
+Porta:                993
+Usuário:              senado\&lt;seu_usuario&gt;
+Segurança da conexão: SSL/TLS
+Modo de autenticação: Senha normal
+  </pre>
+
+        <pre>
+Servidor de envio (SMTP)
+
+Servidor:             mail.senado.gov.br
+Porta:                587
+Segurança da conexão: STARTTLS
+Modo de autenticação: Senha normal
+Nome de usuário:      &lt;seu_usuario&gt; (não necessita do prefixo "senado\")
+  </pre>
+
+        <pre>
+Em "Catálogo" selecionar "Arquivo -&gt; Novo -&gt; Diretório LDAP"
+
+Servidor: infraa.senado.gov.br
+Base DN:  DC=senado,DC=gov,DC=br
+Porta:    389
+Bind DN:  senado\&lt;seu_usuario&gt;
+  </pre>
+
+        <h3>Utilitários diversos</h3>
+
+        <pre>$ sudo pacman -S pcmanfm file-roller filezilla scrot tree xorg-xcalc youtube-dl</pre>
+
+        <p>Principais opções do scrot (Screen Shot)</p>
+
+        <pre>
+$ scrot opcoes [nomeArquivo]
+
+# Permite a seleção da janela ou área a ser capturada.
+$ scrot -s
+
+# Captura a tela com foco
+$ sleep 5 && scrot -ucd 3
+
+# Captura uma parte da tela
+$ sleep 5 && scrot -scd 3
+
+# -b            = inclui a borda da janela
+# -d            = intervalo de tempo antes da captura
+# -c            = conta o tempo conforme definido em -d
+# -u            = captura a janela que tem o foco
+# -e comando    = executa o comando após a captura
+# -t percentual = percentual do tamanho da imagem
+# -q percentual = relação qualidade e opção de compressão do arquivo
+
+  </pre>
+
+        <h3>Editores/leitores</h3>
+
+        <pre>$ sudo pacman -S libreoffice-fresh-pt-BR gimp evince calibre</pre>
+
+        <h2>- Instalar cliente Oracle - (<a href="https://wiki.archlinux.org/index.php/Oracle_client">Doc. ArchLinux</a>)</h2>
+
+        <p>Fazer download dos arquivo oracle-instantclient-basic.tar.gz e oracle-instantclient-sqlplus.tar.gz do site AUR</p>
+
+        <pre>
+$ wget https://aur.archlinux.org/cgit/aur.git/snapshot/oracle-instantclient-basic.tar.gz
+$ wget https://aur.archlinux.org/cgit/aur.git/snapshot/oracle-instantclient-sqlplus.tar.gz
+  </pre>
+
+        <p>Fazer download dos arquivos de instalação do <a href="http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html">Oracle instant client</a>.</p>
+
+        <p>Descompactar o arquivo oracle-instantclient-basic.tar.gz</p>
+
+        <pre>
+$ tar xzf oracle-instantclient-basic.tar.gz
+$ cd oracle-instantclient-basic
+  </pre>
+
+        <p>Copiar o arquivo instantclient-basic-linux.x64-12.1.0.2.0.zip para o diretório oracle-instantclient-basic e executar
+          o comando makepkg</p>
+
+        <pre>
+$ cp ../instantclient-basic-linux.x64-12.1.0.2.0.zip .
+$ makepkg -ic
+  </pre>
+
+        <p>Descompactar o arquivo oracle-instantclient-sqlplus.tar.gz</p>
+
+        <pre>
+$ tar xzf oracle-instantclient-sqlplus.tar.gz
+$ cd oracle-instantclient-sqlplus
+  </pre>
+
+        <p>Copiar o arquivo instantclient-sqlplus-linux.x64-12.1.0.2.0.zip para o diretório oracle-instantclient-basic e executar
+          o comando makepkg</p>
+
+        <pre>
+$ cp ../instantclient-sqlplus-linux.x64-12.1.0.2.0.zip .
+$ makepkg -ic
+  </pre>
+
+        <p>Copiar o arquivo tnsnames.ora para o diretório /etc/</p>
+
+        <pre>$ sudo cp ~/ti/linux/archBang/instalacao/configuracoes/etc/tnsnames.ora /etc/tnsnames.ora</pre>
+
+        <p>Alterar o arquivo /etc/profile.d/oracle.sh</p>
+
+        <pre>$ sudo geany /etc/profile.d/oracle.sh</pre>
+
+        <p>Inserir as linhas abaixo:</p>
+
+        <pre>
+## Colocar no final do arquivo. -- /etc/profile.d/oracle.sh
+## Configuracoes para o Oracle
+
+# export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1'
+export NLS_LANG='BRAZILIAN PORTUGUESE_BRAZIL.UTF8'
+  </pre>
+
+        <p>Carregar variáveis de ambiente</p>
+
+        <pre>$ source /etc/profile</pre>
+
+        <p>Testar a instalação</p>
+
+        <pre>$ sqlplus sicon/sicon@OPUS.WORLD </pre>
+
+        <h2>- Instalar o Oracle SqlDeveloper 4.0.3 - java 7</h2>
+
+        <p>Fazer download dos arquivo de instalação do <a href="http://www.oracle.com/technetwork/developer-tools/sql-developer/downloads/index.html">Oracle SqlDeveloper</a>.</p>
+
+        <p>Descompactar no diretório /opt e renomear para sqldeveloper-4.0.3</p>
+
+        <p>Configurar permissões</p>
+
+        <pre>
+$ sudo groupadd sqldeveloper
+$ sudo gpasswd -a wilton sqldeveloper
+$ sudo find sqldeveloper-4.0.3 -type d -exec chmod g+s {} \;
+$ sudo chown -R wilton.sqldeveloper /opt/sqldeveloper-4.0.3
+$ sudo chmod -R ug+rwx /opt/sqldeveloper-4.0.3
+  </pre>
+
+        <p>Criar o link abaixo:</p>
+
+        <pre>sudo ln -s sqldeveloper-4.0.3 sqldeveloper</pre>
+
+        <h2>- Instalar o Oracle SqlDeveloper - Precisa do java 8</h2>
+
+        <p>Fazer download do arquivo oracle-sqldeveloper.tar.gz do site AUR</p>
+
+        <pre>$ wget https://aur.archlinux.org/cgit/aur.git/snapshot/oracle-sqldeveloper.tar.gz</pre>
+
+        <p>Fazer download dos arquivo de instalação do <a href="http://www.oracle.com/technetwork/developer-tools/sql-developer/downloads/index.html">Oracle SqlDeveloper</a>.</p>
+
+        <p>Descompactar o arquivo oracle-sqldeveloper.tar.gz</p>
+
+        <pre>
+$ tar xzf oracle-sqldeveloper.tar.gz
+$ cd oracle-sqldeveloper
+  </pre>
+
+        <p>Copiar o arquivo sqldeveloper-4.1.2.20.64-no-jre.zip para o diretório oracle-sqldeveloper.</p>
+
+        <pre>
+$ cp ../sqldeveloper-4.1.2.20.64-no-jre.zip .
+$ makepkg -ic
+  </pre>
+
+        <p>Alterar o arquivo ~/.sqldeveloper/4.1.2/product.conf</p>
+
+        <pre>$ sudo geany ~/.sqldeveloper/4.1.2/product.conf</pre>
+
+        <p>Alterar o parâmentro SetJavaHome para:</p>
+
+        <pre>SetJavaHome /usr/lib/jvm/default</pre>
+
+        <h2>- Instalar o Oracle Virtualbox - (<a href="https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_hosts">Doc. ArchLinux</a>)</h2>
+
+        <pre>$ sudo pacman -S virtualbox virtualbox-host-dkms virtualbox-guest-iso qt4</pre>
+
+        <p><strong>Obs: </strong> O arquivo .iso está localizado em usr/lib/virtualbox/additions/VBoxGuestAdditions.iso e deve
+          ser montado manualmente dentro da máquina virtual.</p>
+
+        <h3>Configuração do Virtualbox</h3>
+
+        <p>Adicionar o usuário no grupo vboxusers</p>
+
+        <pre>$ sudo gpasswd -a $USER vboxusers</pre>
+
+        <h4>Carregar o Virtualbox kernel module (vboxdrv)</h4>
+
+        <p>Carregar o módulo manualmente - Antes de iniciar o virtualbox</p>
+
+        <pre>$ sudo modprobe vboxdrv</pre>
+
+        <h5>Carregar o módulo no boot</h5>
+
+        <p>Criar o arquivo /etc/modules-load.d/</p>
+
+        <pre>$ sudo geany /etc/modules-load.d/virtualbox.conf</pre>
+
+        <p>Incluir a linha abaixo:</p>
+
+        <pre>vboxdrv</pre>
+
+        <p>Os módulos <b>vboxnetadp</b>, <b>vboxnetflt</b> e <b>vboxpci</b> são opcionais. É recomendado carregar esses módulos
+          se você deseja fazer configurações avançadas. Veja no link "<a href="https://wiki.archlinux.org/index.php/VirtualBox#Load_the_VirtualBox_kernel_modules">Load the VirtualBox kernel modules</a>"
+          quando eles são necessários.</p>
+
+        <pre>
+$ sudo modprobe vboxnetadp
+$ sudo modprobe vboxnetflt
+$ sudo modprobe vboxpci
+  </pre>
+
+        <p>ou adicionar no arquivo /etc/modules-load.d/virtualbox.conf</p>
+
+        <p><strong>Obs: </strong> É necessário recarregar os módulos manualmente com o comando abaixo caso eles tenham sido
+          carregados no boot e atualizados.</p>
+
+        <pre>$ sudo vboxreload</pre>
+
+        <h2>- Gravando uma imagem do HD</h2>
+
+        <pre>
+<a href="http://www.techtudo.com.br/dicas-e-tutoriais/noticia/2011/03/aprenda-como-fazer-um-backup-completo-do-seu-hd-clonando-o.html">Aprenda como fazer um backup completo do seu HD clonando-o</a>
+
+<a href="http://br.ccm.net/faq/7175-fazer-um-ghost-imagem-sistema-do-windows-e-linux-com-ubuntu">Fazer um ghost (imagem sistema) do Windows e Linux</a>
+
+<a href="http://www.hardware.com.br/livros/ferramentas-linux/fazendo-uma-imagem-todo.html">Fazendo uma imagem de todo o HD</a>
+
+<a href="http://www.linuxdescomplicado.com.br/2012/10/3-ferramentas-open-source-para-voce-2.html">Ferramentas Open Source para você criar uma imagem do disco rígido</a>
+  </pre>
+
+        <h3>Usando o comando partclone.ext4 para gravar a imagem das partições</h3>
+
+        <h4>Sem compressão</h4>
+
+        <pre>
+$ sudo partclone.ext4 -c -s /dev/sda1 -o /dir/sda1.pcl
+$ sudo partclone.ext4 -c -s /dev/sda3 -o /dir/sda3.pcl
+  </pre>
+
+        <p>Restaurar</p>
+
+        <pre>
+$ sudo partclone.ext4 -r -s /dir/sda1.pcl -o /dev/sda1
+$ sudo partclone.ext4 -r -s /dir/sda3.pcl -o /dev/sda3
+  </pre>
+
+        <h4>Com compressão</h4>
+
+        <pre>
+$ sudo partclone.ext4 -c -s /dev/sda1 | gzip -c &gt; /dir/sda1.pcl.gz
+$ sudo partclone.ext4 -c -s /dev/sda3 | gzip -c &gt; /dir/sda3.pcl.gz
+  </pre>
+
+        <p>Restaurar</p>
+
+        <pre>a
+$ sudo zcat /dir/sda1.pcl.gz | partclone.ext4 -r -o /dev/sda1
+$ sudo zcat /dir/sda3.pcl.gz | partclone.ext4 -r -o /dev/sda3
+  </pre>
+
+        <p><strong>OBS: </strong>Usar o comando dd para gerar imagem da MBR e fsdisk para a tabela de partições.</p>
+
+        <h3>Usando o comando dd para gravar imagem do HD</h3>
+
+        <p>Imagem do HD inteiro</p>
+
+        <pre>$ sudo dd if=/dev/sda | gzip &gt; /dir/sda.img.gz</pre>
+
+        <p>Restaurar o HD com uma imagem</p>
+
+        <pre>$ sudo gzip -d -c /dir/sda.img.gz | dd of=/dev/sda</pre>
+
+        <p>Tirar backup da MBR e do setor de boot</p>
+
+        <pre>
+$ sudo dd if=/dev/sda of=sda.mbr count=1 bs=512
+$ sudo sfdisk -d /dev/sda &gt; sda.sf
+  </pre>
+
+        <p>Restaurar a MBR e tabela de partições</p>
+
+        <pre>
+$ sudo dd if=hda.mbr of=/dev/hda
+$ sudo sfdisk --force /dev/hda &lt; hda.sf
+  </pre>
+
+</body>
