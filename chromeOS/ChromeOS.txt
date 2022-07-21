@@ -25,7 +25,7 @@ cat /etc/*-release
 hostnamectl
 sudo apt update --allow-releaseinfo-change
 sudo apt update
-sudo apt dist-upgrade
+sudo apt upgrade
 
 ***** Alterar o arquivo sources.list
 sudo vim /etc/apt/sources.list
@@ -43,12 +43,11 @@ sudo passwd wiltonj
 sudo passwd root
 
 ***** Configuração para português
-locale-gen pt_BR.UTF-8
 sudo locale-gen pt_BR.UTF-8
 locale
 sudo dpkg-reconfigure locales
 —- desmarcar “en_US.UTF-8”
-—- Selecionar “pt_BR.ISO-8859-1”/”pt_BR.UTF-8”
+—- Selecionar ”pt_BR.UTF-8”
 —- Selecionar “pt_BR.UTF-8” como default
 
 ***** Restart o sistema 
