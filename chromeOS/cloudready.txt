@@ -52,7 +52,7 @@ passwd wiltonj
 passwd root
 
 ***** Permitir que o usuário default execute sudo
-pacman -S sudo 
+pacman -S sudo
 visudo
 
 - Descomentar a linha abaixo
@@ -88,7 +88,7 @@ pt_BR ISO-8859-1
 -- Executar:
 sudo locale-gen
 
-***** Acertar repositórios do archlinux 
+***** Acertar repositórios do archlinux
 sudo vi /etc/pacman.conf
 
 - descomente as linhas abaixo
@@ -214,14 +214,14 @@ source config-mongodb.sh desenv
 export EMAIL_USAR_SENDGRID=sim
 export EMAIL_FROM=wjps@wilton.jose.nom.br
 export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
-export EMAIL_SENDGRID_API_KEY=SG.8rbZhrQ4Sq28bsmMqbEh6g.yfDNSmdbXs7L8bjNdJ6G7mm96s4GHH1EM9X-37NUBlQ
+export EMAIL_SENDGRID_API_KEY=rs.akdjfleiwrjlkkljfalk6g.dkalfddddddkdkdkdkdkdkdkdkdkdkdkd9X-37NUBlQ
 
 # --- Producao
 # source config-mongodb.sh prod
 # export EMAIL_USAR_SENDGRID=sim
 # export EMAIL_FROM=site@seluz.org.br
 # export EMAIL_NODEMAILER_USUARIO=site@seluz.org.br:kpg89d33
-# export EMAIL_SENDGRID_API_KEY=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
+# export EMAIL_SENDGRID_API_KEY=rs.akdjfleiwrjlkkljfalk6g.dkalfddddddkdkdkdkdkdkdkdkdkdkdkd9X-37NUBlQ
 
 ### ----- Colocado pelo nvm
 ================================================================================================
@@ -398,7 +398,7 @@ count=0
 
 chown wilton:android-sdk .android/repositories.cfg
 
-- executar sdkmanager 
+- executar sdkmanager
 sdkmanager --sdk_root=$ANDROID_HOME --list
 sdkmanager --sdk_root=$ANDROID_HOME --update
 sdkmanager --sdk_root=$ANDROID_HOME --licenses
@@ -487,12 +487,12 @@ sudo sysctl --system
 - Plugin flutter
 No menu View > Command Palette….
 Digite install e selecione  Extensions: Install Extensions
-Digite flutter e instale Flutter 
+Digite flutter e instale Flutter
 
 ***** Instalar banco de dados - MongoDB
 yay -S mongodb-bin mongodb-tools-bin
 
-- Executar o comando abaixo se der o erro “gpg: keyserver receive failed: Erro genérico‘ 
+- Executar o comando abaixo se der o erro “gpg: keyserver receive failed: Erro genérico‘
 gpg --keyserver pgp.mit.edu --recv-key 5CC908FDB71E12C2
 
 - Configurar mongdb
@@ -594,7 +594,7 @@ Docker version 19.03.12-ce, build 48a66213fe
 Voltar para crosh
 vmc stop termina
 vmc start termina
-exit 
+exit
 vmc container termina penguin
 vmc container termina arch
 exit

@@ -1292,11 +1292,11 @@ source config-mongodb.sh desenv
 export EMAIL_USAR_SENDGRID=sim
 export EMAIL_FROM=wjps@wilton.jose.nom.br
 export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
-export EMAIL_SENDGRID_API_KEY=SG.8rbZhrQ4Sq28bsmMqbEh6g.yfDNSmdbXs7L8bjNdJ6G7mm96s4GHH1EM9X-37NUBlQ
+export EMAIL_SENDGRID_API_KEY=rs.akdjfleiwrjlkkljfalk6g.dkalfddddddkdkdkdkdkdkdkdkdkdkdkd9X-37NUBlQ
 
 # --- Producao
 # source config-mongodb.sh prod
 # export EMAIL_USAR_SENDGRID=sim
 # export EMAIL_FROM=site@seluz.org.br
 # export EMAIL_NODEMAILER_USUARIO=site@seluz.org.br:kpg89d33
-# export EMAIL_SENDGRID_API_KEY=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
+# export EMAIL_SENDGRID_API_KEY=rs.afaffafafafafaf-afafff.x_afafafafafafafafaff_afafafafafafafffffafE
