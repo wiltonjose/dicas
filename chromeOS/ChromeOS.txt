@@ -21,9 +21,9 @@ http://www.dicasparacomputador.com/conheca-crosh-chrome-ambiente-shell
 ========== Crostini - Instalação Linux - DEBIAN ==========
 
 ***** Configuração inicial do debian (Crostini)
-cat /etc/*-release
-hostnamectl
-sudo apt update --allow-releaseinfo-change
+# cat /etc/*-release
+# hostnamectl
+# sudo apt update --allow-releaseinfo-change
 sudo apt update
 sudo apt dist-upgrade
 
@@ -43,8 +43,8 @@ sudo passwd wiltonj
 sudo passwd root
 
 ***** Configuração para português
-locale-gen pt_BR.UTF-8
-sudo locale-gen pt_BR.UTF-8
+# locale-gen pt_BR.UTF-8
+# sudo locale-gen pt_BR.UTF-8
 locale
 sudo dpkg-reconfigure locales
 —- desmarcar “en_US.UTF-8”
@@ -56,9 +56,7 @@ sudo dpkg-reconfigure locales
 ***** Criar os links simbolicos
 ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
 ln -s /mnt/chromeos/GoogleDrive/MyDrive/ gdrive
-ln -s /mnt/chromeos/GoogleDrive/MyDrive/bin bin
 ln -s /mnt/chromeos/removable/disco/ disco 
-ln -s /mnt/chromeos/removable/disco/devtools devtools 
 
 ***** Instalar 
 sudo apt install build-essential cmake autoconf automake pkg-config zlib1g-dev
@@ -121,7 +119,7 @@ scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
 scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
 
 ***** Instalar utilitários
-sudo apt install lxterminal
+sudo apt install chromium pcmanfm lxterminal 
 sudo apt install gvfs sshfs exfat-fuse exfat-utils
 sudo apt install samba smbclient cifs-utils 
 sudo apt install curl nano xarchiver putty youtube-dl pcmanfm tree ghex hexedit meld
@@ -165,18 +163,15 @@ https://www.freecodecamp.org/news/how-to-install-go-in-arch-linux-using-pacman/
 —- Remover a versão anterior
 sudo rm -rf /usr/local/go
 
-—- Criar diretório no /mnt/chromeos/removable/disco/
-mkdir -p /mnt/chromeos/removable/disco/devtools/go
-
 —- Instalar dependencias
 sudo apt install wget software-properties-common apt-transport-https
 
 —- Fazer download da nova versão
 cd Download
-wget https://go.dev/dl/go1.18.2.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
 
 —- Instalar versão do download 
-sudo tar -zxvf go1.18.2.linux-amd64.tar.gz -C /usr/local/
+sudo tar -zxvf go1.18.4.linux-amd64.tar.gz -C /usr/local/
 
 —- Instalar versão do repositório
 sudo apt install golang-go 
@@ -184,9 +179,9 @@ sudo apt install golang-go
 —- Se for necessário, alterar a variável de ambiente GOPATH
 go env -w GOPATH="/home/wiltonj/go"
 
-—- Incluir as linhas abaixo no arquivo .bashrc
+—- Colocar as linhas abaixo no arquivo .bashrc
 export GOLANG_HOME=/usr/local/go
-export PATH=$PATH:$GOLANG_HOME/bin:$HOME/devtools/go/bin
+export PATH=$PATH:$GOLANG_HOME/bin:$HOME/go/bin
 
 —- Instalar ou atualizar gopls (Antes verificar se já está instalado)
 go install golang.org/x/tools/gopls@latest
@@ -201,7 +196,7 @@ go install github.com/kisielk/errcheck@latest
 sudo apt install default-jre default-jdk
 
 —- instalar uma versão específica
-sudo apt install openjdk-17-jre openjdk-17-jdk
+sudo apt install openjdk-8-jre openjdk-8-jdk
 
 —- listar versão do java
 sudo update-alternatives --list java
@@ -264,7 +259,7 @@ unzip commandlinetools-linux-*_latest.zip
 mv cmdline-tools/ android-sdk
 
 —- incluir as linhas abaixo no arquivo .bashrc
-export CHROME_EXECUTABLE=/usr/bin/google-chrome-stable
+export CHROME_EXECUTABLE=/usr/bin/chromium
 export ANDROID_HOME=$HOME/devtools/android-sdk
 export ANDROID_KEYSTORE=$HOME/gdrive/ti/certificados/android/release.keystore
 export ANDROID_KEY_ALIAS=wjps-release
@@ -379,18 +374,58 @@ echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" 
 sudo apt update
 sudo apt install code
 
-—- Alternativa fazendo download do arquivo .deb
-https://code.visualstudio.com/docs/?dv=linux64_deb
+—- Alternativa fazendo download do arquivo .tar.gz
+https://code.visualstudio.com/sha/download?build=stable&os=linux-x64
 
-sudo apt install ./code_*_amd64.deb
+cd devtools
+tar xzf ../Downloads/code-stable-x64-999999.tar.gz
+mv VSCode-linux-x64/ vscode
+
+—- Colocar as linhas abaixo no arquivo .bashrc
+export VSCODE_HOME=$HOME/devtools/vscode
+export PATH=$PATH:$VSCODE_HOME/bin
 
 –- Recuperar os arquivos abaixo do backup
 cd ~
 tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vscode.tar.gz
 cd /tmp
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_configCode.tar.gz
+tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_config.tar.gz
 cd .config
 mv Code ~/.config
+
+***** Instalar banco de dados - MongoDB
+sudo apt install gnupg
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+sudo apt update
+sudo apt-get install mongodb-org
+
+sudo systemctl start mongod
+
+- Editar o arquivo /etc/mongod.conf
+security:
+  authorization: enabled
+
+-- Reiniciar o mongodb
+sudo systemctl restart mongod
+
+-- Criar um usuário no banco local
+mongo --host <ip-maquina> --port 27017
+use admin
+db.createUser({user: 'admin', pwd: 'malcxkwmvg59o', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+exit
+
+- Editar o arquivo /etc/mongod.conf
+security:
+ authorization: enabled
+
+-- Reiniciar o mongodb
+sudo systemctl restart mongod
+
+-- Conectar o cliente com um usuário
+mongo --host <ip-maquina> --port 27017 -u admin -p --authenticationDatabase admin
+
+-- Para criar objetos do banco de dados (usuários, etc) ver no final deste arquivo
 
 ***** Localizar arquivos/diretórios duplicados
 —- Instalar utilitário para localizar arquivo duplicados
@@ -789,7 +824,7 @@ npm install -g bash-language-server dts-gen
 
 nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
 npm cache clear --force
-npm install --location=global nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates 
+npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates 
 npm install --location=global typescript eslint jslint 
 npm install --location=global @nestjs/cli @angular/cli
 npm install --location=global bash-language-server dts-gen
@@ -937,6 +972,7 @@ fc-list
 fc-list :spacing=mono
 fc-match -s Helvetica
 
+***** Configurar vim
 -- Criar o diretório ~/vim-backup
 
 —- Instalar vim-plug
@@ -972,6 +1008,7 @@ mkdir vim-backup
 cp /home/wiltonj/.vimrc .
 cp /home/wiltonj/.viminfo .
 cp -R /home/wiltonj/.vim/ .vim/
+cp -R /home/wiltonj/.config/coc/ .config/coc
 exit
 
 ***** Instalar Android SDK
