@@ -13,15 +13,14 @@ Tecla    : Tecla mapeada
 <BAR>    : | pipe
 <CWORD>  : Palavra sob o cursor
 <CFILE>  : Arquivo sob o cursor
-
 <SFILE>  : Conteúdo do arquivo sob o cursor
 <LEFT>   : Salta um caractere para esquerda
 <UP>     : Equivale clicar em 'seta acima'
 <M-F4>   : A tecla (ALT = M) mais a tecla F4
-<C-f>    : Control f
+<c-f>    : Control f
 <BS>     : Backspace
 <space>  : Espaço
-<TAB>    : Tab
+<tab>    : Tab
 -----------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -35,7 +34,7 @@ vim -d arq1 arq2    - abre "arq1" e "arq2" no modo diff
 vim -u arquivo -N   - abre "arquivo" sem as configurações do .vimrc
 vim -p arq1 arq2    - abre cada arquivo numa tab
 
-Destrava quando digita ctrl-s --> <C-q>
+Destrava quando digita ctrl-s --> <c-q>
 
 --------------------------------------------------------------------------------
 ** Recupera arquivo
@@ -66,12 +65,12 @@ C  - deleta linha a frente do cursor e entra em modo de inserção, vem de 'clea
 s  - deleta caracter e entra no modo de inserção 'substitute'
 S  - deleta linha e entra no modo de inserção
 
-<C-h>  - deleta a caracter anterior ao cursor
-<C-w>  - deleta a palavra antes do cursor
-<C-j>  - insere uma nova linha
-<C-t>  - move a linha para a direita
-<C-d>  - move a linha para a esquerda
-<C-n>  - auto-complete
+<c-h>  - deleta a caracter anterior ao cursor
+<c-w>  - deleta a palavra antes do cursor
+<c-j>  - insere uma nova linha
+<c-t>  - move a linha para a direita
+<c-d>  - move a linha para a esquerda
+<c-n>  - auto-complete
 
 Para sair do modo inserção <ESC>
 
@@ -145,21 +144,21 @@ H                - primeiro caracter da primeira linha da tela
 M                - meio da tela
 L                - ultima linha da tela
 
-<C-e>    - scroll para cima
-<C-y>    - scroll para baixo
+<c-e>    - scroll para cima
+<c-y>    - scroll para baixo
 
-<C-b>    - volta página - coloca cursor na ultima linha da tela
-<C-f>    - avança página - coloca cursor na primeira linha da tela
+<c-b>    - volta página - coloca cursor na ultima linha da tela
+<c-f>    - avança página - coloca cursor na primeira linha da tela
 
-<C-u>    - volta página - cursor permanece na altura atual da tela
-<C-d>    - avança página - cursor permanece na altura atual da tela
+<c-u>    - volta página - cursor permanece na altura atual da tela
+<c-d>    - avança página - cursor permanece na altura atual da tela
 
-<C-o>    - volta para a posição anterior do cursor
-<C-i>    - avança para a próximo posição do cursor
+<c-o>    - volta para a posição anterior do cursor
+<c-i>    - avança para a próximo posição do cursor
 
 <n>|     - posiciona na coluna "n"
-z<CR>    - redesenha a tela colocando a linha atual no topo
-<n>z<CR> - redesenha a tela colocando a linha "n" no topo
+z<cr>    - redesenha a tela colocando a linha atual no topo
+<n>z<cr> - redesenha a tela colocando a linha "n" no topo
 zz       - posiciona a linha atual no centro da tela
 
 }        - vai para o próximo parágrafo (ou função/bloco)
@@ -171,14 +170,14 @@ g;       - vai para alteração anterior
 --------------------------------------------------------------------------------
 ** Movimentação entre janelas
 --------------------------------------------------------------------------------
-<C-ws>       - divide a janela
-<C-wv>       - divide a janela verticalmente
-<C-wq>       - fecha a janela
-<C-w=>       - faz as janelas do mesmo tamanho
+<c-ws>       - divide a janela
+<c-wv>       - divide a janela verticalmente
+<c-wq>       - fecha a janela
+<c-w=>       - faz as janelas do mesmo tamanho
 
-<C-ww>       - move entre tabs
-<C-w> setas  - move entre tabs
-<C-w>h|j|k|l - move entre tabs
+<c-ww>       - move entre tabs
+<c-w> setas  - move entre tabs
+<c-w>h|j|k|l - move entre tabs
 
 --------------------------------------------------------------------------------
 ** Movimentação entre TABS (abas)
@@ -204,8 +203,8 @@ g;       - vai para alteração anterior
 :badd arquivo    - cria um buffer e abre o "arquivo"
 :b<n>            - vai para o buffer "n"
 :b!<n>           - esconde o buffer atual (mesmo se alterado) e vai para buffer "n"
-:bn|<A-Right>    - proximo buffer
-:bp|<A-Left>     - buffer anterior
+:bn|<a-right>    - proximo buffer
+:bp|<a-left>     - buffer anterior
 :b arquivo       - troca para o buffer que tem o "arquivo"
 :bd              - remove buffer atual
 :bd!             - remove buffer atual abandomando alterações
@@ -213,7 +212,7 @@ g;       - vai para alteração anterior
 :bw              - remove buffer atual e posiciona no proximo
 :bw!             - remove buffer atual abandomando alterações
 :bw<n>           - remove buffer número "n"
-:b <texto><CR>   - lista os buffers cujo nome possui "texto"
+:b <texto><cr>   - lista os buffers cujo nome possui "texto"
 :sp arquivo      - abre "arquivo" num novo buffer e divide a tela
 :vs arquivo      - abre "arquivo" num novo buffer e divide a tela (vertical)
 
@@ -243,14 +242,13 @@ guw          - altera palavra para caixa baixa (o cursor tem que ficar no primei
 .            - repete ultimo comando
 u            - desfazer
 U            - restaurar linha inteira
-<C-r>        - refazer
+<c-r>        - refaz o comando (pode ser usado após um "u")
 
 ci[|'|"|(|{  - troca tudo que estiver entre [], '', "", (), {}
 ca[|'|"|(|{  - apaga tudo que estiver entre [], '', "", (), {} (inclusive)
 ciP          - troca o paragrafo
 cit          - troca tuod que estiver entre uma tag <tag></tag>
 
-<C-R>        - refaz o comando (pode ser usado após um "u")
 
 --------------------------------------------------------------------------------
 ** Deletar texto
@@ -290,7 +288,7 @@ y$          - copia até o final da linha
 v        - inicia marcacao de bloco orientado a caracter
 V        - inicia marcacao de bloco orientado a linha
 o        - vai para inicio/fim da seleção
-<C-v>    - inicia marcacao de bloco (colunas)
+<c-v>    - inicia marcacao de bloco (colunas)
 O        - vai para inicio/fim do bloco
 
 aw   - seleciona palavras
@@ -353,8 +351,8 @@ n             - proxima
 N             - anterior
 :g/<texto>    - procura por "texto" e mostra todas as ocorrências
 
-<A-F2> - cancela a busca
-<A-F3> - alterna entre mostrar texto pesquisado e não mostrar
+<a-f2> - cancela a busca
+<a-f3> - alterna entre mostrar texto pesquisado e não mostrar
 *      - procura pela palavra sobre o cursor
 g*     - procura pela palavra sobre o cursor (Sem ser palavra cheia)
 #      - procura pela palavra sobre o cursor no sentido contrario
@@ -421,16 +419,16 @@ gg=G   - indenta o buffer inteiro
 ** Autocomplete
 --------------------------------------------------------------------------------
 - no modo de inserção
-<C-x + C-n>  - palavras
-<C-n>        - proximo item no menu complete
-<C-p>        - item anterior no menu complete
-<C-x + C-l>  - linha
-<C-x + C-f>  - sistema de arquivo
+<c-x + C-n>  - palavras
+<c-n>        - proximo item no menu complete
+<c-p>        - item anterior no menu complete
+<c-x + C-l>  - linha
+<c-x + C-f>  - sistema de arquivo
 
 --------------------------------------------------------------------------------
 ** File explore Netrw
 --------------------------------------------------------------------------------
-:Explore|<F5>     - abre o file explore do diretório do file corrente
+:Explore|<f5>     - abre o file explore do diretório do file corrente
 :Vexplore         - abre o fale explore (vertical)
 <enter>           - abre o arquivo
 p                 - abre numa nova janela
@@ -443,7 +441,7 @@ d                 - cria um diretório
 R                 - rename o arquivo
 i                 - muda a visualização
 I                 - remove/ativa o banner
-:e<space> <C-d>   - mostra arquivos
+:e<space> <c-d>   - mostra arquivos
 :!ls              - lista arquivos
 
 --------------------------------------------------------------------------------
@@ -458,7 +456,7 @@ q           - fecha
 ** Plugin CtrlP - Busca de arquivos
 --------------------------------------------------------------------------------
 :CtrlP <diretorio>    - inicia o CtrlP no diretório informado
-<C-p>                 - ativa a busca de arquivo.
+<c-p>                 - ativa a busca de arquivo.
 :help ctrlp-commands  - help dos comandos.
 
 --------------------------------------------------------------------------------
@@ -473,7 +471,7 @@ q           - fecha
 --------------------------------------------------------------------------------
 ** Plugin taglist
 --------------------------------------------------------------------------------
-<F8>                 - listar tags numa tab
+<f8>                 - listar tags numa tab
 
 --------------------------------------------------------------------------------
 ** Plugin surround - Envolver texto por tags, (, [, ", etc
@@ -490,23 +488,6 @@ ds"             - remove ""
 dst             - remove tags
 cs"*            - troca "" por **
 cst<em>         - troca a tag mais interna por <em>
-
---------------------------------------------------------------------------------
-** Plugin fugitive - GIT
---------------------------------------------------------------------------------
-:git <comando>        - mesmo comando que daria no shell
-:Gwrite|:Gw           - salva o arquivo atual e já adiciona no index para o próximo commit
-:Gblame               - faz um split da tela, mostrando do lado direito o fonte que já estava aberto
-                        e do lado esquerdo, o último commit (SHA1) e o autor do commit
-:Gread                - descarta as alterações locais e recupera o arquivo atual na sua última revisão
-                        dentro do repositório do Git (ou seja, revert)
-:Gdiff                - mostra um diff da versão atual com a versão no repositório, com splits
-:Gcommit              - faz o commit dos arquivos que estão no index
-:Gstatus              - faz um "git status", mas deixa que você altere os arquivos no index
-                        (usando "-" para adicionar ou remover o arquivo -- leia o texto com atenção)
-                        e faça commit dos selecionados (usando "cc") [Note que ambos os comandos devem
-                        ser usados em modo normal dentro do split aberto por :Gstatus.]
-
 --------------------------------------------------------------------------------
 ** Plugin Coc.vim
 --------------------------------------------------------------------------------
@@ -516,9 +497,9 @@ cst<em>         - troca a tag mais interna por <em>
 <leader>i            - formatação imports
 <leader>f            - formatação seleção
 <leader>qf           - fix corrente
-<TAB>                - completar
-<S-space>            - completar
-<C-space>            - completar
+<tab>                - completar
+<s-space>            - completar
+<c-space>            - completar
 k                    - mostra o tipo de um simbolo
 K                    - mostra documentação simbolo
 ]g|[g                - navegar por erros
@@ -531,8 +512,11 @@ gi                   - implementação
 --------------------------------------------------------------------------------
 ** Diversos
 --------------------------------------------------------------------------------
-<C-t>           - abre um terminal
-<C-k>i          - mostra/esconde barras de indentação
+<c-t>           - abre um terminal
+<c-k>i          - mostra/esconde barras de indentação
 <space>         - barra de espaço colapsa ou expande blocos
 <leader>;       - coloca ; no final da linha
+<c-n>           - cnext - próximo erro
+<c-m>           - cprevious - erro anterior
+<leader>a       - cclose
 
