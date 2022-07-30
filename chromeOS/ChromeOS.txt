@@ -643,7 +643,7 @@ sudo dhcpcd eth0
 sudo vi /etc/locale.gen
 Descomentar as linhas abaixo e conferir se as demais estão comentadas.
 pt_BR.UTF-8 UTF-8
-pt_BR ISO-8859-1
+en_US.UTF-8 UTF-8
 
 -- Executar:
 sudo locale-gen
@@ -695,20 +695,19 @@ sudo pacman -S chromium
 ***** Setar o som
 sudo pacman -S alsa-utils alsa-oss
 alsamixer
-
--- testar o som
-aplay /usr/share/sounds/alsa/Noise.wav
+- verificar se é necessário alterar o sound card para "HDA Intel PCH"
 
 -- se não passar nos testes do som (verificar se necessário)
-sudo pacman -S pulseaudio
+sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth 
 pulseaudio --start
 
 —- Instalar moc
 sudo pacman -S cmus moc alsa-lib libao libpulse faad2 ffmpeg flac jack libmad libmodplug libmp4v2 speex
 sudo pacman -S taglib libmpcdec libsamplerate libvorbis libcdio-paranoia opusfile wavpack ffmpeg4.4
 
-***** Instalar screenfetch
-sudo pacman -S screenfetch
+-- testar o som
+aplay /usr/share/sounds/alsa/Noise.wav
+cat /proc/asound/card*/codec* |grep Codec
 
 —- Colocar a linha abaixo no arquivo .bashrc
 screenfetch
@@ -810,24 +809,6 @@ chmod u+x nvm.sh
 
 -- Fechar o terminal e abrir outro.
 
-***** Instalação Nodejs
--- Instalar pacotes
-nvm ls-remote --lts | grep Latest
-
-nvm install --lts=fermium --default
-npm cache clear --force
-npm install -g nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates
-npm install -g typescript eslint jslint
-npm install -g @nestjs/cli @angular/cli
-npm install -g bash-language-server dts-gen
-
-nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
-npm cache clear --force
-npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates
-npm install --location=global typescript eslint jslint
-npm install --location=global @nestjs/cli @angular/cli
-npm install --location=global bash-language-server dts-gen
-
 —- Comando importantes do nvm
 nvm --version
 nvm ls-remote
@@ -839,6 +820,24 @@ nvm ls
 nvm alias default 10.21.0
 nvm use 9.9.9
 nvm which 9.9.9
+
+***** Instalação Nodejs
+-- Instalar pacotes
+nvm ls-remote --lts | grep Latest
+
+nvm install --lts=fermium --default
+npm cache clear --force
+npm install -g nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates
+npm install -g typescript@3.9.6 @nestjs/cli@8.0.2 @angular/cli
+npm install -g eslint jslint
+npm install -g bash-language-server dts-gen
+
+nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
+npm cache clear --force
+npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates
+npm install --location=global typescript @nestjs/cli @angular/cli
+npm install --location=global eslint jslint
+npm install --location=global bash-language-server dts-gen
 
 —- Configurar npm
 npm config set temp /tmp
@@ -922,9 +921,8 @@ sudo pacman -S python-pip
 -- Restaurar o backup do arquivo .pylintrc
 cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
 
--- Instalar o spyder
+-- Instalar o pylint
 sudo pip install pylint
-sudo pip install spyder
 
 -- Instalar utils
 sudo pip install pyflakes flake8 pycodestyle jedi-language-server
