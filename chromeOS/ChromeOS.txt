@@ -50,7 +50,32 @@ sudo dpkg-reconfigure locales
 —- Selecionar ”pt_BR.UTF-8”
 —- Selecionar “pt_BR.UTF-8” como default
 
-***** Restart o sistema
+***** Configuração teclado/font console
+-- ver configuração atual
+localectl status
+
+-- ver a font atual
+showconsolefont
+
+-- listar mapas de teclado disponíveis
+localectl list-keymaps
+
+-- listar as fonts existente
+ls -l /usr/share/kbd/consolefonts
+
+-- definir mapa apenas para a sessão atual
+sudo loakeys br-abnt2
+
+-- definir fonte apenas para a sessão atual
+sudo setfont lat2-14 -m 8859-1
+
+-- alterar para todas as sessões
+sudo nano /etc/vconsole.conf
+KEYMAP=br-abnt2
+FONT=lat1-14
+FONT_MAP=8859-2
+
+-- executar reboot 
 
 ***** Criar os links simbolicos
 ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads

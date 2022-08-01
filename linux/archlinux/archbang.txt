@@ -9,7 +9,6 @@ wget https://sourceforge.net/projects/archbang/files/ArchBang/archbang-summer-26
 
 sudo dd if=archbang-summer-2606-x86_64.iso of=/dev/sdb bs=4MB
 
-
 =====================================================================================
 ----- Instalação do archbang
 http://archbang.org/guide/
@@ -29,6 +28,53 @@ en_US.UTF-8 UTF-8
 
 -- Executar:
 sudo locale-gen
+
+***** Configuração teclado/font console
+-- ver configuração atual
+localectl status
+
+-- ver a font atual
+showconsolefont
+
+-- listar mapas de teclado disponíveis
+localectl list-keymaps
+
+-- listar as fonts existente
+ls -l /usr/share/kbd/consolefonts
+
+-- definir mapa apenas para a sessão atual
+sudo loakeys br-abnt2
+
+-- definir fonte apenas para a sessão atual
+sudo setfont lat2-14 -m 8859-1
+
+-- alterar para todas as sessões
+sudo nano /etc/vconsole.conf
+KEYMAP=br-abnt2
+FONT=lat1-14
+FONT_MAP=8859-2
+
+-- Verificar no arquivo .bash_profile a necessidade de retirar (comentar) 
+   a linha que inicia o X (startx)
+Por exempo: [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
+
+-- Desabilitar login automático
+sudo systemctl edit getty@tty1
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --skip-login --noclear %I 38400 linux
+
+-- executar reboot 
+
+***** Montar o segundo HD
+sudo mkdir /mnt/disco
+sudo mount -t ext4 /dev/sdb1 /mnt/disco
+sudo chown -R wilton:users /mnt/disco/
+sudo chmod -R 755 /mnt/disco/
+
+-- incluir a linha abaixo no arquivo /etc/fstab
+# /dev/sdb1
+UUID=23c37b35-4d8a-41cb-bcad-53796534d03a  /mnt/disco  ext4  rw  0 0
 
 ***** Proxy (primeira parte)
 -- Veja arquivo configurar_proxy.txt
@@ -60,7 +106,7 @@ Server = http://repo.archlinux.fr/x86_64
 sudo pacman -Syy
 
 ***** Atualizar o arquivo /etc/pacman.d/mirrorlist
-sudo vi /etc/pacman.d/mirrorlist
+sudo nano /etc/pacman.d/mirrorlist
 
 -- Instalar pacman-contrib
 sudo pacman -S pacman-contrib
@@ -99,21 +145,17 @@ cd ..
 rm -rf yay/
 yay -Syyu
 
+-- executar reboot 
+
 ***** Proxy (segunda parte)
 -- Veja arquivo configurar_proxy.txt
 reboot
-
-***** Colocar a linha abaixo no arquivo .bashrc
-export PATH=$PATH:$HOME/bin
 
 ***** Instalar screenfetch
 sudo pacman -S screenfetch
 
 —- Colocar a linha abaixo no arquivo .bashrc
 screenfetch
-
-***** Instalar medit
-yay -S medit 
 
 -- Configurar o esquema de cores para oblivion
 
@@ -141,13 +183,76 @@ smbclient //servidor/share
 -- montar um compartilhamento
 sudo mount.cifs //servidor/share /mnt/share -o user=wilton,rw,vers=1.0
 
+***** Inicialização do firewall no boot
+sudo pacman -S ufw gufw
+sudo ufw enable
+sudo systemctl enable ufw
+sudo systemctl start ufw
+sudo ufw status
+
+***** Configurando openssh
+sudo pacman -S openssh 
+
+-- Alterar o arquivo /etc/ssh/sshd_config. 
+   Colocar as linhas abaixo e comentar todas as configurações já existentes.
+
+ListenAddress 0.0.0.0
+Protocol 2
+LoginGraceTime 120
+PermitRootLogin no
+AuthorizedKeysFile	.ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+AllowUsers wilton
+
+-- Restaurar backup do diretório .ssh 
+
+-- Configurar o firewall para aceitar a porta 22
+
+-- Inicar o daemon sshd
+sudo systemctl start sshd
+
+-- Conectar ao servidor
+ssh usuario@endereço.ip.do.destino
+
+-- copiando arquivos e diretórios para outra máquina via ssh
+scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
+scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
+
+***** Configurar git
+-- Gerar um par de chave ssh
+ssh-keygen
+
+-- Cadastrar a chave pública no servidor Git (Github ou trabalho)
+-- Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
+
+-- Gerar arquivo de configuração ~/.gitconfig
+git config --global user.email SEU_EMAIL@dominio.com.br
+git config --global user.name SEU_LOGIN
+git config --global merge.tool vimdiff
+git config --global pull.rebase false
+Se for necessário configurar proxy
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+-- Restaurar backup do arquivo .gitconfig
+cp /mnt/disco/bck/saturno/ultimo/home/_gitconfig .gitconfig
+
+***** Restaurar backup do diretório ~/bin
+tar xzf /mnt/disco/bck/saturno/ultimo/home/bin.tar.gz
+
+-- Colocar a linha abaixo no arquivo .bashrc
+export PATH=$PATH:$HOME/bin
+
 ***** Setar o som
 sudo pacman -S alsa-utils alsa-oss
 alsamixer
 - verificar se é necessário alterar o sound card para "HDA Intel PCH"
 
 -- se não passar nos testes do som (verificar se necessário)
-sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth 
+sudo pacman -S pulseaudio pulseaudio-alsa 
 pulseaudio --start
 
 —- Instalar moc
@@ -162,18 +267,43 @@ cat /proc/asound/card*/codec* |grep Codec
 sudo alsactl store
 
 ***** Configurar bluetooth
+https://www.jeremymorgan.com/tutorials/linux/how-to-bluetooth-arch-linux/
+https://linuxhint.com/configure_bluetooth_arch_linux/
 sudo pacman -S bluez bluez-utils 
-sudo systemctl enable bluetooth
-sudo systemctl start bluetooth
 
+-- verificar se o módulo btusb está carregado
+lsmod | grep btusb
+
+-- ajuda a encontrar adaptadores, mesmo se você conectar um. Alterar o 
+   parametro AutoEnable para true
+sudo vim /etc/bluetooth/main.conf
+
+# AutoEnable defines option to enable all controllers when they are found.
+# This includes adapters present on start as well as adapters that are plugged
+# in later on. Defaults to 'false'.
+#AutoEnable=false
+AutoEnable=true
+
+-- verificar se o adaptador está conectado ou bloqueado.
 rfkill 
 ID TYPE      DEVICE                SOFT         HARD
  0 wlan      acer-wireless desbloqueado desbloqueado
  1 wlan      phy0          desbloqueado desbloqueado
  2 bluetooth hci0          desbloqueado desbloqueado
 
-Obs: verificar se bluetooth está bloqueado. Se estiver executar: rfkill unblock 2
+-- se estiver bloqueado executar: 
+rfkill unblock 2
+ou 
+rfkill unblock bluetooth
 
+-- ativar o serviço bluetooth
+sudo systemctl start bluetooth
+sudo systemctl enable bluetooth
+
+-- instalar pulseaudio-bluetooth
+sudo pacman -S pulseaudio-bluetooth
+
+-- emparelhar dispositivo bluetooth com bluetoothctl
 bluetoothctl
 [bluetooth]# power on
 [bluetooth]# agent on
@@ -194,6 +324,9 @@ pulseaudio -k
 [bluetooth]# scan off
 [bluetooth]# exit
 
+-- util TUI
+yay -S bluetuith
+
 ***** Configurar o uso da memória de swap
 -- verificar o valor atual
 cat /proc/sys/vm/swappiness
@@ -210,7 +343,7 @@ sudo pacman -S mesa
 
 ***** Fontes
 sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
-yay -S  ttf-ms-fonts
+yay -S ttf-ms-fonts
 
 -- Novas fontes colocar em ~/.fonts depois executar:
 fc-cache
@@ -272,16 +405,6 @@ logfile             /var/log/slim.log
 
 sudo systemctl enable slim.service
 
--- Verificar no arquivo .bash_profile a necessidade de retirar (comentar) 
-   a linha que inicia o X (startx)
-Por exempo: [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
-
--- Desabilitar login automático
-sudo systemctl edit getty@tty1
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --skip-login --noclear %I 38400 linux
-
 ***** Configurar mais de um monitor
 ***** lxrandr - monitor
 sudo pacman -S lxrandr
@@ -294,44 +417,6 @@ xrandr -q
 # (sleep 1s && xrandr --output VGA-1 --auto --output HDMI-1 --auto --right-of VGA-1)
 # (sleep 1s && xrandr --output eDP1 --auto --output DP1 --auto --right-of eDP1)
 (sleep 1s && xrandr --output eDP1 --auto --output HDMI1 --auto --left-of eDP1)
-
-***** Inicialização do firewall no boot
-sudo pacman -S ufw gufw
-sudo ufw enable
-sudo systemctl enable ufw
-sudo systemctl start ufw
-sudo ufw status
-
-***** Configurando openssh
--- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
-ListenAddress 0.0.0.0
-Protocol 2
-LoginGraceTime 120
-PermitRootLogin no
-AuthorizedKeysFile	.ssh/authorized_keys
-ChallengeResponseAuthentication no
-UsePAM yes
-PrintMotd no
-Subsystem	sftp	/usr/lib/ssh/sftp-server
-AllowUsers wiltonj
-
--- Configurar o firewall para aceitar a porta 22
-
--- Restaurar backup do arquivo .ssh
-tar xfz /mnt/disco/bck/saturno/ultimo/home/_ssh.tar.gz
-
--- Inicar o daemon sshd
-sudo systemctl start sshd
-
--- Conectar ao servidor
-ssh usuario@endereço.ip.do.destino
-
--- Copiando arquivos e diretórios para outra máquina via ssh
-scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
-scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
-
--- Reiniciar o sistema
-reboot
 
 ***** Diversos
 ***** rmlint - verifica arquivos duplicados e vazios. 
@@ -356,7 +441,7 @@ sudo pacman -S xautolock
 sudo pacman -S chromium
 yay -S google-chrome
 sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre geogebra
-sudo pacman -S ghex hexedit meld sqlite sqlite-doc curl
+sudo pacman -S medit ghex hexedit meld sqlite sqlite-doc curl
 yay -S postman-bin
 
 ***** Colocar as linha abaixo no arquivo .bashrc
@@ -477,61 +562,11 @@ sleep 5s && scrot -scd 3
 # (sleep 1s && xterm -fg white -bg black -geometry 52x5 -e mount.sh --hd) &
 ------------------------
 
-***** Configurando openssh
-sudo pacman -S openssh 
-
--- Alterar o arquivo /etc/ssh/sshd_config. 
-   Colocar as linhas abaixo e comentar todas as configurações já existentes.
-
-ListenAddress 0.0.0.0
-Protocol 2
-LoginGraceTime 120
-PermitRootLogin no
-AuthorizedKeysFile	.ssh/authorized_keys
-ChallengeResponseAuthentication no
-UsePAM yes
-PrintMotd no
-Subsystem	sftp	/usr/lib/ssh/sftp-server
-AllowUsers wilton
-
--- Restaurar backup do diretório .ssh 
-
--- Configurar o firewall para aceitar a porta 22
-
--- Inicar o daemon sshd
-sudo systemctl start sshd
-
--- Conectar ao servidor
-ssh usuario@endereço.ip.do.destino
-
--- copiando arquivos e diretórios para outra máquina via ssh
-scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
-scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
-
--- configurando aplicação padrão
+***** configurando aplicação padrão
 xdg-mime default medit.desktop text/plain
 
-***** Configurar git
--- Gerar um par de chave ssh
-ssh-keygen
-
--- Cadastrar a chave pública no servidor Git (Github ou trabalho)
--- Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
-
--- Gerar arquivo de configuração ~/.gitconfig
-git config --global user.email SEU_EMAIL@dominio.com.br
-git config --global user.name SEU_LOGIN
-git config --global merge.tool vimdiff
-git config --global pull.rebase false
-Se for necessário configurar proxy
-git config --global http.proxy $http_proxy
-git config --global https.proxy $https_proxy
-
--- Restaurar backup do arquivo .gitconfig
-cp /mnt/disco/bck/penguin/ultimo/home/_gitconfig .gitconfig
-
 ***** Restaurar backup do diretório ~/devtools
-tar xzf /mnt/disco/bck/penguin/ultimo/home/devtools.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/devtools.tar.gz
 
 ***** Instalação NVM
 -- Site nvm https://github.com/creationix/nvm
@@ -587,7 +622,7 @@ npm config set https-proxy "http://127.0.0.1:3128"
 npm config set prefix "/usr/lib/node_modules/"
 
 -- Restaurar backup do arquivo .npmrc
-cp /mnt/disco/bck/penguin/ultimo/home/_npmrc .npmrc
+cp /mnt/disco/bck/saturno/ultimo/home/_npmrc .npmrc
 
 —- Comandos importantes do npm (Obs: mas versões acima da gallium (16.15.0) usar
     --location=global no lugar de -g
@@ -656,7 +691,7 @@ export PATH=$PATH:$M2_HOME/bin
 sudo pacman -S python-pip
 
 -- Restaurar o backup do arquivo .pylintrc
-cp /mnt/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
+cp /mnt/disco/bck/saturno/ultimo/home/_pylintrc .pylintrc
 
 -- Instalar o pylint
 sudo pip install pylint
@@ -668,7 +703,7 @@ sudo pip install pyflakes flake8 pycodestyle jedi-language-server
 pip3 list --format=(legacy|columns)
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/disco/bck/penguin/ultimo/home/_pip.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_pip.tar.gz
 
 —- Criar o arquivo $HOME/.pip/pip.conf
 [list]
@@ -713,13 +748,13 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 -- Restaurar backup do arquivo .viminfo
-cp /mnt/disco/bck/penguin/ultimo/home/_viminfo .viminfo
+cp /mnt/disco/bck/saturno/ultimo/home/_viminfo .viminfo
 
 -- Restaurar backup do arquivo .vimrc
-cp /mnt/disco/bck/penguin/ultimo/home/_vimrc .vimrc
+cp /mnt/disco/bck/saturno/ultimo/home/_vimrc .vimrc
 
 -- Restaurar backup do diretório .vim
-tar xzf /mnt/disco/bck/penguin/ultimo/home/_vim.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_vim.tar.gz
 
 —- Editar arquivo ~/.vim/coc-settings.json
 nano ~/.vim/coc-settings.json
@@ -774,7 +809,7 @@ export REPO_OS_OVERRIDE=linux
 export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/disco/bck/penguin/ultimo/home/_android.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_android.tar.gz
 ou
 —- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
 ### User Sources for Android SDK Manager
@@ -908,9 +943,9 @@ tar xzf ../Downloads/code-stable-x64-1652813090.tar.gz
 
 —- Recuperar os arquivos abaixo do backup
 cd ~
-tar xzf /mnt/disco/bck/penguin/ultimo/home/_vscode.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_vscode.tar.gz
 cd /tmp
-tar xzf /mnt/disco/bck/penguin/ultimo/home/_config.tar.gz
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_config.tar.gz
 cd .config
 mv Code ~/.config
 
