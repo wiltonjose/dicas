@@ -15,10 +15,10 @@ http://archbang.org/guide/
 =====================================================================================
 
 ***** Dar boot pela USB e executar a instalação
-/dev/sda1 - 192GB - linux - / 
+/dev/sda1 - 192GB - linux - /
 /dev/sda2 -  32GB - linux swap - restante do disco
 
--- dar boot 
+-- dar boot
 
 ***** Configurar locale.gen
 -- Alterar o arquivo /etc/locale.gen
@@ -46,7 +46,7 @@ ls -l /usr/share/kbd/consolefonts
 sudo loakeys br-abnt2
 
 -- definir fonte apenas para a sessão atual
-sudo setfont lat2-14 -m 8859-1
+sudo setfont lat1-14 -m 8859-1
 
 -- alterar para todas as sessões
 sudo nano /etc/vconsole.conf
@@ -54,7 +54,7 @@ KEYMAP=br-abnt2
 FONT=lat1-14
 FONT_MAP=8859-2
 
--- Verificar no arquivo .bash_profile a necessidade de retirar (comentar) 
+-- Verificar no arquivo .bash_profile a necessidade de retirar (comentar)
    a linha que inicia o X (startx)
 Por exempo: [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
 
@@ -64,7 +64,7 @@ sudo systemctl edit getty@tty1
 ExecStart=
 ExecStart=-/sbin/agetty --skip-login --noclear %I 38400 linux
 
--- executar reboot 
+-- executar reboot
 
 ***** Montar o segundo HD
 sudo mkdir /mnt/disco
@@ -145,7 +145,7 @@ cd ..
 rm -rf yay/
 yay -Syyu
 
--- executar reboot 
+-- executar reboot
 
 ***** Proxy (segunda parte)
 -- Veja arquivo configurar_proxy.txt
@@ -163,10 +163,10 @@ screenfetch
 -- Veja arquivo criptografar_particao.txt
 
 ***** Conferir arquivo /etc/shells
--- Verificar o valor na variável de ambiente SHELL está no arquivo /etc/shells 
+-- Verificar o valor na variável de ambiente SHELL está no arquivo /etc/shells
 env | grep SHELL
 
--- Incluir o valor de SHELL no arquivo /etc/shells 
+-- Incluir o valor de SHELL no arquivo /etc/shells
 
 ***** Utilitários de rede
 sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
@@ -191,9 +191,9 @@ sudo systemctl start ufw
 sudo ufw status
 
 ***** Configurando openssh
-sudo pacman -S openssh 
+sudo pacman -S openssh
 
--- Alterar o arquivo /etc/ssh/sshd_config. 
+-- Alterar o arquivo /etc/ssh/sshd_config.
    Colocar as linhas abaixo e comentar todas as configurações já existentes.
 
 ListenAddress 0.0.0.0
@@ -207,7 +207,7 @@ PrintMotd no
 Subsystem	sftp	/usr/lib/ssh/sftp-server
 AllowUsers wilton
 
--- Restaurar backup do diretório .ssh 
+-- Restaurar backup do diretório .ssh
 
 -- Configurar o firewall para aceitar a porta 22
 
@@ -252,7 +252,7 @@ alsamixer
 - verificar se é necessário alterar o sound card para "HDA Intel PCH"
 
 -- se não passar nos testes do som (verificar se necessário)
-sudo pacman -S pulseaudio pulseaudio-alsa 
+sudo pacman -S pulseaudio pulseaudio-alsa
 pulseaudio --start
 
 —- Instalar moc
@@ -269,12 +269,12 @@ sudo alsactl store
 ***** Configurar bluetooth
 https://www.jeremymorgan.com/tutorials/linux/how-to-bluetooth-arch-linux/
 https://linuxhint.com/configure_bluetooth_arch_linux/
-sudo pacman -S bluez bluez-utils 
+sudo pacman -S bluez bluez-utils
 
 -- verificar se o módulo btusb está carregado
 lsmod | grep btusb
 
--- ajuda a encontrar adaptadores, mesmo se você conectar um. Alterar o 
+-- ajuda a encontrar adaptadores, mesmo se você conectar um. Alterar o
    parametro AutoEnable para true
 sudo vim /etc/bluetooth/main.conf
 
@@ -285,15 +285,15 @@ sudo vim /etc/bluetooth/main.conf
 AutoEnable=true
 
 -- verificar se o adaptador está conectado ou bloqueado.
-rfkill 
+rfkill
 ID TYPE      DEVICE                SOFT         HARD
  0 wlan      acer-wireless desbloqueado desbloqueado
  1 wlan      phy0          desbloqueado desbloqueado
  2 bluetooth hci0          desbloqueado desbloqueado
 
--- se estiver bloqueado executar: 
+-- se estiver bloqueado executar:
 rfkill unblock 2
-ou 
+ou
 rfkill unblock bluetooth
 
 -- ativar o serviço bluetooth
@@ -316,7 +316,7 @@ bluetoothctl
 [bluetooth]# trust 00:1D:43:6D:03:26
 [bluetooth]# scan off
 
-Se der o erro org.bluez.Error.Failed 
+Se der o erro org.bluez.Error.Failed
 
 pulseaudio -k
 [bluetooth]# connect 00:1D:43:6D:03:26
@@ -419,11 +419,11 @@ xrandr -q
 (sleep 1s && xrandr --output eDP1 --auto --output HDMI1 --auto --left-of eDP1)
 
 ***** Diversos
-***** rmlint - verifica arquivos duplicados e vazios. 
+***** rmlint - verifica arquivos duplicados e vazios.
                        Diretórios vazios e symlinks quebrados
 ***** ncdu - localiza arquivos e diretórios grandes
 ***** feh - visualizar imagens e papel de parede
-***** imagemagick - tratamento de imagens (convert, junta, etc) 
+***** imagemagick - tratamento de imagens (convert, junta, etc)
               https://terminalroot.com.br/2015/03/tratamento-de-imagens-com-imagemagick.html
 ***** tint2 - barra de tarefas
 ***** scrot - print screen
@@ -974,12 +974,12 @@ Digite install e selecione  Extensions: Install Extensions
 Digite flutter e instale Flutter
 
 ***** Configurar temas openbox
-sudo pacman -S arc-gtk-theme arc-icon-theme 
+sudo pacman -S arc-gtk-theme arc-icon-theme
 sudo pacman -S gtk-engine-murrine gnome-themes-standard
 yay -S openbox-theme-arcbox openbox-arc-git
 
 obconf -> Arc-Dark, Aparência fontes - tamanho 8
-lxAppearence -> Widget - Arc-Dark, Fonte padrão - Sans Regular 9, Ícones - Arc, 
+lxAppearence -> Widget - Arc-Dark, Fonte padrão - Sans Regular 9, Ícones - Arc,
                 Borda - Sample-slate
 
 -- Gerando menu do openbox
