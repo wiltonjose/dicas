@@ -1035,17 +1035,6 @@ xdg_menu --format openbox3 --root-menu /etc/xdg/menus/arch-applications.menu > x
     </action>
   </keybind>
 
-
-
-
-
-
-
-
-
-
-
-
 ***** Configurando a impressora
 sudo pacman -S cups cups-pdf system-config-printer
 
@@ -1078,9 +1067,7 @@ Trabalho: smb:\\usuario:senha@printserver\is0432
           ipp://is0432:631/ipp
           socket://is0432 ou socket://is0432:9100
 
-
 ***** Instalação VirtualBox
-
 sudo pacman -S virtualbox virtualbox-host-modules-arch virtualbox-guest-iso
 
 -- Obs: O arquivo .iso está localizado em /usr/lib/virtualbox/additions/VBoxGuestAdditions.iso
@@ -1100,78 +1087,183 @@ sudo modprobe vboxdrv
    inserir a linha abaixo:
 vboxdrv
 
+***** Instalar docker
+sudo pacman -S docker docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
 
-***** Instalação do Cub Linux no Virtualbox
+-- conferir se a instalação deu certo 
+sudo docker info
 
--- Fazer Download
-https://www.osboxes.org/cub-linux/ (Cub = Chromium + Ubuntu)
-https://www.osboxes.org/cub-linux/
+-- executar o docker como usuário normal
+sudo groupadd docker
+sudo usermod -aG docker wilton
 
--- Descompactar o arquivo 1RC-64.7z no diretório VirtualBoxVMs
+-- mover o diretório de dados para outro local
+sudo system stop docker
 
--- Criar a máquina virtual no virtualbox
-Sistema | Placa mãe | Memória Base | 3072MB
-Sistema | Placa mãe | Ordem de boot | marcar apenas disco rígido
-Monitor | Memória de vídeo | 128MB
+-- criar o arquivo /etc/docker/daemon.json
+sudo vim /etc/docker/daemon.json
+{ 
+  "graph": "/mnt/disco/docker" 
+}
 
--- Alterar a senha do usuário osboxes
-1) Precione a tecla SHIFT enquanto o máquina virtual inicia. Vai aparecer o menu do GRUB
-2) Seleciona “Advanced options for CubLinux”
-3) Selecione “Cub Linux, with Linux 4.2.0…-generic (Recorvery mode)”
-4) No Recovery menu selecionar “Root    Drop to root shell prompt”
-5) Executar mount -rw -o remount /
-6) Alterar a senha do root passwd osboxes
-7) exit e reboot
+-- copiar os arquivos de /var/lib/docker para /mnt/disco/docker
+sudo rsync -aP /var/lib/docker/ /mnt/disco/docker
 
--- instalar virtualbox-guest-iso
-Menu -> Dispositivos | Inserir Imagem do CD dos Adicionais para convidado…
-Dentro do CubLinux o CD é montado em /media/osboxes/VBox_GAs_6.1.10
+-- tirar backup de /var/lib/docker
+sudo mv /var/lib/docker /var/lib/docker.old
 
--- Ir para o diretório /media/osboxes/VBox_GAs_6.1.10 e executar:
-VBoxLinuxAdditions.run
+-- testar
+sudo systemctl start docker
+docker info | grep -i "Docker Root Dir:"
+sudo rm -rf /var/lib/docker.old
 
--- Atualizar o sistema (CubLinux)
-sudo apt update
-sudo apt dist-upgrade
+-- comando mais importantes
+docked image ls
+docker image rmi ID_DA_IMAGEM
+docker container ls
+docker container ls --all
+docker container start ID_DO_CONTAINER
+docker container stop ID_DO_CONTAINER
+docker container rm ID_DO_CONTAINER
+docker search mongo
+docker pull NOME_IMAGEM
+docker run NOME_IMAGEM OPCOES
+docker ps
+docker commit CONTAINER_ID IMAGE_NAME
+docker stats
+docker stats --all
+docker stats --no-stream
+docker network ls
+docker network inspect NETWORK_NAME
+docker network create –driver DRIVER_NAME NETWORK_NAME
+docker run --name=CONTAINER_ID --network=NETWORK_NAME -itd CONTAINER_NAME
+docker ps -f status=exited
+docker stop CONTAINER_ID && docker rm -v CONTAINER_ID
 
 
-=====================================================================================
------ Desenvolvimento
-=====================================================================================
+***** Instalar banco de dados - MongoDB
+yay -S mongodb-bin mongodb-tools-bin
 
+—- Executar o comando abaixo se der o erro “gpg: keyserver receive failed: Erro genérico‘
+gpg --keyserver pgp.mit.edu --recv-key 5CC908FDB71E12C2
 
-====> ----- Ferramentas
+-- Configurar mongodb
 
-sudo pacman -S ghex hexedit meld sqlite sqlite-doc curl
-yay -S postman-bin
+- Editar o arquivo /etc/mongodb.conf
+Alterar o bindIp para o IP da máquina.
 
+- Iniciar o servidor
+sudo systemctl start mongodb
 
-====> ----- Configurar acesso a um device android pela USB
+- Testar
+mongo --host <ip-maquina> --port 27017
 
--- Configurar para usar o dispositivo. Executar o comando lsusb para descobrir o vender Id e product id do dispositivo.
+- Sair do mongo (exit)
+sudo chown -R mongodb: /var/lib/mongodb
+sudo chown -R mongodb: /var/log/mongodb
 
-lsusb
+- Criar um usuário no banco local
+mongo --host <ip-maquina> --port 27017
+use admin
+db.createUser({user: 'admin', pwd: 'malcxkwmvg59o', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
 
-Bus 001 Device 007: ID 22b8:2e82 Motorola PCS motorola one
+- Editar o arquivo /etc/mongodb.conf
+security:
+ authorization: enabled
 
--- Criar o arquivo /etc/udev/rules.d/51-android.rules e inserir as linhas abaixo:
+- Reiniciar o mongodb
+sudo systemctl restart mongodb
 
-SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",MODE="0666",OWNER="wilton"
-SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="android_adb"
-SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="android_fastboot"
-SUBSYSTEM=="usb",ATTR{idVendor}=="22b8",ATTR{idProduct}=="2e82",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
-SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",MODE="6860",OWNER="wilton"
-SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="android_adb"
-SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="android_fastboot"
-SUBSYSTEM=="usb",ATTR{idVendor}=="04e8",ATTR{idProduct}=="6860",SYMLINK+="libmtp",MODE="0666",ENV{ID_MTP_DEVICE}="1"
+- Conectar o cliente com um usuário
+mongo --host <ip-maquina> --port 27017 -u admin -p --authenticationDatabase "admin"
 
--- Recarregar as regras udev
+- Criar usuários
+use admin
+db.createUser({user: 'wilton', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'wilton'}, {role: 'dbAdmin', db: 'wilton'}]})
+db.createUser({user: 'seluz', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'seluz'}, {role: 'dbAdmin', db: 'seluz'}]})
 
-sudo udevadm control --reload-rules
+***** Dar permissão para o usuário wilton alterar o banco seluz
+db.grantRolesToUser('wilton', [{role: 'readWrite', db: 'seluz'}])
+db.grantRolesToUser('wilton', [{role: 'dbAdmin', db: 'seluz'}])
 
--- Instalar Media Transfer Protocol
+obs: fazer o mesmo (criar usuários e configurar security no servidor remoto)
+mongo --host marte --port 27017
 
-sudo pacman -S mtpfs gvfs-mtp
+—- Conectar o cliente com um usuário
+mongo --host <ip-maquina> --port 27017 -u admin -p --authenticationDatabase "admin"
+mongo --host marte --port 27017 -u admin -p --authenticationDatabase "admin"
 
--- Descomentar a linha que tem "user_allow_other" no arquivo "/etc/fuse.conf"
+mongo mongodb://admin:@<ip-maquina>:27017/admin
+mongo mongodb://admin:@marte:27017/admin
 
+-- Exemplo de comando para criar usuário:
+
+—- Grant role para usuário (dbAdmin, dbOwner, userAdmin, read, readWrite)
+db.createUser({user: 'admin', pwd: 'admin', roles: ['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase', 'root']})
+db.grantRolesToUser('admin', ['dbAdminAnyDatabase', 'readWriteAnyDatabase'])
+db.grantRolesToUser('admin', [{role: 'root', db: 'admin'}])
+
+—- Alterar a senha do usuário
+db.changeUserPassword('usuario', 'nova-senha')
+
+—- Trocar usuário corrente
+db.auth('usuario', 'senha')
+
+—- Remover usuário
+db.dropUser('usuario')
+
+—- Listar usuário corrente
+db.runCommand({connectionStatus : 1})
+
+—- Listar todos os usuário
+use <banco>
+db.getUsers()
+ou
+db.system.users.find(null, {user:1})
+
+—- Configurar para iniciar o mongodb no boot
+sudo systemctl enable  mongodb
+
+—- Autenticação/autorização
+http://ednilsonamaral.me/autenticacao-no-mongodb/
+https://docs.mongodb.com/manual/core/authentication/
+https://pt.stackoverflow.com/questions/205519/cria%C3%A7%C3%A3o-e-altera%C3%A7%C3%A3o-de-usu%C3%A1rios-e-permiss%C3%B5es
+
+—- Conectando ao banco de dados
+mongo mongodb://wilton:@<ip-maquina>:27017/seluz
+
+***** restart vm do crontini
+Voltar para crosh
+vmc stop termina
+vmc start termina
+exit
+vmc container termina penguin
+vmc container termina arch
+exit
+vsh termina penguin
+vsh termina arch
+
+***** Colocar as linhas abaixo no arquivo .bashrc (para instalação manual)
+### ----- site da seluz - versão nodejs
+
+export NODE_ENV=desenvolvimento
+export LOG_ACESSOS=sim
+
+# --- Local
+# source config-mongodb.sh local
+
+# --- Desenvolvimento
+source config-mongodb.sh desenv
+export EMAIL_USAR_SENDGRID=sim
+export EMAIL_FROM=wjps@wilton.jose.nom.br
+export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
+export EMAIL_SENDGRID_API_KEY=rs.akdjfleiwrjlkkljfalk6g.dkalfddddddkdkdkdkdkdkdkdkdkdkdkd9X-37NUBlQ
+
+# --- Producao
+# source config-mongodb.sh prod
+# export EMAIL_USAR_SENDGRID=sim
+# export EMAIL_FROM=site@seluz.org.br
+# export EMAIL_NODEMAILER_USUARIO=site@seluz.org.br:kpg89d33
+# export EMAIL_SENDGRID_API_KEY=rs.afaffafafafafaf-afafff.x_afafafafafafafafaff_afafafafafafafffffafE
