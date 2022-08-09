@@ -491,23 +491,23 @@ cst<em>         - troca a tag mais interna por <em>
 --------------------------------------------------------------------------------
 ** Plugin Coc.vim
 --------------------------------------------------------------------------------
-<leader>cc           - comenta a linha
-<leader>rn           - rename
-<leader>a            - açoes no código
-<leader>i            - formatação imports
-<leader>f            - formatação seleção
-<leader>qf           - fix corrente
-<tab>                - completar
-<s-space>            - completar
-<c-space>            - completar
-k                    - mostra o tipo de um simbolo
-K                    - mostra documentação simbolo
-]g|[g                - navegar por erros
-gd                   - definição
-gy                   - definição de tipo
-gr                   - referencia
-gi                   - implementação
-<space>a             - CocList diagnostico
+<leader>cc      - comenta a linha
+<leader>rn      - rename
+<leader>a       - açoes no código
+<leader>i       - formatação imports
+<leader>f       - formatação seleção
+<leader>qf      - fix corrente
+<tab>           - completar
+<s-space>       - completar
+<c-space>       - completar
+k               - mostra o tipo de um simbolo
+K               - mostra documentação simbolo
+]g|[g           - navegar por erros
+gd              - definição
+gy              - definição de tipo
+gr              - referencia
+gi              - implementação
+<space>a        - CocList diagnostico
 
 --------------------------------------------------------------------------------
 ** Diversos
