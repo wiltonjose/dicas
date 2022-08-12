@@ -1092,7 +1092,7 @@ sudo pacman -S docker docker-compose
 sudo systemctl start docker
 sudo systemctl enable docker
 
--- conferir se a instalação deu certo 
+-- conferir se a instalação deu certo
 sudo docker info
 
 -- executar o docker como usuário normal
@@ -1104,8 +1104,8 @@ sudo system stop docker
 
 -- criar o arquivo /etc/docker/daemon.json
 sudo vim /etc/docker/daemon.json
-{ 
-  "graph": "/mnt/disco/docker" 
+{
+  "graph": "/mnt/disco/docker"
 }
 
 -- copiar os arquivos de /var/lib/docker para /mnt/disco/docker
@@ -1142,6 +1142,30 @@ docker run --name=CONTAINER_ID --network=NETWORK_NAME -itd CONTAINER_NAME
 docker ps -f status=exited
 docker stop CONTAINER_ID && docker rm -v CONTAINER_ID
 
+***** Instalar imagem docker do MongoDB
+docker pull mongo
+
+***** Instalar utilitários do MongoDB
+yay -S mongodb-tools mongosh-bin
+
+-- criar volume de dados
+mkdir /mnt/disco/mongo/data/db
+
+-- criar o banco de dados
+docker run -d --name mongodb -v /mnt/disco/mongo/data/db:/data/db -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=m.....o mongo
+
+-- start o mongodb
+docker run -d --name mongodb -v /mnt/disco/mongo/data/db:/data/db mongo
+docker exec -it mongodb bash
+mongo
+
+-- string de conexão
+mongodb://usuario:senha@localhost:27017/admin
+
+-- comandos
+docker container start mongodb
+docker container stop mongodb
+docker container rm mongodb
 
 ***** Instalar banco de dados - MongoDB
 yay -S mongodb-bin mongodb-tools-bin
