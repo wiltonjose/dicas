@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=SublimeText2
+GenericName=Integrated Development Environment
+Comment=SublimeText2
+Exec=/opt/SublimeText2/sublime_text
+Icon=/opt/SublimeText2/Icon/48x48/sublime_text.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

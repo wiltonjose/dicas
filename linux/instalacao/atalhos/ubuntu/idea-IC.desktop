@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Intellij
+GenericName=Integrated Development Environment
+Comment=Intellij
+Exec=/opt/java/idea-IC/bin/idea.sh
+Icon=/opt/java/idea-IC/bin/idea.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

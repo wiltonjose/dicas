@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=VSCode
+GenericName=Integrated Development Environment
+Exec=/usr/bin/vscode
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

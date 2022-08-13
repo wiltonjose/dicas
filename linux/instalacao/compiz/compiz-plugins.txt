@@ -1,0 +1,116 @@
+PLUGINS COMPIZ
+---------------
+
+ACESSIBILITY
+------------
+
+- Opacity, brightness and saturation
+
+    <alt> <botão 4> - Diminui transparencia
+    <alt> <botão 5> - Aumenta transparencia
+    
+- Zoom melhorado
+
+    <super> <botão 4> - Aumenta zoom
+    <super> <botão 5> - Diminui zoom
+    
+    
+
+DESKTOP
+-------
+
+- Alternador de janelas de visualização
+
+- Expo
+
+    <super> <e> - Iniciar
+    <botão 1>   - Mover janela entre áreas
+    <botão 3>   - Sair do expo
+    <botão 5>   - Próxima área
+    <botão 4>   - Área anterior
+    
+- Muro da área de trabalho
+
+    <ctrl> <alt> <left>          - Move para a área da esquerda
+    <ctrl> <alt> <right>         - Move para a área da direita
+    <shift> <ctrl> <alt> <left>  - Move janela para área da esquerda
+    <shift> <ctrl> <alt> <right> - Move janela para área da direita
+
+
+EFFECTS
+-------
+
+- Decoração de janela
+
+
+EXTRAS
+------
+
+- Previsões das janelas
+
+
+IMAGE LOADING
+-------------
+
+- JPEG, Png, Svg e Texto
+
+
+UTILITY
+-------
+
+- Correções de bug
+
+- Dbus
+
+- Gestão de sessão
+
+- Informação de redimensionamento
+
+- Refrescamento da posição do rato
+
+
+WINDOW MANAGEMENT
+-----------------
+
+- Alternador estático de aplicações
+
+    <alt> <tab>        - Área atual
+    <ctrl> <alt> <tab> - Todas as áreas
+    
+    <shift> <alt> <tab> - Área atual
+    <shift> <alt> <tab> - Todas as áreas
+
+- Alternador Shift
+
+    <shift> <super> <s> - Iniciar área atual
+    <ctrl> <super> <s>  - Iniciar todas as áreas (configurar)
+    <Enter>             - Encerrar
+    <super> <tab>       - Próxima janela da área atual
+    <alt> <super> <tab> - Próxima janela de todas as áreas
+
+- Colocar janelas
+
+- Dimensionar (Scale)
+    
+    <shitf> <alt> UP   - Na área atual
+    <shift> <alt> Down - Todas as áreas    
+
+- Redimensionar janela
+
+    <alt> <botão 2> - Iniciar window resize
+    <alt> <F8>      - Iniciar window resize
+
+
+SEM CATEGORIA
+-------------
+
+    
+- Mover janela
+
+    <alt> <botão 1> - Iniciar window move
+    <alt> <F7>      - Iniciar window move   
+
+
+    
+    
+            

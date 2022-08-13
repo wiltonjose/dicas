@@ -1,0 +1,236 @@
+runtime! debian.vim
+
+filetype off              " required!
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" let Vundle manage Vundle
+" required!
+Bundle 'gmarik/vundle'
+
+" Agora os bundles
+" Navegador para os buffers abertos
+Bundle 'vim-scripts/bufexplorer.zip'
+
+" Adiciona tags html e mais umas coisinhas para o %
+Bundle 'vim-scripts/matchit.zip'
+
+" Fecha automaticamente aspas, chaves, parênteses...
+Bundle 'Townk/vim-autoclose'
+
+" Autocomplete para java
+Bundle 'vim-scripts/javacomplete'
+Bundle 'xuhdev/indent-java.vim'
+
+" Classpath para Autocomplete java
+" Bundle 'anddam/android-javacomplete'
+" Bundle 'bpowell/vim-android'
+
+" Autocomplete para PHP
+Bundle 'shawncplus/phpcomplete.vim'
+
+" Autocomplete para Python
+Bundle 'vim-scripts/pythoncomplete'
+
+" javaScript
+" > sudo apt-get install npm
+" > npm config set proxy http://login:pass@host:port
+" > npm config set https-proxy http://login:pass@host:port
+" > npm config set registry \"http://registry.npmjs.org/\"
+" > sudo npm install -g jshint
+" > cd /usr/bin
+" > sudo ln -s nodejs node
+Bundle 'jelera/vim-javascript-syntax'
+Bundle 'Shutnik/jshint2.vim'
+Bundle 'myhere/vim-nodejs-complete'
+
+" Tag List
+Bundle 'vim-scripts/taglist.vim'
+
+" Task List
+Bundle 'vim-scripts/TaskList.vim'
+
+" Super Tab
+Bundle 'ervandew/supertab'
+
+" ShowMarks
+Bundle 'vim-scripts/ShowMarks'
+
+" NerdTree
+Bundle 'scrooloose/nerdtree'
+
+" HTML5
+Bundle 'othree/html5.vim'
+
+" CSS3
+Bundle 'hail2u/vim-css3-syntax'
+
+" ------------------------------------------------------------------------------------------------------
+
+if has('unix')
+    let &shell="bash"
+    set clipboard=autoselect
+endif
+
+set nocompatible          " be iMproved
+
+syntax on
+
+filetype on
+filetype plugin on
+filetype plugin indent on
+
+" set runtimepath+=$HOME/.vim/bundle/taglist.vim
+
+" blue, darkblue, default, delek, desert, elflord, evening, koehler, morning, murphy, pablo,
+" peachpuff, ron, shine, slate, torte, zellner
+colorscheme default
+
+set background=dark
+
+set history=700                   " Quantidade de linha que o vim guarda
+set encoding=utf-8
+set number                        " Apresenta o numero da linha
+set showmode                      " Mostra o modo de operacao que voce esta
+set cursorline                    " Destaca a linha atual
+set autoindent                    " Recua a linha atual para o mesmo nivel da linha anterior
+set ruler                         " Regua - Mostra a posicao do cursor
+set autoread                      " Atualiza o texto no vim e o mesmo for alterado por fora
+set autochdir                     " Vai para o diretorio do arquivo aberto
+set tabstop=2                     " Numero de colunas para o comando TAB
+set softtabstop=2                 " Backspace volta indentacao
+set sw=2                          " tab com 4 espaços
+set expandtab                     " TAB's sao substituidos por espacos
+set shiftwidth=2                  " Numero de colunas para o comandos > ou <
+set smarttab
+set showmatch                     " Ao fechar (, {, [ mostro onde ele foi aberto
+set shm=filmnrwxt                 " Encurta nomes na regua
+set showcmd                       " Mostra comando sendo executado
+set nowrap                        " Nao quebra a linha
+
+set report=0                      " Reporta operacoes com linhas no rodape
+set backspace=eol,start,indent    " Usando backspace para deletar linha
+set ve=all                        " Permite mover com as setas em area que nao tem texto
+set ttyfast                       " Envia mais caracteres para tela - Melhora o redraw de janelas
+set backupdir=~/vim-backup        " Pasta para guardar backups
+set backup                        " Guarda backup do arquivo
+" set nobackup                      " Nao guarda backup do arquivo
+set laststatus=2                  " Qtde de linhas na barra de status
+set mouse=a                       " Permite o uso do mouse
+
+set ignorecase		              " Ignora case na pesquisa
+set smartcase		              " Do smart case matching
+set incsearch		              " Incremental search
+set hlsearch
+set title                         " Mostra nome do arquivo na barra de titulo
+set titlestring=%<Nome=%t%m%r%h%w
+\%=
+\Buffer=%n
+\%(\ %a%)
+\%28([Total\ de\ Linhas=%L]%)
+
+highlight CursorLine cterm=NONE ctermbg=DarkGray ctermfg=NONE guibg=DarkGray guifg=NONE
+highlight CursorColumn cterm=NONE ctermbg=DarkGray ctermfg=NONE guibg=DarkGray guifg=NONE
+highlight statusline ctermfg=blue ctermbg=white
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+highlight Search ctermbg=green ctermfg=white
+highlight IncSearch ctermbg=green ctermfg=cyan
+highlight Modified guifg=black guibg=#FFA500
+highlight Pmenu guibg=brown gui=bold
+highlight Pmenu ctermfg=blue ctermbg=white
+highlight PmenuSel ctermfg=white ctermbg=blue
+
+" Change Color when entering Insert Mode
+" autocmd InsertEnter * highlight CursorLine cterm=NONE ctermbg=DarkGray ctermfg=NONE guibg=DarkGray guifg=NONE
+
+" Revert Color to default when leaving Insert Mode
+" autocmd InsertLeave * highlight CursorLine cterm=NONE ctermbg=DarkGray ctermfg=NONE guibg=DarkGray guifg=NONE
+
+set wildmode=list:longest,full    " Completa palavra automaticamento com TAB
+set wildmenu                      " Menu com as opções do vim usando tab
+
+set statusline=%F%m%r%h%w\ \ \ \ \ [Fmt=%{&ff}]\ [%Y]\ [ASCII=\%03.3b]\ [Hex=\%02.2B]\ [Pos=%l,%v]\ [%p%%]\ [Tam=%L]
+
+autocmd FileType php  setlocal omnifunc=phpcomplete#CompletePHP
+
+autocmd FileType java setlocal omnifunc=javacomplete#Complete
+autocmd FileType java setlocal completefunc=javacomplete#CompleteParamsInfo
+
+autocmd FileType js call JavaScriptFold()
+
+autocmd BufWritePre *.py normal m`:%s/\s\+$//e``
+autocmd BufWrite * :call RemoveTraillingSpaces()
+autocmd BufRead *.py set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class
+
+autocmd BufNewFile,BufRead *.thtml setfiletype php
+
+inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P>
+inoremap <buffer> <C-S-Space> <C-X><C-U><C-P>
+
+autocmd vimenter * NERDTree
+autocmd VimEnter * wincmd p
+autocmd vimenter * if !argc() | NERDTree | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+let g:cssColorVimDoNotMessMyUpdatetime = 1
+set guifont=Liberation\ Mono\ 11
+
+let g:NERDTreeDirArrows=0
+let g:NERDTreeWinSize = 40
+let g:NERDTreeWinPos="left"
+let g:NERDTreeMinimalUI=1
+let g:NERDTreeHighlightCursorline=1       " Destaca a linha atual
+let g:NERDTreeShowHidden=1                " Lista arquivos ocultos
+let g:NERDTreeShowLineNumbers=0
+let g:NERDTreeQuitOnOpen=0
+let g:NERDTreeIgnore=['\.*swp$', '\.*pyc$', '^\.git$', '^\.hg$']  " Arquivos que não serão exibidos.
+" let g:nerdtree_tabs_open_on_console_startup=1
+" let g:nerdtree_tabs_open_on_gui_startup=1
+
+let Tlist_Use_Right_Window=1            " Lista de tags à direita
+let Tlist_GainFocus_On_ToggleOpen=1     " Ganhar foco
+let Tlist_File_Fold_Auto_Close=1        " Não exibe tags de buffers inativos
+let Tlist_Sort_Type="name"              " Ordenar pelo nome e não pela ordem no arquivo
+let Tlist_Close_On_Select=1             " Fecha a taglist após selecionar uma tag
+
+let php_sql_query=1
+let php_htmlInStrings=1
+
+let jshint2_read=0
+let jshint2_save=0
+let jshint2_confirm=0
+
+let g:nodejs_complete_config = {
+\  'js_compl_fn': 'jscomplete#CompleteJS',
+\  'max_node_compl_len': 15
+\}
+"Escondendo itens no TagList para PHP
+let tlist_php_settings='php;c:Classes;f:Functions'
+
+if filereadable("/etc/vim/vimrc.local")
+    source /etc/vim/vimrc.local
+endif
+
+function! RemoveTraillingSpaces()
+    let cursor_pos = getpos(".")
+    %s/[ \t]*$//g
+    call setpos(".", cursor_pos)
+endfunction
+
+nnoremap <F3> :set hlsearch!<CR>
+nnoremap <F4> :let @/=""<CR>
+
+nnoremap <F5> :TaskList<CR>
+
+nnoremap <F6> :TlistOpen<CR>
+nnoremap <C-F6> :TlistClose<CR>
+
+nnoremap <F9> :NERDTree<CR>
+nnoremap <C-F9> :NERDTreeClose<CR>
+
+nnoremap <C-Right> :tabp<CR>
+nnoremap <C-Left> :tabn<CR>
+
+nnoremap <C-F12> :JSHint<CR>
+

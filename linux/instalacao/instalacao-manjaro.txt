@@ -1,0 +1,38 @@
+
+1) Fazer download do ISO
+
+http://sourceforge.net/projects/manjarolinux/files/release/
+
+sudo md5sum manjaro-xfce-0.8.12-x86_64.iso
+
+2) Colocar o pendrive no leitor (Formatado em fat32). Executar
+   o comando abaixo para desmontar o dispositivo
+
+sudo umount /dev/sdb1
+
+3) No Ubuntu instalar o pacote abaixo:
+
+sudo apt-get install syslinux-utils
+
+4) Executar o comando abaixo:
+
+isohybrid manjaro-xfce-0.8.12-x86_64.iso
+
+5) Executar o comando abaixo:
+
+sudo dd if=manjaro-xfce-0.8.12-x86_64.iso of=/dev/sdb bs=4MB
+
+6) Pode ser usado o programa abaixo.
+
+6.1) Download
+
+http://usbaktarici.googlecode.com/files/USBTransfer301Source.zip
+
+6.2) Executar o comando abaixo dentro do diretório do utilitário acima:
+
+python start.py
+
+
+
+
+

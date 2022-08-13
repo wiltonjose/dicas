@@ -1,0 +1,21 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+
+
+## Colocar no final do arquivo. -- /etc/environment
+## Configuracoes de PROXY
+## Para configurar usuaro e senha do proxy: http://usuario:senha@servidor:80/
+
+all_proxy="http://localhost:3128/"
+http_proxy="http://localhost:3128/"
+https_proxy="https://localhost:3128/"
+ftp_proxy="ftp://localhost:3128/"
+socks_proxy="socks://localhost:3128/"
+
+ALL_PROXY="http://localhost:3128/"
+HTTP_PROXY="http://localhost:3128/"
+HTTPS_PROXY="https://localhost:3128/"
+FTP_PROXY="ftp://localhost:3128/"
+SOCKS_PROXY="socks://localhost:3128/"
+
+no_proxy="*.senado.leg.br,*.senado.gov.br,*.lexml.gov.br,*.local,.senado.leg.br,.senado.gov.br,.lexml.gov.br,.local,senado.leg.br,senado.gov.br,lexml.gov.br,local,localhost,127.0.0.0/8,172.28.*,172.29.*,172.30.*,172.31.*"
+

@@ -1,0 +1,23 @@
+
+# ================================================== #
+Instalar HomeBank
+# ================================================== #
+
+*-----* Fazer download do HomeBank
+
+http://homebank.free.fr/index.php
+
+Copiar para $HOME/Downloads/Linux/HomeBank
+
+sudo apt-get install build-essential libgtk2.0-dev libofx4 libofx-dev intltool
+
+# uncompress the archive file:
+tar -zxpf homebank-4.3.tar.gz
+
+# move to HomeBank folder:
+cd homebank-4.3
+
+./configure --prefix=/usr
+make
+sudo make install
+

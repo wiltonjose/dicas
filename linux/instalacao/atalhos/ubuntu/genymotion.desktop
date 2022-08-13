@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Genymotion
+GenericName=Simulador Android
+Comment=Genymotion
+Exec=/opt/java/genymotion/genymotion
+Icon=/opt/java/genymotion/icons/icon.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

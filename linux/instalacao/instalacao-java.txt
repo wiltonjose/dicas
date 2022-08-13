@@ -1,0 +1,140 @@
+
+# ================================================== #
+Instalação do java da Oracle
+# ================================================== #
+
+*-----* Fazer download do jdk no site da oracle
+
+http://www.oracle.com/technetwork/java/javase/overview/index.html
+
+*-----* Instalacao jdk
+
+cd /usr/lib/jvm
+sudo cp ~/Downloads/Java/Oracle/jdk-6u24-linux-i586.bin .
+sudo chmod u+x jdk-6u24-linux-i586.bin
+sudo ./jdk-6u24-linux-i586.bin
+sudo rm jdk-6u24-linux-i586.bin
+
+sudo cp ~/Downloads/Java/Oracle/jdk-7u17-linux-i586.tar.gz .
+sudo tar xzf jdk-7u17-linux-i586.tar.gz
+sudo rm jdk-7u17-linux-i586.tar.gz
+
+*-----* Configurando jdk
+
+sudo ln -s jdk1.6.0_24/ jdk-oracle
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk-oracle/bin/java" 1
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk-oracle/bin/javac" 1
+sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk-oracle/bin/javaws" 1
+sudo update-alternatives --set java /usr/lib/jvm/jdk-oracle/bin/java
+sudo update-alternatives --set javac /usr/lib/jvm/jdk-oracle/bin/javac
+sudo update-alternatives --set javaws /usr/lib/jvm/jdk-oracle/bin/javaws
+
+cd /opt/java
+ln -s /usr/lib/jvm/jdk-oracle/ jdk
+
+# ================================================== #
+Desenvolvimento (Java)
+# ================================================== #
+
+*-----* Java
+
+*--* Alterar script instalaProdutos.sh para instalar OpenJDK ou SUN Java
+
+*--* Criar ambiente
+
+cd /opt
+sudo mkdir java
+sudo groupadd java
+sudo gpasswd -a wilton java
+sudo find java -type d -exec chmod g+s {} \;
+sudo chown -R wilton.java java
+sudo chmod -R ug+rwx java
+
+*--* GWT source
+
+mkdir ~/Informatica/Linguagens/java/web/GWT/gwt-svn
+cd ~/Informatica/Linguagens/java/web/GWT/gwt-svn
+svn checkout http://google-web-toolkit.googlecode.com/svn/tools/ tools
+svn checkout http://google-web-toolkit.googlecode.com/svn/trunk/ trunk
+
+*--* Incluir o diretório abaixo no PATH definido no arquivo /etc/environment
+
+/opt/java/jdk/bin
+
+
+*--* Alterar arquivo /etc/bash.bashrc ou ~/.profile
+
+## Colocar no final do arquivo. -- /etc/bash.bashrc, ~/.bashrc ou ~/.profile
+## Configuracoes para o JAVA
+
+export JAVA_DIR=/opt/java
+
+# export JAVA_HOME=/opt/java/jdk-producao
+# export JAVA_HOME=/usr/lib/jvm/java-6-sun
+# export JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk
+# export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386
+# export JAVA_HOME=/usr/lib/jvm/jdk1.6.0_24
+# export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_17
+export JAVA_HOME=$JAVA_DIR/jdk
+export JRE_HOME=$JAVA_DIR/jdk/jre
+
+export ANT_HOME=$JAVA_DIR/apache-ant
+export CATALINA_HOME=$JAVA_DIR/apache-tomcat
+export MAVEN_HOME=$JAVA_DIR/apache-maven
+# export ANDROID_SDK=$JAVA_DIR/adt-bundle-linux-x86/sdk
+export ANDROID_SDK=$JAVA_DIR/android-sdk-linux
+export ANDROID_NDK=$JAVA_DIR/android-ndk-linux
+
+export OC4J_HOME=$JAVA_DIR/oc4j
+export J2EE_HOME=$OC4J_HOME/j2ee/home
+
+# export GWT_HOME=$JAVA_DIR/gwt-2.2.0
+# export GWT_HOME=$JAVA_DIR/gwt-2.3.0
+export GWT_HOME=$JAVA_DIR/gwt
+
+export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:/usr/share/java/mysql.jar
+export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin:$ANT_HOME/bin:$MAVEN_HOME/bin:$CATALINA_HOME/bin:$GWT_HOME:$ANDROID_SDK/tools:$ANDROID_SDK/platform-tools
+
+
+*--* Instalar o Eclipse
+
+*--* Alterar o arquivo eclipse.ini que está no diretório /opt/java/eclipse
+
+-showsplash
+org.eclipse.platform
+-framework
+plugins/org.eclipse.osgi_3.4.3.R34x_v20081215-1030.jar
+-vmargs
+-Dosgi.requiredJavaVersion=1.5
+-Xms512m
+-Xmx512m
+-XX:PermSize=256m
+-XX:MaxPermSize=256m
+-Xverify:none
+-XX:+UseConcMarkSweepGC
+-XX:+CMSClassUnloadingEnabled
+-XX:+CMSPermGenSweepingEnabled
+
+*--* Executar o eclipse
+
+cd eclipse
+./eclipse
+
+*--* Diretório workspace igual a /opt/java/eclipse/workspace
+*--* No Prodasen configurar proxy
+
+*--* Instalar os plugins do Eclipse
+
+  PyDev                       http://pydev.sourceforge.net/updates/
+  Subversive                  http://download.eclipse.org/technology/subversive/0.7/update-site/
+  Subversive SVN Connectors   http://www.polarion.org/projects/subversive/download/eclipse/2.0/update-site/
+
+*--* Configurar PyDev
+
+  Em "Preferences/PyDev/Interpreter - Python/" clicar em "New..." para
+  "Python interpreters..." e digitar "/usr/bin/python". Ou seja, informar
+
+*--* Criar atalho para o eclipse no desktop
+
+/opt/java/eclipse/eclipse
+

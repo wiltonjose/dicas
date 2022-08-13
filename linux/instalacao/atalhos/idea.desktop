@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Intellij Idea
+GenericName=Integrated Development Environment
+Exec=/opt/idea-IC-141.1532.4/bin/idea.sh
+Icon=/opt/idea-IC-141.1532.4/bin/idea.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

@@ -1,0 +1,105 @@
+## Syntax: minimum_size [width] [height]
+minimum_size 265 300
+
+## Syntax: maximum_width [width]
+maximum_width 265
+
+## Gap between text and screen borders.
+gap_x 20  ## Left / Right
+gap_y 32  ## Top / Bottom
+
+## Use XFT? Required to Force UTF8 (see below)
+use_xft yes
+xftfont DroidSans:size=10
+#xftfont Bitstream Vera Sans Mono:size=9
+xftalpha 0.8
+
+## Create own window in instead of using desktop?
+own_window yes
+own_window_transparent yes
+own_window_type normal
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+
+## Draw shades?
+draw_shades yes
+draw_outline no
+draw_graph_borders yes
+
+## My colors (suit yourself)
+color0  White            #FFFFFF
+color1  Ivory            #FFFFF0
+color2  Ivory2           #EEEEE0
+color3  Ivory3           #CDCDC1
+color4  Tan1             #FFA54F
+color5  Tan2             #EE9A49
+color6  Gray             #7E7E7E
+color7  AntiqueWhite4    #8B8378
+color8  DimGray          #696969
+color9  Tomato           #FF6347
+
+default_color #FFFFFF
+default_shade_color black
+default_outline_color black
+
+##  Outros
+background no
+update_interval 3.0
+total_run_times 0
+double_buffer yes
+alignment top_right
+no_buffers yes
+uppercase no
+cpu_avg_samples 2
+net_avg_samples 1
+override_utf8_locale yes
+use_spacer no # right
+text_buffer_size 256
+
+TEXT
+${color0 grey74} ${font Helvetica:size=36}$alignc${time %H:%M}
+${voffset -160}
+${color white}
+${font Helvetica:size=12}$alignc${time %d %b %Y}
+
+# Uso do processador
+${voffset -40}
+${font Arial:bold:size=9}${color9 grey74}SISTEMA ${color9 grey74} ${hr 1}
+$font${color white}$sysname $kernel $alignr $machine
+${alignc}${pre_exec cat /proc/cpuinfo | grep "model name" -m1 | cut -d":" -f2 | cut -d" " -f2- | sed 's#Processor ##'}
+Real time CPU clock $alignr${freq_g cpu0}Ghz
+Uptime $alignr${uptime}
+File System $alignr${fs_type}
+
+# Uso da CPU
+${voffset -30}
+${font Arial:bold:size=9}${color9 grey74}PROCESSADOR ${color9 grey74}${hr 1}
+$font${color white}CPU-0 $alignr ${cpu cpu0}%
+${cpugraph cpu0 FFFF00 FF0000 -t}
+CPU-1 $alignr ${cpu cpu0}%
+${cpugraph cpu1 FFFF00 FF0000 -t}
+
+# Uso da memoria
+${voffset -40}
+${font Arial:bold:size=9}${color9 grey74}MEMÓRIA ${color9 grey74}${hr 1}
+$font${color white}MEM $alignc $mem / $memmax $alignr $memperc%
+${memgraph FFFF00 FF0000 -t}
+
+# Uso do disco
+${voffset -40}
+${font Arial:bold:size=9}${color9 grey74}HDD ${color9 grey74}${hr 1}
+$font${color white}/ $alignc ${fs_used /} / ${fs_size /} $alignr ${fs_free_perc /}%
+${fs_bar /}
+
+# Uso da rede
+${voffset -30}
+${font Arial:abold:size=9}${color9 grey74}REDES ${color9 grey74}${hr 1}
+$font${color white}IP on eth1 $alignr ${addr eth1}
+Down $alignr ${downspeed eth1} kb/s
+Up $alignr ${upspeed eth1} kb/s
+Downloaded: $alignr  ${totaldown eth1}
+Uploaded: $alignr  ${totalup eth1}
+
+${voffset -30}
+${font Arial:abold:size=9}${color9 grey74}CONEXÕES ${color9 grey74}${hr 1}
+$font${color white}Entrada $alignr ${tcp_portmon 1 32767 count}
+$font${color white}Saída $alignr ${tcp_portmon 32768 61000 count}

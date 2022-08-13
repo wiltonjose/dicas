@@ -1,0 +1,47 @@
+
+# ================================================== #
+Desenvolvimento (Python)
+# ================================================== #
+
+*--* Complementos
+sudo apt-get install python-gtk2-tutorial python-gtk2-doc python-pysqlite2 python-django python-tk
+
+*--* Criar ambiente
+
+cd /opt
+sudo mkdir python
+sudo groupadd python
+sudo gpasswd -a wilton python
+sudo find python -type d -exec chmod g+s {} \;
+sudo chown -R wilton.python python
+sudo chmod -R ug+rwx python
+
+- Ultima versão oficial do Django
+
+http://www.djangoproject.com/download/1.0.2/tarball/Django-1.0.2.tar.gz
+cd python
+tar xzvf Django-1.0.2.tar.gz
+cd Django-1.0.2
+sudo python setup.py install
+
+*--* Instalar o Pyjamas
+
+cd /opt/python
+svn co https://pyjamas.svn.sourceforge.net/svnroot/pyjamas/trunk pyjamas-svn
+cd pyjamas-svn
+python bootstrap.py
+
+./bin/pyjsbuild --help
+
+*--* Alterar arquivo /etc/environment, /etc/bash.bashrc ou ~/.profile
+
+
+## Colocar no final do arquivo. -- /etc/bash.bashrc, ~/.bashrc ou ~/.profile
+## Configuracoes para o Python
+
+export PYTHON_DIR=/opt/python
+
+export PYTHONPATH=$PYTHONPATH:$PYTHON_DIR/pyjamas
+export PATH=$PATH:$PYTHON_DIR/pyjamas/bin
+
+

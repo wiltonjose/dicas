@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=PLSQL Developer
+GenericName=PL/SQL Developer
+Comment=PL/SQL Developer
+Exec=/home/wilton/Scripts/plsqlDeveloper.sh
+Icon=/home/wilton/.local/share/icons/hicolor/48x48/apps/application-x-wine-extension-dev.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Android Studio
+GenericName=Integrated Development Environment
+Exec=/opt/java/android-studio/bin/studio.sh
+Icon=/opt/java/android-studio/bin/idea.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

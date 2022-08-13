@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=SQL Developer
+GenericName=SQL Developer
+Comment=SQL Developer
+Exec=/opt/oracle/sqldeveloper/sqldeveloper/bin/sqldeveloper
+Icon=/opt/oracle/sqldeveloper/icon.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true
+

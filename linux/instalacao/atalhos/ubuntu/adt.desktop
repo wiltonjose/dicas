@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Android Developer Tools
+GenericName=Integrated Development Environment
+Exec=/opt/java/adt-bundle-linux-x86_64/eclipse/eclipse
+Icon=/opt/java/adt-bundle-linux-x86_64/eclipse/android.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true

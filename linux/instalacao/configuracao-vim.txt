@@ -1,0 +1,69 @@
+
+# ================================================== #
+Plugins do VIM
+# ================================================== #
+
+*-----* NERDTree (http://www.vim.org/scripts/script.php?script_id=1658)
+
+git clone https://github.com/scrooloose/nerdtree.git
+
+Copie os arquivos e subdiretórios de "nerdtree" para ~/.vim.
+
+Entre no vim e execute ":helptags doc"
+
+Para ver a página de help execute: ":help NERD_tree.txt"
+
+*-----* Project.vim (http://www.vim.org/scripts/script.php?script_id=69)
+
+https://github.com/akiradeveloper/project.vim.git
+
+Copie os arquivos e subdiretórios de "project.vim" para ~/.vim.
+
+Entre no vim e execute ":helptags doc"
+
+Para ver a página de help execute: ":help project"
+
+*-----* Tagbar.vim (http://majutsushi.github.com/tagbar/)
+
+https://github.com/majutsushi/tagbar.git
+
+Copie os arquivos e subdiretórios de "tagbar" para ~/.vim.
+
+Entre no vim e execute ":helptags doc"
+
+Para ver a página de help execute: ":help tagbar"
+
+*-----* MiniBufExplorer (http://www.vim.org/scripts/script.php?script_id=159)
+
+Fazer download do arquivo minibufexpl.vim e copiar para o diretório ~/.vim/plugin
+
+Colocar as linha abaixo no arquivo .vimrc
+
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
+
+*-----* Tasklist (http://www.vim.org/scripts/script.php?script_id=2607)
+
+Fazer download do arquivo tasklist.vim e copiar para o diretório ~/.vim/plugin
+
+Colocar as linha abaixo no arquivo .vimrc
+
+map T :TaskList<CR>
+
+*-----* PyDiction (http://www.vim.org/scripts/script.php?script_id=850)
+
+Fazer download do arquivo pydiction-1.2.zip
+
+Copiar o arquivo python_pydiction.vim para ~/.vim/after/ftplugin/
+Copiar os outros arquivos (complete-dict, pydiction.py e README.txt) para ~/.vim/after/pydiction/
+
+Colocar as linha abaixo no arquivo .vimrc
+
+" pydiction
+filetype plugin on
+let g:pydiction_location = '~/.vim/after/pydiction/complete-dict'
+let g:pydiction_menu_height = 15
+
+

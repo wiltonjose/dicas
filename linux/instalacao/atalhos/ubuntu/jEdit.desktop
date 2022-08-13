@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=jEdit
+Comment=jEdit
+Exec=/home/wilton/Scripts/jedit %U
+Icon=/opt/java/jedit/doc/jedit.png
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true
+Path=/opt/java/jedit

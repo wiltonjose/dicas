@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Eclipse
+GenericName=Integrated Development Environment
+Comment=Eclipse
+Exec=/opt/java/eclipse/eclipse
+Icon=/opt/java/eclipse/eclipse.png
+#Icon=/opt/java/eclipse/icon.xpm
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=GNOME;GTK;Development;IDE;
+StartupNotify=true
