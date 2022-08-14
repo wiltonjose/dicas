@@ -79,7 +79,7 @@ UUID=23c37b35-4d8a-41cb-bcad-53796534d03a  /mnt/disco  ext4  rw  0 0
 ***** Proxy (primeira parte)
 -- Veja arquivo configurar_proxy.txt
 
-***** configurar keys
+***** Configurar keys
 -- Atualizar o banco de dados local do pacman
 sudo pacman -Syy
 
@@ -146,6 +146,55 @@ rm -rf yay/
 yay -Syyu
 
 -- executar reboot
+
+***** Instalar reclone
+https://rclone.org/docs/
+sudo pacman -S rclone
+
+-- pegar credenciais client-id (google drive)
+https://rclone.org/drive/
+https://console.cloud.google.com/apis/credentials?project=lofty-dynamics-212302
+- na lista "IDs do cliente OAuth 2.0" clicar em "Clente rclone"
+- copiar o client_id e a chave client_secret
+
+-- pegar credenciais client-id (dropbox)
+https://ostechnix.com/mount-dropbox-using-rclone-in-linux/
+https://rclone.org/dropbox/
+https://rclone.org/dropbox/#get-your-own-dropbox-app-id
+https://www.dropbox.com/developers/apps/create
+- acessar "App console"
+- clicar em rclone_db
+- copiar o client_id = App key e a chave client_secret = App secret
+
+-- configuração dos volumes remotos
+rclone config
+
+-- montar dropbox e google drive em /mnt/dropbox e /mnt/gdrive
+sudo mkdir /mnt/dropbox
+sudo chown -R wilton:users /mnt/dropbox
+rclone mount dropbox:/ /mnt/dropbox/
+
+sudo mkdir /mnt/gdrive
+sudo chown -R wilton:users /mnt/gdrive
+rclone mount gdrive:/ /mnt/gdrive/
+
+fusermount -u /mnt/dropbox
+fusermount -u /mnt/gdrive
+
+-- comando importantes
+rclone listremotes
+rclone lsd remote:
+rclone lsl remote:
+rclone ls remote:
+rclone copy origem remote:destino
+rclone move origem remote:destino
+rclone delete remote:destino
+
+-- sincronizar - o destino é atualizado para ficar igual origem
+rclone sync -P origem remote:destino --exclude="**/node_modules/**"
+
+-- testa a sincronização para evitar perda de dados (--dry-run ou --interactive/-i)
+rclone sync -i origem remote:destino --exclude="/node_modules/**"
 
 ***** Proxy (segunda parte)
 -- Veja arquivo configurar_proxy.txt
