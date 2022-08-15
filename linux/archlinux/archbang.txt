@@ -218,7 +218,10 @@ env | grep SHELL
 -- Incluir o valor de SHELL no arquivo /etc/shells
 
 ***** Utilitários de rede
-sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
+sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils lsof
+yay -S ipscan
+
+lsof -P -i -n
 
 ***** Comandos comuns smbclient
 https://debian-handbook.info/browse/pt-BR/stable/sect.windows-file-server-with-samba.html
