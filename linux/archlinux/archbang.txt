@@ -34,7 +34,7 @@ sudo locale-gen
 localectl status
 
 -- ver a font atual
-showconsolefont
+sudo showconsolefont
 
 -- listar mapas de teclado disponíveis
 localectl list-keymaps
@@ -43,7 +43,7 @@ localectl list-keymaps
 ls -l /usr/share/kbd/consolefonts
 
 -- definir mapa apenas para a sessão atual
-sudo loakeys br-abnt2
+sudo loadkeys br-abnt2
 
 -- definir fonte apenas para a sessão atual
 sudo setfont lat1-14 -m 8859-1
@@ -74,7 +74,7 @@ sudo chmod -R 755 /mnt/disco/
 
 -- incluir a linha abaixo no arquivo /etc/fstab
 # /dev/sdb1
-UUID=23c37b35-4d8a-41cb-bcad-53796534d03a  /mnt/disco  ext4  rw  0 0
+UUID=23c37b35-4d8a-41cb-bcad-53796534d03a  /mnt/disco  ext4  rw  0 2
 
 ***** Proxy (primeira parte)
 -- Veja arquivo configurar_proxy.txt
@@ -236,11 +236,11 @@ smbclient //servidor/share
 sudo mount.cifs //servidor/share /mnt/share -o user=wilton,rw,vers=1.0
 
 ***** Inicialização do firewall no boot
-sudo pacman -S ufw gufw
+sudo pacman -S ufw
 sudo ufw enable
+sudo ufw status
 sudo systemctl enable ufw
 sudo systemctl start ufw
-sudo ufw status
 
 ***** Configurando openssh
 sudo pacman -S openssh
@@ -262,6 +262,15 @@ AllowUsers wilton
 -- Restaurar backup do diretório .ssh
 
 -- Configurar o firewall para aceitar a porta 22
+sudo ufw allow ssh
+ou
+sudo ufw allow 22/tcp
+sudo ufw allow 22/tcp comment 'port ssh tcp port 22'
+sudo ufw allow from 10.105.28.0/24 to 10.105.29.1 port 22 proto tcp comment 'Allow SSH'
+
+-- limita abra o SSH de entrada, mas negue conexões de um endereço IP que tentou
+   iniciar 6 ou mais conexões nos últimos 30 segundos
+sudo ufw limit ssh
 
 -- Inicar o daemon sshd
 sudo systemctl start sshd
@@ -385,7 +394,7 @@ cat /proc/sys/vm/swappiness
 
 -- se o valor for muito alto alterar para um valor menor
 -- inserir a linha abaixo no arquivo /etc/sysctl.d/99-sysctl.conf
-vm.swappiness=5
+vm.swappiness=10
 
 -- executar o comando abaixo:
 sudo sysctl --system
@@ -409,7 +418,7 @@ sudo pacman -S xorg-xrandr obconf lxinput
 
 ***** Instalar slim
 sudo pacman -S slim slim-themes archlinux-themes-slim
-sudo medit /etc/slim.conf
+sudo vi /etc/slim.conf
 
 -- Fazer as alterações abaixo:
 ------------------------
@@ -477,23 +486,19 @@ xrandr -q
 ***** feh - visualizar imagens e papel de parede
 ***** imagemagick - tratamento de imagens (convert, junta, etc)
               https://terminalroot.com.br/2015/03/tratamento-de-imagens-com-imagemagick.html
-***** tint2 - barra de tarefas
 ***** scrot - print screen
-***** slock - bloqueia a tela
-***** xautolock - auto bloqueio da tela
 ***** archlinux-xdg-menu - gerar menu para o openbox
-sudo pacman -S putty rmlint colordiff usbutils
-sudo pacman -S testdisk scrot tree xorg-xcalc xautolock youtube-dl
+sudo pacman -S putty rmlint colordiff usbutils htop
+sudo pacman -S testdisk scrot tree xorg-xcalc youtube-dl
 sudo pacman -S imagemagick audacious
 sudo pacman -S firefox firefox-i18n-pt-br
-sudo pacman -S xarchiver file-roller filezilla vlc transmission-gtk
+sudo pacman -S xarchiver file-roller filezilla vlc
 sudo pacman -S lxhotkey gucharmap gpicview simple-scan guvcview evince mtpaint xfburn
 sudo pacman -S p7zip tar gzip bzip2 unrar unzip
-sudo pacman -S xautolock
 sudo pacman -S chromium
 yay -S google-chrome
 sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre geogebra
-sudo pacman -S medit ghex hexedit meld sqlite sqlite-doc curl
+sudo pacman -S ghex hexedit meld sqlite sqlite-doc curl
 yay -S postman-bin
 
 ***** Colocar as linha abaixo no arquivo .bashrc
@@ -628,6 +633,8 @@ yay -S watchman
 
 -- Alterar permissão de execução para o arquivo "~/.config/nvm/nvm.sh"
 cd ~/.config/nvm
+ou
+cd ~/.nvm
 chmod u+x nvm.sh
 
 -- Fechar o terminal e abrir outro.
@@ -648,14 +655,14 @@ nvm which 9.9.9
 -- Instalar pacotes
 nvm ls-remote --lts | grep Latest
 
-nvm install --lts=fermium --default
+nvm install --lts=fermium
 npm cache clear --force
-npm install -g nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates
+npm install -g nodemon node-gyp node-pre-gyp gulp n pm-check-updates
 npm install -g typescript@3.9.6 @nestjs/cli@8.0.2 @angular/cli
 npm install -g eslint jslint
 npm install -g bash-language-server dts-gen
 
-nvm install --lts=gallium
+nvm install --lts=gallium --default
 nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
 npm cache clear --force
 npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates
@@ -675,9 +682,10 @@ npm config set prefix "/usr/lib/node_modules/"
 
 -- Restaurar backup do arquivo .npmrc
 cp /mnt/disco/bck/saturno/ultimo/home/_npmrc .npmrc
+npm -g update
 
 —- Comandos importantes do npm (Obs: mas versões acima da gallium (16.15.0) usar
-    --location=global no lugar de -g
+   --location=global no lugar de -g
 npm list
 npm list --location=global --depth=0
 npm update --location=global
@@ -824,10 +832,11 @@ vim .vimrc
 su
 cd /root
 mkdir vim-backup
+mkdir -p .config/coc
 cp /home/wilton/.vimrc .
 cp /home/wilton/.viminfo .
 cp -R /home/wilton/.vim/ .vim/
-cp -R /home/wilton/.config/coc/ .config/coc
+cp -R /home/wilton/.config/coc/* .config/coc/
 -- editar o .vimrc e executar o comando abaixo
 vim .vimrc
 :PlugUpdate
@@ -860,7 +869,7 @@ export ANDROID_KEY_ALIAS=wjps-release
 export REPO_OS_OVERRIDE=linux
 export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
--- Restaurar o backup do arquivo .pip
+-- Restaurar o backup do diretório .android
 tar xzf /mnt/disco/bck/saturno/ultimo/home/_android.tar.gz
 ou
 —- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
@@ -1014,7 +1023,7 @@ sudo sysctl -p
 sudo sysctl --system
 
 —- Criar atalho (para instalação manual)
-echo -e '[Desktop Entry]\n Version=1.0\n Name=vscode\n Exec=/home/wilton/devtools/VSCode-linux-x64/code\n Icon=/home/wilton/devtools/VSCode-linux-x64/resources/app/resources/linux/code.png\n Type=Application\n Categories=Application' | sudo tee /usr/share/applications/vscode.desktop
+echo -e '[Desktop Entry]\n Version=1.0\n Name=vscode\n Exec=/home/wilton/devtools/vscode/code\n Icon=/home/wilton/devtools/vscode/resources/app/resources/linux/code.png\n Type=Application\n Categories=Application' | sudo tee /usr/share/applications/vscode.desktop
 
 —- Colocar as linhas abaixo no arquivo .bashrc (para instalação manual)
 export VSCODE_HOME=$HOME/devtools/vscode
@@ -1024,6 +1033,30 @@ export PATH=$PATH:$VSCODE_HOME
 No menu View > Command Palette….
 Digite install e selecione  Extensions: Install Extensions
 Digite flutter e instale Flutter
+
+***** Configurar I3WM
+-- i3lock - bloqueia a tela
+sudo pacman -S i3lock
+yay -S xidlehook
+
+-- editar arquivo ~/.config/i3/config
+set $browser google-chrome-stable
+bindsym $mod+e exec $ei vim
+exec $ei feh --bg-scale ~/Imagens/papelParede/archLinux/arch-linux-wallpaper.png
+
+# keybinding to lock screen
+bindsym $mod+Pause exec $ei "i3lock -c 000000"
+
+exec $ei xidlehook --detect-sleep --not-when-audio --timer 600 'i3lock -c 000000' ''
+
+# captura de tela
+bindsym Print --release exec $ei scrot ~/Downloads/%Y-%m-%d-%H-%M-%S.png
+
+# captura da janela selecionada
+bindsym Alt+Print --release exec $ei scrot -u -b -d 5 ~/Downloads/%Y-%m-%d-%H-%M-%S.png
+
+# captura de área da tela selecionada oom mouse
+bindsym $mod+Print --release exec $ei scrot -s -d 5  ~/Downloads/%Y-%m-%d-%H-%M-%S.png
 
 ***** Configurar temas openbox
 sudo pacman -S arc-gtk-theme arc-icon-theme
