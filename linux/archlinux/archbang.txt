@@ -1272,6 +1272,13 @@ docker run -d --name mongodb -v /mnt/disco/mongo/data/db:/data/db mongo
 docker exec -it mongodb bash
 mongo
 
+- Conectar o cliente com um usuário
+mongo --host localhost --port 27017 -u admin -p --authenticationDatabase "admin"
+
+- Criar usuários
+use admin
+db.createUser({user: 'wilton', pwd: 'malcxkwmvg59o', roles: [{role: 'readWrite', db: 'wilton'}, {role: 'dbAdmin', db: 'wilton'}]})
+
 -- string de conexão
 mongodb://usuario:senha@localhost:27017/admin
 
@@ -1370,6 +1377,16 @@ https://pt.stackoverflow.com/questions/205519/cria%C3%A7%C3%A3o-e-altera%C3%A7%C
 
 —- Conectando ao banco de dados
 mongo mongodb://wilton:@<ip-maquina>:27017/seluz
+
+***** limpeza do sistema
+-- lista pacotes órfãos
+pacman -Qtd
+
+-- limpa os pacotes antigos do cache que não estão instalado
+pacman -Sc
+
+-- limpa todo o cache
+pacman -Scc
 
 ***** restart vm do crontini
 Voltar para crosh
