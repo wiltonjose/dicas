@@ -200,6 +200,9 @@ rclone sync -i origem remote:destino --exclude="/node_modules/**"
 -- Veja arquivo configurar_proxy.txt
 reboot
 
+***** Instalar lf (list file)
+yay lf
+
 ***** Instalar screenfetch
 sudo pacman -S screenfetch
 
@@ -1021,6 +1024,16 @@ Digite flutter e instale Flutter
 -- i3lock - bloqueia a tela
 sudo pacman -S i3lock
 yay -S xidlehook
+
+-- recupar diretórios de configuração do ambiente graficos
+cd /tmp
+tar xzf /mnt/disco/bck/saturno/ultimo/home/_config.tar.gz
+cd .config
+mv rofi ~/.config
+mv i3 ~/.config
+mv i3status ~/.config
+
+
 
 -- editar arquivo ~/.config/i3/config
 set $browser google-chrome-stable
