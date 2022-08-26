@@ -46,10 +46,12 @@ vim -r <arquivo> - recupera "arquivo"
 ** Modos do vim
 --------------------------------------------------------------------------------
 Normal   - o que é digitado são comandos
-Inserção - o que é digitado é o texto. Deverá estar visível uma linha na parte de baixo:
+Inserção - o que é digitado é o texto. Deverá estar visível uma linha na parte
+           de baixo:
            -- INSERÇÃO --
-Execução - o que é digitado são comandos. Após digitar : (dois pontos) irá aparecer
-           na parte de baixo do editor uma linha para digitar o comando.
+Execução - o que é digitado são comandos. Após digitar : (dois pontos) irá
+           aparecer na parte de baixo do editor uma linha para digitar o
+           comando.
            Teste com :ls e ESC para sair
 
 ** Entrar no modo inserção
@@ -61,7 +63,8 @@ o  - insere na linha abaixo, já criando uma nova linha
 O  - insere na linha acima, já criando uma nova linha
 ea - insere após a palavra
 cc - deleta a linha e entra no modo de inserção, vem de 'clear'
-C  - deleta linha a frente do cursor e entra em modo de inserção, vem de 'clear'
+C  - deleta linha a frente do cursor e entra em modo de inserção, vem
+     de 'clear'
 s  - deleta caracter e entra no modo de inserção 'substitute'
 S  - deleta linha e entra no modo de inserção
 
@@ -108,9 +111,11 @@ Exemplo:
 :.! - executa comando shell inserindo resultado no lugar da linha atual
 :n! - executa comando shell inserindo resultado num buffer novo
 
-:terminal                - abre o terminal na parte superior da tela
-:terminal ++rows=5       - abre o terminal com 5 linhas na parte superior da tela
-:below terminal ++rows=5 - abre o terminal com 5 linhas na parte de baixo da tela
+:terminal          - abre o terminal na parte superior da tela
+:terminal ++rows=5 - abre o terminal com 5 linhas na parte superior da tela
+
+:below terminal ++rows=5 - abre o terminal com 5 linhas na parte de
+                           baixo da tela
 
 <c-z>  - vai para a janela do shell
 jobs   - na janela do shell lista os processos
@@ -192,7 +197,8 @@ g;       - vai para alteração anterior
 :tabm<n>         - mova a tab atual para a posição "n"
 :tabc            - fecha a tab atual
 :tabo            - fecha as tabs menos a tab atual
-:tabdo <comando> - executa o comando em todas as tabs (:tabdo q - fecha todas as tabs)
+:tabdo <comando> - executa o comando em todas as tabs (:tabdo q - fecha todas
+                   as tabs)
 <n>gt            - vai para a tab de número "n"
 
 --------------------------------------------------------------------------------
@@ -202,7 +208,8 @@ g;       - vai para alteração anterior
 :ls!             - lista os buffers existentes (inclusive os escondidos)
 :badd arquivo    - cria um buffer e abre o "arquivo"
 :b<n>            - vai para o buffer "n"
-:b!<n>           - esconde o buffer atual (mesmo se alterado) e vai para buffer "n"
+:b!<n>           - esconde o buffer atual (mesmo se alterado) e vai para
+                   buffer "n"
 :bn|<a-right>    - proximo buffer
 :bp|<a-left>     - buffer anterior
 :b arquivo       - troca para o buffer que tem o "arquivo"
@@ -235,8 +242,10 @@ S            - substituição da linha corrente
 <n>~         - altera os "n" caracteres para caixa alta (vise-versa)
 U            - converte caracteres selecionados para caixa alta
 u            - converte caracteres selecionados para caixa baixa
-gUw          - altera palavra para caixa alta (o cursor tem que ficar no primeiro caracter da palavra)
-guw          - altera palavra para caixa baixa (o cursor tem que ficar no primeiro caracter da palavra)
+gUw          - altera palavra para caixa alta (o cursor tem que ficar no
+               primeiro caracter da palavra)
+guw          - altera palavra para caixa baixa (o cursor tem que ficar no
+               primeiro caracter da palavra)
 <n>a-<esc>   - repete o caracter (-) n vezes
 
 .            - repete ultimo comando
@@ -356,7 +365,8 @@ N             - anterior
 *      - procura pela palavra sobre o cursor
 g*     - procura pela palavra sobre o cursor (Sem ser palavra cheia)
 #      - procura pela palavra sobre o cursor no sentido contrario
-g#     - procura pela palavra sobre o cursor no sentido contrario (Sem ser palavra cheia)
+g#     - procura pela palavra sobre o cursor no sentido contrario (Sem ser
+         palavra cheia)
 %      - localiza onde abre e fecha {, [, (, <tag>
 
 :noh   - remove destaque dos resultados da busca
@@ -379,19 +389,28 @@ g#     - procura pela palavra sobre o cursor no sentido contrario (Sem ser palav
 ** Substituir texto
 --------------------------------------------------------------------------------
 :s/<old>/<new>             - troca primeira ocorrências na linha
-:s/<old>/<new>/c           - troca primeira ocorrências na linha pedindo confirmação
+:s/<old>/<new>/c           - troca primeira ocorrências na linha pedindo
+                             confirmação
 :s/<old>/<new>/g           - troca todas ocorrências na linha
-:<li>,<lf>s/<old>/<new>    - troca todas ocorrências nas linhas entre "li" e "lf"
-:.,<lf>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha atual e "lf"
-:.,$s/<old>/<new>          - troca todas ocorrências nas linhas entre linha atual e a última linha
-:.,+<n>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha atual e mais "n" linhas
-:<li>,<lf>s/<old>/<new>/g  - troca todas ocorrências nas linhas entre "li" e "lf"
+:<li>,<lf>s/<old>/<new>    - troca todas ocorrências nas linhas entre
+                             "li" e "lf"
+:.,<lf>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha
+                             atual e "lf"
+:.,$s/<old>/<new>          - troca todas ocorrências nas linhas entre linha
+                             atual e a última linha
+:.,+<n>s/<old>/<new>       - troca todas ocorrências nas linhas entre linha
+                             atual e mais "n" linhas
+:<li>,<lf>s/<old>/<new>/g  - troca todas ocorrências nas linhas entre
+                             "li" e "lf"
 
 :%s/<old>/<new>/g          - troca todas ocorrências no arquivo
-:%s/<old>/<new>/gc         - troca todas ocorrências no arquivo pedindo confirmação
-:%s/<old>/<new>/gi         - troca todas ocorrências no arquivo ignora maiúscula e minúscula
+:%s/<old>/<new>/gc         - troca todas ocorrências no arquivo pedindo
+                             confirmação
+:%s/<old>/<new>/gi         - troca todas ocorrências no arquivo ignora
+                             maiúscula e minúscula
 
-:g/<old>/s//<new>          - troca primeira ocorrência em cada linha do arquivo
+:g/<old>/s//<new>          - troca primeira ocorrência em cada linha do
+                             arquivo
 :g/<old>/s//<new>/g        - troca primeira ocorrência no arquivo todo
 :g/<old>/s//<new>/gp       - troca primeira ocorrência no arquivo todo
 
@@ -466,7 +485,8 @@ q           - fecha
 <n><leader>cc         - comenta "n" linhas
 <leader>ci            - inverte comentário
 <n><leader>ci         - inverte comentário de "n" linhas
-<n><leader>c<space>   - alterna o estado de comentário da(s) linha(s) selecionada(s).
+<n><leader>c<space>   - alterna o estado de comentário da(s) linha(s)
+                        selecionada(s).
 
 --------------------------------------------------------------------------------
 ** Plugin taglist
@@ -476,7 +496,8 @@ q           - fecha
 --------------------------------------------------------------------------------
 ** Plugin surround - Envolver texto por tags, (, [, ", etc
 --------------------------------------------------------------------------------
-veeeS"          - envolve texto selecionado - v: modo visualização, e: um para cada palavra, S": envolver com "
+veeeS"          - envolve texto selecionado - v: modo visualização, e: um
+                  para cada palavra, S": envolver com "
 v<selecionar>S" - envolve texto selecionado com ""
 ysiw"           - envolve a palavra sobre o cursor com ""
 ys<n>aw"        - envolve "n" palavras sobre o cursor com ""
