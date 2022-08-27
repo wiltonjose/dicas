@@ -33,7 +33,7 @@ git pull origin
 
 Clonar um repositório remoto
 
-git clone usuario@<urlRepositório> 
+git clone usuario@<urlRepositório>
 
 -- Clonar um branch. O -b faz com que o branch clonado seja o corrente.
 git checkout -b <nomeBranch> origin/<nomeBranch>
@@ -58,13 +58,17 @@ git remote add <apelidoRemoto> <urlRepositório>
 -- Para listar todos os repositórios remotos
 git remote -v
 
--- Para baixar todos os dados que não estão no repositório local. O fetch não faz o merge com os dados na área de trabalho. Deverá ser feito o merge depois
+-- Para baixar todos os dados que não estão no repositório local. O fetch não faz o
+   merge com os dados na área de trabalho. Deverá ser feito o merge depois
 git fetch <apelidoRemoto>
 
--- Para baixar todos os dados que não estão no repositório local fazendo o merge com os dados na área de trabalho. 
+-- Para baixar todos os dados que não estão no repositório local fazendo o merge com
+   os dados na área de trabalho.
 git pull <apelidoRemoto>
 
--- Enviar as alterações no repositório local para o remoto. Se outro desenvolvedor executar o push antes, o seu push será rejeitado e deverá ser executado o pull e os conflitos deverão ser resolvidos.
+-- Enviar as alterações no repositório local para o remoto. Se outro desenvolvedor
+   executar o push antes, o seu push será rejeitado e deverá ser executado o pull
+   e os conflitos deverão ser resolvidos.
 git push <apelidoRemoto> <branch>
 
 -- Listando mais informações sobre o repositório remoto.
@@ -89,7 +93,8 @@ git tag <nomeTag> -m “mensagem”
 -- Clonar uma tag
 git checkout tags/<nomeTag> -b <nomeBranch>
 
--- Para criar uma tag para um commit. O idCommit corresponde aos 10 primeiros caracteres do id do commit a qual a tag se referencia.
+-- Para criar uma tag para um commit. O idCommit corresponde aos 10 primeiros caracteres
+   do id do commit a qual a tag se referencia.
 git tag -a <nomeTag> [<idCommit>] -m “mensagem”
 
 -- Para enviar uma tag para o repositório remoto.
@@ -130,8 +135,8 @@ git push origin --tags
 
 Trabalhando com branch
 
--- Branches são importantes para o desenvolvimento de funcionalidades isoladas. 
-   O branch padrão é master, criado na inicialização do repositório. 
+-- Branches são importantes para o desenvolvimento de funcionalidades isoladas.
+   O branch padrão é master, criado na inicialização do repositório.
    Todo branch deve ser mesclado (merge) com o branch master.
 
 -- Criando um branch
@@ -174,7 +179,8 @@ git pull
 git checkout master
 git merge <branch-a>
 
--- Os conflitos devem ser resolvidos manualmente. Depois de resolvidos devem ser marcados como merged:
+-- Os conflitos devem ser resolvidos manualmente. Depois de resolvidos devem ser
+   marcados como merged:
 git add <arquivo>
 
 -- Podemos verficar as diferenças entre os branchs antes de qualquer alteração:
@@ -204,7 +210,8 @@ OBS: Alterações já incluídas no index, bem como novos arquivos serão mantid
 -- Alterar um commit.
 git commit --amend
 
--- Para descartar todas as alterações e commits locais, deve ser recupedado o histórico mais recente do servidor e fazer o apontamento para o branch master local.
+-- Para descartar todas as alterações e commits locais, deve ser recupedado
+   o histórico mais recente do servidor e fazer o apontamento para o branch master local.
 git fetch origin
 git reset --hard origin/master
 
@@ -217,7 +224,7 @@ git mv <origem> <destino>
 Visualizar histórico
 
 -- Lista o histórico.
-git log 
+git log
 git log --stat
 git log --shortstat
 git log --pretty=oneline

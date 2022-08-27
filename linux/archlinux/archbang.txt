@@ -1406,10 +1406,10 @@ export NODE_ENV=desenvolvimento
 export LOG_ACESSOS=sim
 
 # --- Local
-# source config-mongodb.sh local
+source config-mongodb.sh local
 
 # --- Desenvolvimento
-source config-mongodb.sh desenv
+# source config-mongodb.sh desenv
 export EMAIL_USAR_SENDGRID=sim
 export EMAIL_FROM=wjps@wilton.jose.nom.br
 export EMAIL_NODEMAILER_USUARIO=wjps@wilton.jose.nom.br:ualcxkwmvg59m
