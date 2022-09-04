@@ -1,0 +1,99 @@
+Teclas de atalho
+----------------
+
+--------------------------------------------------------------------------------
+** Mapeamento
+--------------------------------------------------------------------------------
+
+Tecla    : Tecla mapeada
+-----------------------------------------------------
+$mod     : Tecla Windows
+-----------------------------------------------------
+
+--------------------------------------------------------------------------------
+** Modo basico
+--------------------------------------------------------------------------------
+<$mod-enter>     - abre o terminal
+<$mod-j>         - move o foco para esquerda
+<$mod-k>         - move o foco para baixo
+<$mod-l>         - move o foco para cima
+<$mod-;>         - move o foco para direita
+<$mod-space>     - alterna o modo foco
+<$mod-pause>     - bloqueia a tela
+
+--------------------------------------------------------------------------------
+** Movimentação das janelas
+--------------------------------------------------------------------------------
+<$mod-shift-j>   - move a janela para esquerda
+<$mod-shift-k>   - move a janela para baixo
+<$mod-shift-l>   - move a janela para cima
+<$mod-shift-;>   - move a janela para direita
+
+--------------------------------------------------------------------------------
+** Modifica janelas
+--------------------------------------------------------------------------------
+<$mod-f>         - alterna tela cheia
+<$mod-v>         - divide a tela - vertical
+<$mod-h>         - divide a tela - horizontal
+<$mod-r>         - modo altera tamanho
+
+--------------------------------------------------------------------------------
+** Modifica layout do container
+--------------------------------------------------------------------------------
+<$mod-shift-e>   - padrão - uma lado (cima) da outra
+<$mod-shift-s>   - empilhadas
+<$mod-shift-w>   - tabs
+
+--------------------------------------------------------------------------------
+** Floating
+--------------------------------------------------------------------------------
+<$mod-shift-space>  - alterna floating
+<$mod-left-click>   - arrasta janela floating
+<$mod-space>        - alterna janela com foco
+
+--------------------------------------------------------------------------------
+** Workspaces
+--------------------------------------------------------------------------------
+<$mod-[0-9]>        - troca para outro workspace
+<$mod-shift-[0-9]>  - move a janela para outro workspace
+
+--------------------------------------------------------------------------------
+** Abre/fecha aplicação
+--------------------------------------------------------------------------------
+<$mod-d>            - janelas abertas - alterna
+<$mod-shift-d>      - lista de aplicações - executa
+<$mod-shift-q>      - fecha janela com foco
+<$mod-shift-x>      - abre menu exit - Log out/reboot/poweroff
+
+--------------------------------------------------------------------------------
+** Restart
+--------------------------------------------------------------------------------
+<$mod-shift-c>      - recarrega o arquivo de configuração
+<$mod-shift-r>      - restart i3
+
+--------------------------------------------------------------------------------
+** Abre aplicação
+--------------------------------------------------------------------------------
+<$mod-t>         - terminal
+<$mod-w>         - google chrome
+<$mod-f>         - thunar
+<$mod-e>         - editor
+<$mod-b>         - janela com teclas de atalho
+<$mod-ctrl-v>    - vscode
+<$mod-ctrl-g>    - gmail
+<$mod-ctrl-r>    - google drive
+<$mod-ctrl-a>    - google agenda
+<$mod-ctrl-y>    - youtube
+<$mod-ctrl-d>    - google documento
+<$mod-ctrl-p>    - google planilha
+<$mod-ctrl-m>    - google maps
+<$mod-ctrl-c>    - google contatos
+<$mod-ctrl-w>    - whatsapp
+
+--------------------------------------------------------------------------------
+** Print da tela
+--------------------------------------------------------------------------------
+<print>          - tela cheia
+<shift-print>    - janela com foco
+<$mod-print>     - seleciona area da tela
+
