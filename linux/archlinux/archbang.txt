@@ -204,10 +204,19 @@ reboot
 yay lf
 
 ***** Instalar screenfetch
-sudo pacman -S screenfetch
+sudo pacman -S neofetch screenfetch
 
 —- Colocar a linha abaixo no arquivo .bashrc
-screenfetch
+# screenfetch
+neofetch --memory_percent on
+
+-- executar
+source .bashrc
+
+-- alterar o arquivo .config/neofetch/config.config
+   descomentar as linhas abaixo
+# info "Disk" disk
+# info "Battery" battery
 
 -- Configurar o esquema de cores para oblivion
 
