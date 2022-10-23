@@ -130,7 +130,7 @@ Subsystem       sftp    /usr/lib/openssh/sftp-server
 AllowUsers wiltonj
 
 -- Restaurar backup do arquivo .ssh
-tar xfz /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.tar.gz
+tar xfz /mnt/chromeos/removable/bck/saturno/ultimo/home/_ssh.tar.gz
 
 -- Inicar o daemon sshd
 sudo systemctl start sshd
@@ -152,7 +152,7 @@ sudo apt install ttf-mscorefonts-installer
 sudo apt install firefox-esr firefox-esr-l10n-pt-br gimp evince
 sudo apt install libreoffice libreoffice-l10n-pt-br libreoffice-gnome
 sudo apt install tk gitk git-gui
-sudo apt install x11-apps htop filezilla moc p7zip gsmartcontrol
+sudo apt install x11-apps btop htop filezilla moc p7zip gsmartcontrol
 sudo apt install sqlite3 sqlite3-doc
 
 ***** Instalar google chrome
@@ -175,7 +175,7 @@ sudo apt install google-chrome-stable
 ***** Configurar git
 
 ***** Restaurar backup do diretório ~/devtools
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_devtools.tar.gz
 
 ***** Instalar nvm e Nodejs
 
@@ -247,7 +247,7 @@ export PATH=$PATH:$M2_HOME/bin
 sudo apt install python3-pip python2.7-dev python-dev
 
 -- Restaurar o backup do arquivo .pylintrc
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_pylintrc .pylintrc
 
 -- Instalar o spyder
 sudo pip install pylint
@@ -260,7 +260,7 @@ sudo pip install pyflakes flake8 pycodestyle jedi-language-server
 pip3 list --format=(legacy|columns)
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_pip.tar.gz
 ou
 —- Criar o arquivo $HOME/.pip/pip.conf
 [list]
@@ -291,7 +291,7 @@ export REPO_OS_OVERRIDE=linux
 export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_android.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_android.tar.gz
 ou
 —- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
 ### User Sources for Android SDK Manager
@@ -411,9 +411,9 @@ export PATH=$PATH:$VSCODE_HOME/bin
 
 –- Recuperar os arquivos abaixo do backup
 cd ~
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vscode.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_vscode.tar.gz
 cd /tmp
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_config.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_config.tar.gz
 cd .config
 mv Code ~/.config
 
@@ -771,8 +771,8 @@ AllowUsers wiltonj
 -- Configurar o firewall para aceitar a porta 22
 
 -- Restaurar backup do arquivo .ssh
-tar xfz /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.tar.gz
-unzip  /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_ssh.zip
+tar xfz /mnt/chromeos/removable/bck/saturno/ultimo/home/_ssh.tar.gz
+unzip  /mnt/chromeos/removable/bck/saturno/ultimo/home/_ssh.zip
 
 -- Inicar o daemon sshd
 sudo systemctl start sshd
@@ -797,7 +797,7 @@ xrdb -merge ~/.Xresources
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 
 ***** Instalar pacotes
-sudo pacman -S htop usbutils mlocate wget rmlint ranger links colordiff
+sudo pacman -S btop htop usbutils mlocate wget rmlint ranger links colordiff
 sudo pacman -S gvfs gvfs-smb sshfs smbclient cifs-utils exfat-utils
 sudo pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-bitstream-vera
 sudo pacman -S p7zip tar gzip bzip2 unrar unzip
@@ -834,11 +834,11 @@ git config --global http.proxy $http_proxy
 git config --global https.proxy $https_proxy
 
 -- Restaurar backup do arquivo .gitconfig
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_gitconfig .gitconfig
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_gitconfig .gitconfig
 
 ***** Restaurar backup do diretório ~/devtools
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.tar.gz
-unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_devtools.zip
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_devtools.tar.gz
+unzip /mnt/chromeos/removable/bck/saturno/ultimo/home/_devtools.zip
 
 ***** Instalação NVM
 -- Site nvm https://github.com/creationix/nvm
@@ -893,7 +893,7 @@ npm config set https-proxy "http://127.0.0.1:3128"
 npm config set prefix "/usr/lib/node_modules/"
 
 -- Restaurar backup do arquivo .npmrc
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_npmrc .npmrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_npmrc .npmrc
 
 —- Comandos importantes do npm (Obs: mas versões acima da gallium (16.15.0) usar
     --location=global no lugar de -g
@@ -962,7 +962,7 @@ export PATH=$PATH:$M2_HOME/bin
 sudo pacman -S python-pip
 
 -- Restaurar o backup do arquivo .pylintrc
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pylintrc .pylintrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_pylintrc .pylintrc
 
 -- Instalar o pylint
 sudo pip install pylint
@@ -974,8 +974,8 @@ sudo pip install pyflakes flake8 pycodestyle jedi-language-server
 pip3 list --format=(legacy|columns)
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.tar.gz
-unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_pip.zip
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_pip.tar.gz
+unzip /mnt/chromeos/removable/bck/saturno/ultimo/home/_pip.zip
 ou
 —- Criar o arquivo $HOME/.pip/pip.conf
 [list]
@@ -1020,14 +1020,14 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 -- Restaurar backup do arquivo .viminfo
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_viminfo .viminfo
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_viminfo .viminfo
 
 -- Restaurar backup do arquivo .vimrc
-cp /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vimrc .vimrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_vimrc .vimrc
 
 -- Restaurar backup do diretório .vim
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vim.tar.gz
-unzip /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vim.zip
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_vim.tar.gz
+unzip /mnt/chromeos/removable/bck/saturno/ultimo/home/_vim.zip
 
 —- Editar arquivo ~/.vim/coc-settings.json
 nano ~/.vim/coc-settings.json
@@ -1078,7 +1078,7 @@ export REPO_OS_OVERRIDE=linux
 export PATH=$PATH:$ANDROID_HOME/bin:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
 -- Restaurar o backup do arquivo .pip
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_android.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_android.tar.gz
 ou
 —- Criar arquivo ~/.android/repositories.cfg e incluir as linhas abaixo:
 ### User Sources for Android SDK Manager
@@ -1187,9 +1187,9 @@ tar xzf ../Downloads/code-stable-x64-1652813090.tar.gz
 
 —- Recuperar os arquivos abaixo do backup
 cd ~
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_vscode.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_vscode.tar.gz
 cd /tmp
-tar xzf /mnt/chromeos/removable/disco/bck/penguin/ultimo/home/_config.tar.gz
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_config.tar.gz
 cd .config
 mv Code ~/.config
 
