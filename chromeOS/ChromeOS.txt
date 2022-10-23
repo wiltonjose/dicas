@@ -1180,7 +1180,7 @@ flutter help →lista estes e todos os outros comandos disponíveis para serem e
 
 ***** Instalar VsCode
 —- Fazer download do site da Microsoft (https://code.visualstudio.com/Download) ou instalar do repositório AUR
-yay visual-studio-code-bin
+yay -S visual-studio-code-bin
 
 —- Se fizer download e descompactar no diretório /home/wiltonj/devtools
 tar xzf ../Downloads/code-stable-x64-1652813090.tar.gz
