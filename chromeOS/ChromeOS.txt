@@ -749,8 +749,11 @@ sudo pacman -S taglib libmpcdec libsamplerate libvorbis libcdio-paranoia opusfil
 aplay /usr/share/sounds/alsa/Noise.wav
 cat /proc/asound/card*/codec* |grep Codec
 
+-- instalar neofetch
+sudo pacman -S neofetch
+
 —- Colocar a linha abaixo no arquivo .bashrc
-screenfetch
+neofetch --memory_percent on
 
 ***** Configurando openssh
 -- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
