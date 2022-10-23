@@ -75,7 +75,7 @@ KEYMAP=br-abnt2
 FONT=lat1-14
 FONT_MAP=8859-2
 
--- executar reboot 
+-- executar reboot
 
 ***** Criar os links simbolicos
 ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
@@ -627,7 +627,20 @@ sudo pacman -Syyu archlinux-keyring
 
 -– Instalar reflector
 sudo pacman -S reflector rsync
-sudo reflector -a 10 -c us -f 5 --sort rate --save /etc/pacman.d/mirrorlist
+sudo reflector -a 10 -c br -f 5 --sort rate --save /etc/pacman.d/mirrorlist
+
+-- Incluir as linhas abaixo
+## Brazil
+Server = http://archlinux-br.com.br/archlinux/$repo/os/$arch
+Server = https://archlinux-br.com.br/archlinux/$repo/os/$arch
+Server = http://br.mirror.archlinux-br.org/$repo/os/$arch
+Server = http://archlinux.c3sl.ufpr.br/$repo/os/$arch
+Server = http://www.caco.ic.unicamp.br/archlinux/$repo/os/$arch
+Server = https://www.caco.ic.unicamp.br/archlinux/$repo/os/$arch
+Server = http://linorg.usp.br/archlinux/$repo/os/$arch
+Server = http://archlinux.pop-es.rnp.br/$repo/os/$arch
+Server = http://mirror.ufam.edu.br/archlinux/$repo/os/$arch
+Server = http://mirror.ufscar.br/archlinux/$repo/os/$arch
 
 -- Instalar pacman-contrib
 sudo pacman -S pacman-contrib
@@ -662,6 +675,8 @@ systemctl --failed
 systemctl --user --failed
 ip -4 a show dev eth0
 sudo dhcpcd eth0
+exit
+lxc console penguin
 
 ***** Configurar locale.gen
 -- Alterar o arquivo /etc/locale.gen
@@ -692,9 +707,8 @@ rm -rf yay/
 yay -Syyu
 
 ***** Instalar integração com o chromeos
-yay -S cros-container-guest-tools-git wayland xorg-server-xwayland xorg-xwayland
+yay -S cros-container-guest-tools-git wayland xorg-xwayland
 cp -rT /etc/skel/.config/pulse ~/.config
-sudo ln -s /opt/google/cros-containers/bin/sommelier.elf /usr/bin/
 systemctl --user enable --now sommelier@0 sommelier-x@0 sommelier@1 sommelier-x@1
 
 -- Diretório dos atalhos
@@ -703,12 +717,12 @@ systemctl --user enable --now sommelier@0 sommelier-x@0 sommelier@1 sommelier-x@
 -- Executar um boot na máquina
 
 ***** Criar os links simbolicos
-ln -s /mnt/chromeos/GoogleDrive/MyDrive/bin bin
 ln -s /mnt/chromeos/removable/disco/ disco
 ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
 ln -s /mnt/chromeos/GoogleDrive/MyDrive/ gdrive
 
 ***** Colocar a linha abaixo no arquivo .bashrc
+-- antes baixar diretório bin do dropbox
 export PATH=$PATH:$HOME/bin
 
 ***** Instalar editores
@@ -723,7 +737,7 @@ alsamixer
 - verificar se é necessário alterar o sound card para "HDA Intel PCH"
 
 -- se não passar nos testes do som (verificar se necessário)
-sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth 
+sudo pacman -S pulseaudio pulseaudio-alsa pulseaudio-bluetooth
 pulseaudio --start
 
 —- Instalar moc
