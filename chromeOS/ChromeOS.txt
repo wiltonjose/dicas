@@ -805,7 +805,7 @@ sudo pacman -S putty tree youtube-dl
 sudo pacman -S xarchiver file-roller filezilla
 sudo pacman -S tk ghex hexedit meld sqlite sqlite-doc curl geany
 sudo pacman -S firefox firefox-i18n-pt-br
-sudo pacman -S libreoffice-fresh-pt-br gimp epdfview evince calibre
+sudo pacman -S libreoffice-fresh-pt-br epdfview evince
 sudo pacman -S imagemagick
 sudo pacman -S pcmanfm lxterminal
 sudo pacman -S audacious
@@ -870,15 +870,15 @@ nvm ls-remote --lts | grep Latest
 
 nvm install --lts=fermium --default
 npm cache clear --force
-npm install -g nodemon node-gyp node-pre-gyp gulp vtop npm-check-updates
-npm install -g typescript@3.9.6 @nestjs/cli@8.0.2 @angular/cli
+npm install -g nodemon node-gyp node-pre-gyp gulp npm-check-updates
+npm install -g typescript@3.9.6 @nestjs/cli@8.0.2
 npm install -g eslint jslint
 npm install -g bash-language-server dts-gen
 
 nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
 npm cache clear --force
 npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates
-npm install --location=global typescript @nestjs/cli @angular/cli
+npm install --location=global typescript @nestjs/cli
 npm install --location=global eslint jslint
 npm install --location=global bash-language-server dts-gen
 
