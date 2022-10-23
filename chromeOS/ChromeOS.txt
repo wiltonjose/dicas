@@ -627,7 +627,8 @@ sudo pacman -Syyu archlinux-keyring
 
 -– Instalar reflector
 sudo pacman -S reflector rsync
-sudo reflector -a 10 -c br -f 5 --sort rate --save /etc/pacman.d/mirrorlist
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bck
+sudo reflector --verbose --protocol https --age 12 --country br,us --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
 -- Incluir as linhas abaixo
 ## Brazil
