@@ -282,10 +282,10 @@ sudo apt install wget software-properties-common apt-transport-https
 
 —- Fazer download da nova versão
 cd Download
-wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.19.3.linux-amd64.tar.gz
 
 —- Instalar versão do download
-sudo tar -zxvf go1.18.4.linux-amd64.tar.gz -C /usr/local/
+sudo tar -zxvf go1.19.3.linux-amd64.tar.gz -C /usr/local/
 
 —- Instalar versão do repositório
 sudo apt install golang-go
@@ -359,7 +359,72 @@ format=columns
 —- Remover pacote
 sudo pip3 uninstall pacote
 
+***** Instalar vim
+sudo pacman -S vim ctags clang
+
+—- Instalar pacote para coc-sh
+npm install --location=global bash-language-server
+
+—- Instalar fontes extras para o vim
+https://wiki.debian.org/pt_BR/Fonts#Adicionando_fontes
+
+—- Acessar o site NerdFonts
+https://www.nerdfonts.com/
+https://github.com/ryanoasis/nerd-fonts#font-installation
+
+—- Fazer download das fontes
+“Droid Sans Mono Nerd Font”
+“DejaVu Sans Mono Nerd Font Complete”
+“Roboto Mono”
+Arquivos .ttf e .otf
+—- Copiar os arquivos de font para o diretório .local/share/fonts
+mkdir -p .local/share/fonts
+—- Executar os comandos
+fc-cache
+fc-cache -fv
+—- Outros comando
+fc-list
+fc-list :spacing=mono
+fc-match -s Helvetica
+
 ***** Configurar vim
+-- Criar o diretório ~/vim-backup
+
+—- Instalar vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+-- Restaurar backup do arquivo .viminfo
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_viminfo .viminfo
+
+-- Restaurar backup do arquivo .vimrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_vimrc .vimrc
+
+-- Restaurar backup do diretório .vim
+tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_vim.tar.gz
+unzip /mnt/chromeos/removable/bck/saturno/ultimo/home/_vim.zip
+
+—- Editar arquivo ~/.vim/coc-settings.json
+nano ~/.vim/coc-settings.json
+Alterar diretório do node
+
+—- Colocar a linha abaixo no arquivo .bashrc
+export EDITOR=vim
+
+-- editar o .vimrc e executar o comando abaixo
+vim .vimrc
+:PlugUpdate
+:CocUpdate
+
+-- Configurar para o root
+su
+cd /root
+mkdir vim-backup
+cp /home/wiltonj/.vimrc .
+cp /home/wiltonj/.viminfo .
+cp -R /home/wiltonj/.vim/ .vim/
+cp -R /home/wiltonj/.config/coc/ .config/coc
+exit
 
 ***** Instalar Android sdk
 —- Fazer download do sdk
