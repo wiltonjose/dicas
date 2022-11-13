@@ -360,8 +360,6 @@ format=columns
 sudo pip3 uninstall pacote
 
 ***** Instalar vim
-sudo pacman -S vim ctags clang
-
 —- Instalar pacote para coc-sh
 npm install --location=global bash-language-server
 
