@@ -85,7 +85,8 @@ ln -s /mnt/chromeos/removable/disco/ disco
 ***** Instalar
 sudo apt install build-essential cmake autoconf automake pkg-config zlib1g-dev
 sudo apt install vim-gtk exuberant-ctags clang
-sudo apt install screenfetch watchman
+sudo apt install neofetch
+sudo apt install nano
 
 ***** Instalar do firewall (Não instalar)
 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-debian-9-pt
@@ -114,7 +115,7 @@ sudo ufw status numbered
 
 ***** Colocar as linhas abaixo no arquivo .bashrc
 export PATH=$PATH:$HOME/bin
-screenfetch
+neofetch --memory_percent on
 
 ***** Configurar ssh
 -- Alterar o arquivo /etc/ssh/sshd_config. Colocar as linhas abaixo e comentar todas as configurações já existentes.
@@ -143,16 +144,18 @@ scp -r ./ usuario@endereco.ip.do.destino:./diretorio.destino/
 scp -r ./Documents/* usuario@endereco.ip.do.destino:/home/usuario/Documentos
 
 ***** Instalar utilitários
-sudo apt install chromium pcmanfm lxterminal
+sudo apt install pcmanfm lxterminal colordiff
 sudo apt install gvfs sshfs exfat-fuse exfat-utils
 sudo apt install samba smbclient cifs-utils
-sudo apt install curl nano xarchiver putty youtube-dl pcmanfm tree ghex hexedit meld
+sudo apt install curl xarchiver putty youtube-dl tree ghex hexedit meld
 sudo apt install ttf-bitstream-vera fonts-powerline fonts-dejavu
 sudo apt install ttf-mscorefonts-installer
-sudo apt install firefox-esr firefox-esr-l10n-pt-br gimp evince
+sudo apt install firefox-esr firefox-esr-l10n-pt-br
+sudo apt install evince
 sudo apt install libreoffice libreoffice-l10n-pt-br libreoffice-gnome
 sudo apt install tk gitk git-gui
-sudo apt install x11-apps btop htop filezilla moc p7zip gsmartcontrol
+sudo apt install x11-apps btop htop filezilla moc p7zip tar gzip bzip2 unrar unzip
+sudo apt install gsmartcontrol
 sudo apt install sqlite3 sqlite3-doc
 
 ***** Instalar google chrome
@@ -173,9 +176,54 @@ sudo apt update
 sudo apt install google-chrome-stable
 
 ***** Configurar git
+-- Gerar um par de chave ssh
+ssh-keygen
+
+-- Cadastrar a chave pública no servidor Git (Github ou trabalho)
+
+-- Copiar o conteúdo do arquivo ~/.ssh/id_rsa.pub para o local apropriado
+
+-- Gerar arquivo de configuração ~/.gitconfig
+git config --global user.email SEU_EMAIL@dominio.com.br
+git config --global user.name SEU_LOGIN
+git config --global merge.tool vimdiff
+git config --global pull.rebase false
+Se for necessário configurar proxy
+git config --global http.proxy $http_proxy
+git config --global https.proxy $https_proxy
+
+-- Restaurar backup do arquivo .gitconfig
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_gitconfig .gitconfig
 
 ***** Restaurar backup do diretório ~/devtools
 tar xzf /mnt/chromeos/removable/bck/saturno/ultimo/home/_devtools.tar.gz
+
+***** Instalação NVM
+-- Site nvm https://github.com/creationix/nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+sudo apt install watchman
+
+-- Alterar permissão de execução para o arquivo "~/.config/nvm/nvm.sh"
+cd ~/.config/nvm
+chmod u+x nvm.sh
+
+-- Fechar o terminal e abrir outro.
+
+—- Comando importantes do nvm
+nvm --version
+nvm ls-remote
+nvm install 9.9.9
+nvm install 8.2.1 --reinstall-packages-from=7.11.1
+nvm install --lts=argon
+nvm uninstall 9.9.9
+nvm ls
+nvm alias default 10.21.0
+nvm use 9.9.9
+nvm which 9.9.9
+
+
+
 
 ***** Instalar nvm e Nodejs
 
@@ -809,6 +857,7 @@ sudo pacman -S libreoffice-fresh-pt-br epdfview evince
 sudo pacman -S imagemagick
 sudo pacman -S pcmanfm lxterminal
 sudo pacman -S audacious
+sudo pacman -S gsmartcontrol
 yay -S google-chrome
 yay -S ttf-ms-fonts
 yay -S postman-bin
