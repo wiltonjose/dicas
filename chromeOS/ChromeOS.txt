@@ -112,6 +112,7 @@ sudo ufw default deny outgoing
 sudo ufw status numbered
 
 ***** Restaurar backup do diretório ~/bin
+tar xfz /mnt/chromeos/removable/bck/saturno/ultimo/home/bin.tar.gz
 
 ***** Colocar as linhas abaixo no arquivo .bashrc
 export PATH=$PATH:$HOME/bin
@@ -130,7 +131,7 @@ PrintMotd no
 Subsystem       sftp    /usr/lib/openssh/sftp-server
 AllowUsers wiltonj
 
--- Restaurar backup do arquivo .ssh
+-- Restaurar backup do diretório .ssh
 tar xfz /mnt/chromeos/removable/bck/saturno/ultimo/home/_ssh.tar.gz
 
 -- Inicar o daemon sshd
@@ -874,6 +875,9 @@ systemctl --user enable --now sommelier@0 sommelier-x@0 sommelier@1 sommelier-x@
 ln -s /mnt/chromeos/removable/disco/ disco
 ln -s /mnt/chromeos/MyFiles/Downloads/ Downloads
 ln -s /mnt/chromeos/GoogleDrive/MyDrive/ gdrive
+
+***** Restaurar backup do diretório ~/bin
+tar xfz /mnt/chromeos/removable/bck/saturno/ultimo/home/bin.tar.gz
 
 ***** Colocar a linha abaixo no arquivo .bashrc
 -- antes baixar diretório bin do dropbox
