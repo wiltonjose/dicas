@@ -222,10 +222,52 @@ nvm alias default 10.21.0
 nvm use 9.9.9
 nvm which 9.9.9
 
+***** Instalar Nodejs
+-- Instalar pacotes
+nvm ls-remote --lts | grep Latest
 
+nvm install --lts=fermium --default
+npm cache clear --force
+npm install -g nodemon node-gyp node-pre-gyp gulp npm-check-updates
+npm install -g typescript@3.9.6 @nestjs/cli@8.0.2
+npm install -g eslint jslint
+npm install -g bash-language-server dts-gen
 
+nvm install --lts=gallium --reinstall-packages-from='lts/fermium'
+npm cache clear --force
+npm install --location=global nodemon node-gyp node-pre-gyp gulp npm-check-updates
+npm install --location=global typescript @nestjs/cli
+npm install --location=global eslint jslint
+npm install --location=global bash-language-server dts-gen
 
-***** Instalar nvm e Nodejs
+—- Configurar npm
+npm config set temp /tmp
+npm config set strict-ssl false
+npm config set registry "http://registry.npmjs.org/"
+
+Obs: Verificar se é necessário
+npm config set proxy "http://127.0.0.1:3128"
+npm config set https-proxy "http://127.0.0.1:3128"
+npm config set prefix "/usr/lib/node_modules/"
+
+-- Restaurar backup do arquivo .npmrc
+cp /mnt/chromeos/removable/bck/saturno/ultimo/home/_npmrc .npmrc
+
+—- Comandos importantes do npm (Obs: mas versões acima da gallium (16.15.0) usar
+    --location=global no lugar de -g
+npm list
+npm list --location=global --depth=0
+npm update --location=global
+npm list --location=global
+npm update --location=global
+npm cache verify
+npm cache clean --force
+npm update packageName
+npm uninstall packageName
+npm show packageName@* version
+
+sudo npm update --location=global packageName
+sudo npm uninstall --location=global packageName
 
 ***** Instalar Golang
 https://go.dev/doc/install
